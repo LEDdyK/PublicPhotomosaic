@@ -34,6 +34,12 @@ public class ImageRGBTest {
 		ImageRGB rgb = new ImageRGB(image);
 		
 		assertEquals(255, rgb.getRed());
+
+		g2d.setColor(Color.BLUE);
+		g2d.fillRect(0, 0, 100, 100);
+		rgb = new ImageRGB(image);
+		
+		assertEquals(255, rgb.getBlue());
 		
 	}
 }
