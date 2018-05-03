@@ -22,7 +22,7 @@ public class RGBGrid {
 		rgbList = new ImageRGB[w][h];
 		for(int y=0; y<h; y++) {
 			for(int x=0; x<h;x++) {
-				image.getSubimage(x, y, cellWidth, cellWidth);
+				image.getSubimage(x, y, cellWidth, cellHeight);
 				rgbList[x][h] = new ImageRGB(image);
 			}
 		}
