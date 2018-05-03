@@ -1,16 +1,28 @@
 package main.images;
 
+import java.awt.image.BufferedImage;
+
 public class ImageRGB {
 	private int red;
 	private int green;
 	private int blue;
-	private String fileName;
 	
-	public ImageRGB(int r, int g, int b, String name){
-		red = r;
-		green = g;
-		blue = b;
-		fileName = name;
+	public ImageRGB(BufferedImage image){
+		int height = image.getHeight();
+		int width = image.getWidth();
+		
+		//[0]red,[1]green,[2]blue
+		long totalColor[] = new long[3];
+		for(int j=0 ; j<height; j++) { //y axis
+			for(int i=0 ; i<width; i++) { //x axis
+				totalColor[0] = (image.getRGB(i, j)>>16) & 0xff;
+				totalColor[1] = (image.getRGB(i, j)>>8) & 0xff;
+				totalColor[2] = (image.getRGB(i, j)) & 0xff;
+			}
+		}
+		red= (int) (totalColor[0]/255);
+		green = (int) (totalColor[1]/255);
+		blue = (int) (totalColor[2]/255);
 	}
 
 	public int getRed() {
@@ -21,8 +33,5 @@ public class ImageRGB {
 	}
 	public int getBlue() {
 		return blue;
-	}
-	public String getName() {
-		return fileName;
 	}
 }

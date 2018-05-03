@@ -22,23 +22,9 @@ public class RGBLibrary {
 		rgbList = new HashMap<String,ImageRGB>();
 		for(String imageKey: library.keySet()) {
 			BufferedImage image = library.get(imageKey);
-			int height = image.getHeight();
-			int width = image.getWidth();
 			
-			//[0]red,[1]green,[2]blue
-			long totalColor[] = new long[3];
-			for(int j=0 ; j<height; j++) { //y axis
-				for(int i=0 ; i<width; i++) { //x axis
-					totalColor[0] = (image.getRGB(1, 1)>>16) & 0xff;
-					totalColor[1] = (image.getRGB(1, 1)>>8) & 0xff;
-					totalColor[2] = (image.getRGB(1, 1)) & 0xff;
-				}
-			}
-			int aveRed = (int) (totalColor[0]/255);
-			int aveGreen = (int) (totalColor[1]/255);
-			int aveBlue = (int) (totalColor[2]/255);
 			
-			ImageRGB rgb = new ImageRGB(aveRed,aveGreen,aveBlue,imageKey);
+			ImageRGB rgb = new ImageRGB(image);
 			rgbList.put(imageKey,rgb);
 		}
 	}
@@ -56,6 +42,8 @@ public class RGBLibrary {
 				writer.write(line);
 				writer.newLine();
 			}
+			writer.flush();
+			writer.close();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
