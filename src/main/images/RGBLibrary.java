@@ -22,8 +22,6 @@ public class RGBLibrary {
 		rgbList = new HashMap<String,ImageRGB>();
 		for(String imageKey: library.keySet()) {
 			BufferedImage image = library.get(imageKey);
-			
-			
 			ImageRGB rgb = new ImageRGB(image);
 			rgbList.put(imageKey,rgb);
 		}
