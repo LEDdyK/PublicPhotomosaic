@@ -2,6 +2,11 @@ package main.images;
 
 import java.awt.image.BufferedImage;
 
+/**
+ * stores the RGB of the image grid
+ * @author DarkIris3196
+ *
+ */
 public class RGBGrid {
 	private int h;
 	private int w;

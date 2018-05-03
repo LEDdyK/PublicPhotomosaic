@@ -10,7 +10,7 @@ import java.util.HashMap;
 import java.util.List;
 
 /**
- * takes the average 
+ * stores the image RGB of all the images in the directory
  * @author DarkIris3196
  *
  */

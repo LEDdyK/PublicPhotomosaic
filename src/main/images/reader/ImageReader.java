@@ -1,4 +1,4 @@
-package main.images;
+package main.images.reader;
 
 import java.awt.image.BufferedImage;
 import java.io.File;

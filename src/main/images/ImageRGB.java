@@ -1,7 +1,11 @@
 package main.images;
 
 import java.awt.image.BufferedImage;
-
+/**
+ * calculates the average RGB of the image
+ * @author DarkIris3196
+ *
+ */
 public class ImageRGB {
 	private int red;
 	private int green;
