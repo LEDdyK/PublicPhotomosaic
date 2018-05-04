@@ -16,13 +16,13 @@ import java.util.List;
  */
 public class RGBLibrary {
 	
-	private HashMap<String,ImageRGB> rgbList;
+	private HashMap<String,AveRGB> rgbList;
 	
 	public RGBLibrary(HashMap<String,BufferedImage> library) {
-		rgbList = new HashMap<String,ImageRGB>();
+		rgbList = new HashMap<String,AveRGB>();
 		for(String imageKey: library.keySet()) {
 			BufferedImage image = library.get(imageKey);
-			ImageRGB rgb = new ImageRGB(image);
+			AveRGB rgb = new AveRGB(image);
 			rgbList.put(imageKey,rgb);
 		}
 	}
@@ -35,8 +35,8 @@ public class RGBLibrary {
 			BufferedWriter writer = new BufferedWriter(new FileWriter(file));
 			
 			for(String imageKey : rgbList.keySet()) {
-				ImageRGB rgb = rgbList.get(imageKey);
-				String line = imageKey + " " + rgb.getRed() + " " + rgb.getGreen() + " " + rgb.getBlue();
+				AveRGB rgb = rgbList.get(imageKey);
+				String line = imageKey + " " + rgb.getR() + " " + rgb.getG() + " " + rgb.getB();
 				writer.write(line);
 				writer.newLine();
 			}
@@ -48,11 +48,11 @@ public class RGBLibrary {
 		}
 	}
 	
-	public HashMap<String,ImageRGB> getRGBList(){
+	public HashMap<String,AveRGB> getRGBList(){
 		return rgbList;
 	}
 	
-	public ImageRGB getImageRGB(String fileName) {
+	public AveRGB getImageRGB(String fileName) {
 		return rgbList.get(fileName);
 	}
 }

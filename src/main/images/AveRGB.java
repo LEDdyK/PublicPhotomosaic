@@ -6,12 +6,12 @@ import java.awt.image.BufferedImage;
  * @author DarkIris3196
  *
  */
-public class ImageRGB {
+public class AveRGB {
 	private int red;
 	private int green;
 	private int blue;
 	
-	public ImageRGB(BufferedImage image){
+	public AveRGB(BufferedImage image){
 		int height = image.getHeight();
 		int width = image.getWidth();
 		int pixelNum = height*width;
@@ -29,13 +29,13 @@ public class ImageRGB {
 		blue = (int) (totalColor[2]/pixelNum);
 	}
 
-	public int getRed() {
+	public int getR() {
 		return red;
 	}
-	public int getGreen() {
+	public int getG() {
 		return green;
 	}
-	public int getBlue() {
+	public int getB() {
 		return blue;
 	}
 }

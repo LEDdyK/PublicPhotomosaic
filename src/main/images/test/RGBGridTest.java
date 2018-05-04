@@ -41,19 +41,19 @@ public class RGBGridTest {
 	
 	@Test
 	public void test1() {
-		assertEquals(255,grid.getGridCell(0, 0).getGreen());
+		assertEquals(255,grid.getGridCell(0, 0).getG());
 	}
 	
 	@Test
 	public void test2() {
-		assertEquals(0,grid.getGridCell(3, 0).getGreen());
+		assertEquals(0,grid.getGridCell(3, 0).getG());
 	}
 	@Test
 	public void test3() {
-		assertEquals(0,grid.getGridCell(0, 0).getBlue());
+		assertEquals(0,grid.getGridCell(0, 0).getB());
 	}
 	@Test
 	public void test4() {
-		assertEquals(255,grid.getGridCell(3, 0).getBlue());
+		assertEquals(255,grid.getGridCell(3, 0).getB());
 	}
 }
