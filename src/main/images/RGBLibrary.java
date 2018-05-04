@@ -3,11 +3,13 @@ package main.images;
 import java.awt.image.BufferedImage;
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Scanner;
 
 /**
  * stores the image RGB of all the images in the directory
@@ -18,6 +20,10 @@ public class RGBLibrary {
 	
 	private HashMap<String,AveRGB> rgbList;
 	
+	/**
+	 * takes in a library of images and converts them into a library of RGBs paired with their filename
+	 * @param library
+	 */
 	public RGBLibrary(HashMap<String,BufferedImage> library) {
 		rgbList = new HashMap<String,AveRGB>();
 		for(String imageKey: library.keySet()) {
@@ -25,6 +31,26 @@ public class RGBLibrary {
 			AveRGB rgb = new AveRGB(image);
 			rgbList.put(imageKey,rgb);
 		}
+	}
+	
+	/**
+	 * takes in an indexfile and converts the data into a library of RGBs paired with their filename
+	 * @param indexFile
+	 * @throws FileNotFoundException
+	 */
+	public RGBLibrary(File indexFile) throws FileNotFoundException {
+		Scanner index = new Scanner(indexFile);
+		while(index.hasNextLine()) {
+			Scanner indexLine = new Scanner(index.nextLine());
+			String fileName = indexLine.next();
+			int red = Integer.parseInt(indexLine.next());
+			int green = Integer.parseInt(indexLine.next());
+			int blue = Integer.parseInt(indexLine.next());
+			
+			AveRGB rgb = new AveRGB(red,blue,green);
+			rgbList.put(fileName,rgb);
+		}
+		
 	}
 
 	public void indexFiler(String fileName) {
@@ -47,6 +73,7 @@ public class RGBLibrary {
 			e.printStackTrace();
 		}
 	}
+	
 	
 	public HashMap<String,AveRGB> getRGBList(){
 		return rgbList;

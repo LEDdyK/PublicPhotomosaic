@@ -11,6 +11,12 @@ public class AveRGB {
 	private int green;
 	private int blue;
 	
+	public AveRGB(int red, int green, int blue) {
+		this.red = red;
+		this.green = green;
+		this.blue = blue;
+	}
+	
 	public AveRGB(BufferedImage image){
 		int height = image.getHeight();
 		int width = image.getWidth();
