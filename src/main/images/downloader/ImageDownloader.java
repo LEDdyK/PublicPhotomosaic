@@ -10,6 +10,8 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -33,35 +35,21 @@ public class ImageDownloader {
 	
 	public void downloadRecentImages() {
 		try {
-			URL url = new URL(RECENT_IMAGES + API_KEY + REST_FORMAT);
-			HttpURLConnection con = (HttpURLConnection) url.openConnection();
-			con.setRequestMethod("GET");
 			
-			BufferedReader in = new BufferedReader(
-			new InputStreamReader(con.getInputStream()));
+			String xmlResult = getRecentPhotosMetaDataXML();
+			List<PhotoMetaData> photoMetaDataList = parseXMLResult(xmlResult);
 			
-			String inputLine;
-			StringBuffer content = new StringBuffer();
-			
-			while ((inputLine = in.readLine()) != null) {
-			    content.append(inputLine + "\n");
+			for (PhotoMetaData photoMetaData: photoMetaDataList) {
+				String link = String.format(DOWNLOAD_URL, 
+						photoMetaData.getFarm(),
+						photoMetaData.getServer(),
+						photoMetaData.getId(),
+						photoMetaData.getSecret(),
+						"q", "jpg");
+				
+				System.out.println(link);
 			}
-			
-			in.close();
-			
-			System.out.println(content.toString());
-			
-//			DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-//			factory.setNamespaceAware(true);
-//			factory.setValidating(true);
-//			factory.setXIncludeAware(true);
-//			
-//			DocumentBuilder parser = factory.newDocumentBuilder();
-//			StringReader reader = new StringReader(content.toString());
-//			InputSource ins = new InputSource(reader);
-//			Document document = parser.parse(ins);
-//			
-//			System.out.println(document.toString());
+
 			
 			
 		} catch (MalformedURLException e) {
@@ -73,6 +61,26 @@ public class ImageDownloader {
 		} 
 	}
 	
+	private String getRecentPhotosMetaDataXML() throws IOException {
+		URL url = new URL(RECENT_IMAGES + API_KEY + REST_FORMAT);
+		HttpURLConnection con = (HttpURLConnection) url.openConnection();
+		con.setRequestMethod("GET");
+		
+		BufferedReader in = new BufferedReader(
+		new InputStreamReader(con.getInputStream()));
+		
+		String inputLine;
+		StringBuffer content = new StringBuffer();
+		
+		while ((inputLine = in.readLine()) != null) {
+		    content.append(inputLine + "\n");
+		}
+		
+		in.close();
+		
+		return content.toString();
+	}
+	
 	private List<PhotoMetaData> parseXMLResult(String xmlContent) {
 		List<PhotoMetaData> parsedResults = new ArrayList<>();
 		
@@ -82,7 +90,7 @@ public class ImageDownloader {
 			String line = scanner.nextLine();
 			
 			if (line.contains("photo id=")) {
-				
+				parsedResults.add(new PhotoMetaData(line));
 			}
 		}
 		
