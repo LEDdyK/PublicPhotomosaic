@@ -1,11 +1,15 @@
 package main.images.downloader;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
@@ -27,6 +31,7 @@ public class ImageDownloader {
 			
 			String xmlResult = getRecentPhotosMetaDataXML();
 			List<PhotoMetaData> photoMetaDataList = parseXMLResult(xmlResult);
+			new File("photos").mkdir();
 			
 			for (PhotoMetaData photoMetaData: photoMetaDataList) {
 				String link = String.format(DOWNLOAD_URL, 
@@ -37,6 +42,7 @@ public class ImageDownloader {
 						"q", "jpg");
 				
 				System.out.println(link);
+				downloadImage(link, photoMetaData);
 			}
 
 			
@@ -48,6 +54,19 @@ public class ImageDownloader {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} 
+	}
+	
+	/**
+	 * Downloads the image from the provided url using the photoMetaData to determine
+	 * the file name
+	 * @param url
+	 * @param photoMetaData
+	 * @throws IOException
+	 */
+	private void downloadImage(String url, PhotoMetaData photoMetaData) throws IOException {
+		try(InputStream in = new URL(url).openStream()){
+		    Files.copy(in, Paths.get(System.getProperty("user.dir") + "/photos/" + photoMetaData.getImageName()));
+		}
 	}
 	
 	/**
