@@ -49,10 +49,15 @@ public class RGBLibrary {
 			
 			AveRGB rgb = new AveRGB(red,blue,green);
 			rgbList.put(fileName,rgb);
+			indexLine.close();
 		}
-		
+		index.close();
 	}
 
+	/**
+	 * creates an indexFile and writes to it the rgb values and their associated filenames
+	 * @param fileName
+	 */
 	public void indexFiler(String fileName) {
 		try {
 			File file = new File(fileName);
