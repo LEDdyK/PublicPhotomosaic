@@ -61,6 +61,12 @@ public class ImageDownloader {
 		} 
 	}
 	
+	/**
+	 * Makes an API request to the Flickr api to retrieve an XML of 
+	 * the metadata of the most recent photos uploaded
+	 * @return a String representing the XML file
+	 * @throws IOException
+	 */
 	private String getRecentPhotosMetaDataXML() throws IOException {
 		URL url = new URL(RECENT_IMAGES + API_KEY + REST_FORMAT);
 		HttpURLConnection con = (HttpURLConnection) url.openConnection();
@@ -81,6 +87,11 @@ public class ImageDownloader {
 		return content.toString();
 	}
 	
+	/**
+	 * Parses an XML String to create a List of PhotoMetaData objects
+	 * @param xmlContent
+	 * @return
+	 */
 	private List<PhotoMetaData> parseXMLResult(String xmlContent) {
 		List<PhotoMetaData> parsedResults = new ArrayList<>();
 		
