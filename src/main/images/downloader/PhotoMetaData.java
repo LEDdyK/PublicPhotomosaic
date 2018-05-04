@@ -39,6 +39,10 @@ public class PhotoMetaData {
 	public int getFarm() {
 		return farm;
 	}
+	
+	public String getImageName() {
+		return id + ".jpg";
+	}
 
 
 }
