@@ -26,6 +26,10 @@ public class ImageReader {
 		processDirectory(dirPath);
 	}
 	
+	/**
+	 * processes a directory
+	 * @param dirPath
+	 */
 	public void processDirectory(String dirPath) {
 		File directory = new File(dirPath);
 		File[] directoryListing = directory.listFiles();
@@ -44,6 +48,10 @@ public class ImageReader {
 		}
 	}
 	
+	/**
+	 * processes a single image
+	 * @param path
+	 */
 	public void processFile(String path) {
 		File file = new File(path);
 		library = new HashMap<String,BufferedImage>();
