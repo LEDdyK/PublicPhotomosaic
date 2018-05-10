@@ -23,7 +23,7 @@ public class MosaicBuilder {
 		BufferedImage cell = imglib.getImage(mosaicMatrix[0][0]);
 		int cellHeight = cell.getHeight();
 		int cellWidth = cell.getWidth();
-		BufferedImage output = new BufferedImage(cellWidth*mosaicMatrix.length,cellHeight*mosaicMatrix[0].length,BufferedImage.TYPE_INT_RGB);
+		BufferedImage output = new BufferedImage(cellWidth*mosaicMatrix[0].length,cellHeight*mosaicMatrix.length,BufferedImage.TYPE_INT_RGB);
 		Graphics2D g2d = output.createGraphics();
 		for(int row=0; row<mosaicMatrix.length; row++) {
 			for(int col=0; col<mosaicMatrix[0].length; col++) {

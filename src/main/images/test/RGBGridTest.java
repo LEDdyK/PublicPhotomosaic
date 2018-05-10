@@ -35,7 +35,7 @@ public class RGBGridTest {
 			e.printStackTrace();
 		}*/
 		
-		grid = new ImageGrid(4,1,image);
+		grid = new ImageGrid(true,4,1,image);
 		
 	}
 	

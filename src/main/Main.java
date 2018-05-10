@@ -18,11 +18,13 @@ public class Main {
 			long startTime = System.currentTimeMillis();
 			
 			new ImageDownloader().downloadRecentImages();
+			
 			ImageLibrary imglib = new ImageLibrary("photos");
+			
 			RGBLibrary rgbLib = new RGBLibrary(imglib.getLibrary());
 			
-			BufferedImage image = ImageIO.read(new File("biggest.png"));
-			ImageGrid imgGrid = new ImageGrid(100, 100, image);
+			BufferedImage image = ImageIO.read(new File("anime.png"));
+			ImageGrid imgGrid = new ImageGrid(false, 8, 8, image);
 			
 			ImageTinder imgTinder = new ImageTinder(rgbLib.getRGBList(), imgGrid);
 			

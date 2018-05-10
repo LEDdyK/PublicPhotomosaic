@@ -14,20 +14,34 @@ public class ImageGrid {
 	private int cellWidth;
 	private BufferedImage img;
 	private AveRGB[][] rgbList;
-	public ImageGrid(int gridWidth, int gridHeight, BufferedImage image ) {
+	public ImageGrid(boolean initialiseWithGridSize, int width, int height, BufferedImage image ) {
 		img = image;
-		h=gridHeight;
-		w=gridWidth;
-		cellHeight = image.getHeight()/h;
-		cellWidth = image.getWidth()/w;
+		
+		if (initialiseWithGridSize) {
+			h = height;
+			w = width;
+			cellHeight = image.getHeight()/h;
+			cellWidth = image.getWidth()/w;
+		}
+		
+		else {
+			cellHeight = height;
+			cellWidth = width;
+			h = image.getHeight() / cellHeight;
+			w = image.getWidth() / cellWidth;
+		}
+		
 		rgbList = new AveRGB[h][w];
+		
 		for(int y=0; y<h; y++) {
 			for(int x=0; x<w;x++) {
 				
 				rgbList[y][x] = new AveRGB(image.getSubimage(x*cellWidth, y*cellHeight, cellWidth, cellHeight));
 			}
 		}
+		System.out.println();
 	}
+	
 	
 	public AveRGB getGridCell(int x,int y) {
 		return rgbList[y][x];
