@@ -1,4 +1,4 @@
-package Photomosaic;
+package main;
 
 public class Cell {
 	private int R;

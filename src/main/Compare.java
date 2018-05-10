@@ -1,4 +1,10 @@
-package Photomosaic;
+package main;
+
+import java.util.HashMap;
+import java.util.Set;
+
+import main.images.AveRGB;
+import main.images.RGBGrid;
 
 public class Compare {
 	/*
@@ -15,57 +21,55 @@ public class Compare {
 		//2. The number of cells in the reference image does not exceed 2 147 483 648
 
 	//Inputs
-	/*type*/ libraryIndex;
-	Cell[][] cellMatrix;
+	HashMap<String, AveRGB> libraryIndex;
+	RGBGrid cellMatrix;
 
 	//Outputs
-	int[][] mosaicMatrix;
+	String[][] mosaicMatrix;
 
 	//Variables
-	int pointer;
-	int minPointer;
+	String minPointer;
 	double minDistance;
 
 	//Methods
 	//Constructor
-	public void Comparisons(/*type*/ libraryIndex, Cell[][] cellMatrix) {
+	public Compare(HashMap<String, AveRGB> libraryIndex, RGBGrid cellMatrix) {
 		this.libraryIndex = libraryIndex;
 		this.cellMatrix = cellMatrix;
 		makeDefault();
-		mosaicMatrix = new Cell[cellMatrix.length()][cellMatrix[0].length()];
+		mosaicMatrix = new String[cellMatrix.getHeight()][cellMatrix.getWidth()];
 	}
 	//Reset pointer positions and distance to compare
 	public void makeDefault() {
-		pointer = 0;
-		minPointer = 0;
+		minPointer = "";
 		minDistance = Math.pow(256, 3);
 	}
 	//generate the mosaic matrix
-	void findSubstitute(char type) {
-		for (int i = 0; i < cellMatrix.length; ++i) {
-			for (int j = 0; j < cellMatrix[0].length; ++i) {
+	public String[][] findSubstitute(char type) {
+		for (int i = 0; i < cellMatrix.getHeight(); ++i) {
+			for (int j = 0; j < cellMatrix.getWidth(); ++j) {
 				
 				//Default for each loop
 				makeDefault();
 	
-				while (!libraryIndex.endoffile() || minDistance != 0) {
-					
-					double checkDistance = calcDist(cellMatrix[i][j], libraryIndex[i], type);
-	
-					if (checkDistance < minDistance) {
-						
-						minPointer = pointer;
-						minDistance = checkDistance;
-					}
+				Set<String> keySet = libraryIndex.keySet();
+				for (String key: keySet) {
+					double checkDistance = calcDist(cellMatrix.getGridCell(j, i), libraryIndex.get(key), type);
+		
+						if (checkDistance < minDistance) {	
+							minPointer = key;
+							minDistance = checkDistance;
+						}
 				}
 				
 				//process mosaic matrix cell
-				mosaicMatrix[i][j] = pointer;
+				mosaicMatrix[i][j] = minPointer;
 			}
 		}
+		return mosaicMatrix;
 	}
 	//calculate RGB distance
-	double calcDist(Cell a, Cell b, char type) {
+	double calcDist(AveRGB a, AveRGB b, char type) {
 		int aR = a.getR();
 		int aG = a.getG();
 		int aB = a.getB();
@@ -90,5 +94,7 @@ public class Compare {
 			double secB = 2 + 255 * rAverage/256 * Math.pow(delB, 2);
 			return (secR + secG + secB);
 		}
+		
+		else return 256*256*256;
 	}
 }

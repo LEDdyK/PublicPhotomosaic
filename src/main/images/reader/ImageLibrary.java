@@ -14,7 +14,7 @@ import javax.imageio.ImageIO;
  * @author DarkIris3196
  *
  */
-public class ImageReader {
+public class ImageLibrary {
 	
 	HashMap<String,BufferedImage> library;
 	
@@ -22,7 +22,7 @@ public class ImageReader {
 	 * loop through all the files in the directory specified in the path
 	 * @param dirPath
 	 */
-	public ImageReader(String dirPath) {
+	public ImageLibrary(String dirPath) {
 		processDirectory(dirPath);
 	}
 	
@@ -67,5 +67,9 @@ public class ImageReader {
 	
 	public HashMap<String,BufferedImage> getLibrary(){
 		return library;
+	}
+	
+	public BufferedImage getImage(String key) {
+		return library.get(key);
 	}
 }

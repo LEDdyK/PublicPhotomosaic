@@ -20,17 +20,24 @@ public class RGBGrid {
 		w=gridWidth;
 		cellHeight = image.getHeight()/h;
 		cellWidth = image.getWidth()/w;
-		rgbList = new AveRGB[w][h];
+		rgbList = new AveRGB[h][w];
 		for(int y=0; y<h; y++) {
 			for(int x=0; x<w;x++) {
 				
-				rgbList[x][y] = new AveRGB(image.getSubimage(x*cellWidth, y*cellHeight, cellWidth, cellHeight));
+				rgbList[y][x] = new AveRGB(image.getSubimage(x*cellWidth, y*cellHeight, cellWidth, cellHeight));
 			}
 		}
 	}
 	
 	public AveRGB getGridCell(int x,int y) {
-		return rgbList[x][y];
+		return rgbList[y][x];
+	}
+	
+	public int getHeight() {
+		return h;
+	}
+	public int getWidth() {
+		return w;
 	}
 	
 	public BufferedImage gridImage(int x,int y) {
