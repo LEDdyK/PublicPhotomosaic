@@ -63,9 +63,11 @@ public class ImageDownloader {
 	 * @param photoMetaData
 	 * @throws IOException
 	 */
-	private void downloadImage(String url, PhotoMetaData photoMetaData) throws IOException {
+	private void downloadImage(String url, PhotoMetaData photoMetaData) {
 		try(InputStream in = new URL(url).openStream()){
 		    Files.copy(in, Paths.get(System.getProperty("user.dir") + "/photos/" + photoMetaData.getImageName()));
+		} catch (IOException e) {
+			System.out.println("Image already exists");
 		}
 	}
 	
