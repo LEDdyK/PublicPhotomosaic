@@ -4,9 +4,9 @@ import java.util.HashMap;
 import java.util.Set;
 
 import main.images.AveRGB;
-import main.images.RGBGrid;
+import main.images.ImageGrid;
 
-public class Compare {
+public class ImageTinder {
 	/*
 	IMPORTANT NOTE:
 	The input for the reference image should be in cell-units and not pixel-units
@@ -22,7 +22,7 @@ public class Compare {
 
 	//Inputs
 	HashMap<String, AveRGB> libraryIndex;
-	RGBGrid cellMatrix;
+	ImageGrid cellMatrix;
 
 	//Outputs
 	String[][] mosaicMatrix;
@@ -33,7 +33,7 @@ public class Compare {
 
 	//Methods
 	//Constructor
-	public Compare(HashMap<String, AveRGB> libraryIndex, RGBGrid cellMatrix) {
+	public ImageTinder(HashMap<String, AveRGB> libraryIndex, ImageGrid cellMatrix) {
 		this.libraryIndex = libraryIndex;
 		this.cellMatrix = cellMatrix;
 		makeDefault();

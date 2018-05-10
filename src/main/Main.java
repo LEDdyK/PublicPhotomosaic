@@ -6,7 +6,7 @@ import java.io.IOException;
 
 import javax.imageio.ImageIO;
 
-import main.images.RGBGrid;
+import main.images.ImageGrid;
 import main.images.RGBLibrary;
 import main.images.downloader.ImageDownloader;
 import main.images.reader.ImageLibrary;
@@ -22,11 +22,11 @@ public class Main {
 			RGBLibrary rgbLib = new RGBLibrary(imglib.getLibrary());
 			
 			BufferedImage image = ImageIO.read(new File("biggest.png"));
-			RGBGrid rgbGrid = new RGBGrid(100, 100, image);
+			ImageGrid imgGrid = new ImageGrid(100, 100, image);
 			
-			Compare compare = new Compare(rgbLib.getRGBList(), rgbGrid);
+			ImageTinder imgTinder = new ImageTinder(rgbLib.getRGBList(), imgGrid);
 			
-			PhotoBuilder photoBuilder = new PhotoBuilder(imglib, compare.findSubstitute('R'));
+			PhotoBuilder photoBuilder = new PhotoBuilder(imglib, imgTinder.findSubstitute('R'));
 			photoBuilder.makePhoto();
 			
 			long endTime = System.currentTimeMillis() - startTime;

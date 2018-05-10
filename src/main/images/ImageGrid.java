@@ -7,14 +7,14 @@ import java.awt.image.BufferedImage;
  * @author DarkIris3196
  *
  */
-public class RGBGrid {
+public class ImageGrid {
 	private int h;
 	private int w;
 	private int cellHeight;
 	private int cellWidth;
 	private BufferedImage img;
 	private AveRGB[][] rgbList;
-	public RGBGrid(int gridWidth, int gridHeight, BufferedImage image ) {
+	public ImageGrid(int gridWidth, int gridHeight, BufferedImage image ) {
 		img = image;
 		h=gridHeight;
 		w=gridWidth;

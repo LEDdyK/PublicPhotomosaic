@@ -13,10 +13,10 @@ import javax.imageio.ImageIO;
 import org.junit.Before;
 import org.junit.Test;
 
-import main.images.RGBGrid;
+import main.images.ImageGrid;
 
 public class RGBGridTest {
-	RGBGrid grid;
+	ImageGrid grid;
 	
 	@Before
 	public void before(){
@@ -35,7 +35,7 @@ public class RGBGridTest {
 			e.printStackTrace();
 		}*/
 		
-		grid = new RGBGrid(4,1,image);
+		grid = new ImageGrid(4,1,image);
 		
 	}
 	
