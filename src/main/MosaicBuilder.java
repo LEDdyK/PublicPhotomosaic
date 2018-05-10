@@ -9,17 +9,17 @@ import javax.imageio.ImageIO;
 
 import main.images.reader.ImageLibrary;
 
-public class PhotoBuilder {
+public class MosaicBuilder {
 	ImageLibrary imglib;
 	
 	String[][] mosaicMatrix;
 	
-	public PhotoBuilder(ImageLibrary lib, String[][] matrix) {
+	public MosaicBuilder(ImageLibrary lib, String[][] matrix) {
 		imglib = lib;
 		mosaicMatrix = matrix;
 	}
 	
-	public void makePhoto() {
+	public void createMosaic() {
 		BufferedImage cell = imglib.getImage(mosaicMatrix[0][0]);
 		int cellHeight = cell.getHeight();
 		int cellWidth = cell.getWidth();

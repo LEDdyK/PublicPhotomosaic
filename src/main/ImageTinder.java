@@ -45,7 +45,7 @@ public class ImageTinder {
 		minDistance = Math.pow(256, 3);
 	}
 	//generate the mosaic matrix
-	public String[][] findSubstitute(char type) {
+	public String[][] findMatches(char type) {
 		for (int i = 0; i < cellMatrix.getHeight(); ++i) {
 			for (int j = 0; j < cellMatrix.getWidth(); ++j) {
 				

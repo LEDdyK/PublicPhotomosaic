@@ -26,8 +26,8 @@ public class Main {
 			
 			ImageTinder imgTinder = new ImageTinder(rgbLib.getRGBList(), imgGrid);
 			
-			PhotoBuilder photoBuilder = new PhotoBuilder(imglib, imgTinder.findSubstitute('R'));
-			photoBuilder.makePhoto();
+			MosaicBuilder mosaicBuilder = new MosaicBuilder(imglib, imgTinder.findMatches('R'));
+			mosaicBuilder.createMosaic();
 			
 			long endTime = System.currentTimeMillis() - startTime;
 			System.out.println(endTime);
