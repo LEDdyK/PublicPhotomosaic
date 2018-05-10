@@ -18,17 +18,17 @@ import java.util.Scanner;
  */
 public class RGBLibrary {
 	
-	private HashMap<String,AveRGB> rgbList;
+	private HashMap<String,AvgRGB> rgbList;
 	
 	/**
 	 * takes in a library of images and converts them into a library of RGBs paired with their filename
 	 * @param library
 	 */
 	public RGBLibrary(HashMap<String,BufferedImage> library) {
-		rgbList = new HashMap<String,AveRGB>();
+		rgbList = new HashMap<String,AvgRGB>();
 		for(String imageKey: library.keySet()) {
 			BufferedImage image = library.get(imageKey);
-			AveRGB rgb = new AveRGB(image);
+			AvgRGB rgb = new AvgRGB(image);
 			rgbList.put(imageKey,rgb);
 		}
 	}
@@ -47,7 +47,7 @@ public class RGBLibrary {
 			int green = Integer.parseInt(indexLine.next());
 			int blue = Integer.parseInt(indexLine.next());
 			
-			AveRGB rgb = new AveRGB(red,blue,green);
+			AvgRGB rgb = new AvgRGB(red,blue,green);
 			rgbList.put(fileName,rgb);
 			indexLine.close();
 		}
@@ -66,7 +66,7 @@ public class RGBLibrary {
 			BufferedWriter writer = new BufferedWriter(new FileWriter(file));
 			
 			for(String imageKey : rgbList.keySet()) {
-				AveRGB rgb = rgbList.get(imageKey);
+				AvgRGB rgb = rgbList.get(imageKey);
 				String line = imageKey + " " + rgb.getR() + " " + rgb.getG() + " " + rgb.getB();
 				writer.write(line);
 				writer.newLine();
@@ -80,11 +80,11 @@ public class RGBLibrary {
 	}
 	
 	
-	public HashMap<String,AveRGB> getRGBList(){
+	public HashMap<String,AvgRGB> getRGBList(){
 		return rgbList;
 	}
 	
-	public AveRGB getImageRGB(String fileName) {
+	public AvgRGB getImageRGB(String fileName) {
 		return rgbList.get(fileName);
 	}
 }

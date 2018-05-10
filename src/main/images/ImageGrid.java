@@ -13,7 +13,7 @@ public class ImageGrid {
 	private int cellHeight;
 	private int cellWidth;
 	private BufferedImage img;
-	private AveRGB[][] rgbList;
+	private AvgRGB[][] rgbList;
 	public ImageGrid(boolean initialiseWithGridSize, int width, int height, BufferedImage image ) {
 		img = image;
 		
@@ -31,19 +31,19 @@ public class ImageGrid {
 			w = image.getWidth() / cellWidth;
 		}
 		
-		rgbList = new AveRGB[h][w];
+		rgbList = new AvgRGB[h][w];
 		
 		for(int y=0; y<h; y++) {
 			for(int x=0; x<w;x++) {
 				
-				rgbList[y][x] = new AveRGB(image.getSubimage(x*cellWidth, y*cellHeight, cellWidth, cellHeight));
+				rgbList[y][x] = new AvgRGB(image.getSubimage(x*cellWidth, y*cellHeight, cellWidth, cellHeight));
 			}
 		}
 		System.out.println();
 	}
 	
 	
-	public AveRGB getGridCell(int x,int y) {
+	public AvgRGB getGridCell(int x,int y) {
 		return rgbList[y][x];
 	}
 	

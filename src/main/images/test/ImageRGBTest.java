@@ -8,7 +8,7 @@ import java.awt.image.BufferedImage;
 
 import org.junit.Test;
 
-import main.images.AveRGB;
+import main.images.AvgRGB;
 
 public class ImageRGBTest {
 	/*public static void main(String args[]) {
@@ -31,13 +31,13 @@ public class ImageRGBTest {
 		Graphics2D g2d = image.createGraphics();
 		g2d.setColor(Color.RED);
 		g2d.fillRect(0, 0, 100, 100);
-		AveRGB rgb = new AveRGB(image);
+		AvgRGB rgb = new AvgRGB(image);
 		
 		assertEquals(255, rgb.getR());
 
 		g2d.setColor(Color.BLUE);
 		g2d.fillRect(0, 0, 100, 100);
-		rgb = new AveRGB(image);
+		rgb = new AvgRGB(image);
 		
 		assertEquals(255, rgb.getB());
 		

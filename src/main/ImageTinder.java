@@ -3,7 +3,7 @@ package main;
 import java.util.HashMap;
 import java.util.Set;
 
-import main.images.AveRGB;
+import main.images.AvgRGB;
 import main.images.ImageGrid;
 
 public class ImageTinder {
@@ -21,7 +21,7 @@ public class ImageTinder {
 		//2. The number of cells in the reference image does not exceed 2 147 483 648
 
 	//Inputs
-	HashMap<String, AveRGB> libraryIndex;
+	HashMap<String, AvgRGB> libraryIndex;
 	ImageGrid cellMatrix;
 
 	//Outputs
@@ -33,7 +33,7 @@ public class ImageTinder {
 
 	//Methods
 	//Constructor
-	public ImageTinder(HashMap<String, AveRGB> libraryIndex, ImageGrid cellMatrix) {
+	public ImageTinder(HashMap<String, AvgRGB> libraryIndex, ImageGrid cellMatrix) {
 		this.libraryIndex = libraryIndex;
 		this.cellMatrix = cellMatrix;
 		makeDefault();
@@ -69,7 +69,7 @@ public class ImageTinder {
 		return mosaicMatrix;
 	}
 	//calculate RGB distance
-	double calcDist(AveRGB a, AveRGB b, char type) {
+	double calcDist(AvgRGB a, AvgRGB b, char type) {
 		int aR = a.getR();
 		int aG = a.getG();
 		int aB = a.getB();
