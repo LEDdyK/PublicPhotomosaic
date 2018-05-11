@@ -91,21 +91,25 @@
 		<javac srcdir="${src.dir}" destdir="${tempCompile.dir}">
 			<classpath>
 				<pathelement path="${@PTJAR}"/>
+				<pathelement path="${PJJAR}"   />
+				<pathelement path="${JOMPJAR}" />
+				<pathelement path="${JUJAR}"/>
+				<pathelement path="${HCJAR}"/>
 			</classpath>
 		</javac>
 	</target>
 	
 	<target name="process" depends="tempCompile">
 		<exec executable="java">
-			<arg line="-cp ${@PTJAR}${Delimiter}${tempCompile.dir} spoon.Launcher -i ${src.dir} -o ${gen.dir} -p apt.processors.AptInitParaTaskProcessor"/>
+			<arg line="-cp ./${@PTJAR}${Delimiter}${tempCompile.dir} spoon.Launcher -i ${src.dir} -o ${gen.dir} -p apt.processors.AptInitParaTaskProcessor -x"/>
 		</exec>
 		<exec executable="java">
-			<arg line=" -cp ${@PTJAR}${Delimiter}${tempCompile.dir} spoon.Launcher -i ${gen.dir} -o ${tempGen.dir} -p apt.processors.AptFutureProcessor"/>
+			<arg line=" -cp ./${@PTJAR}${Delimiter}${tempCompile.dir} spoon.Launcher -i ${gen.dir} -o ${tempGen.dir} -p apt.processors.AptFutureProcessor -x"/>
 		</exec>
 		<delete dir="${gen.dir}"/>
 		<mkdir dir="${gen.dir}"/>
 		<exec executable="java">
-			<arg line="-cp ${@PTJAR}${Delimiter}${tempCompile.dir} spoon.Launcher -i ${tempGen.dir} -o ${gen.dir} -p apt.processors.AptGuiProcessor"/>
+			<arg line="-cp ./${@PTJAR}${Delimiter}${tempCompile.dir} spoon.Launcher -i ${tempGen.dir} -o ${gen.dir} -p apt.processors.AptGuiProcessor -x"/>
 		</exec>
 		<delete dir="${tempGen.dir}"/>
 	</target>
