@@ -6,13 +6,17 @@ import java.io.IOException;
 
 import javax.imageio.ImageIO;
 
+import apt.annotations.Future;
+import apt.annotations.InitParaTask;
+import apt.annotations.TaskScheduingPolicy;
 import main.images.ImageGrid;
 import main.images.RGBLibrary;
 import main.images.downloader.ImageDownloader;
 import main.images.reader.ImageLibrary;
+import pt.runtime.ParaTask;
 
 public class Main {
-
+	
 	public static void main(String[] args) {
 	try {
 			long startTime = System.currentTimeMillis();
@@ -41,7 +45,4 @@ public class Main {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-
-		
-	}
 }
