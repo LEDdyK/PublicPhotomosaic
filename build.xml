@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<project name="PhotoMosaic" basedir="." default="main">
+	<property name="src.dir"        value="src" />
+	<property name="build.dir"      value="bin" />
+	<property name="libs.dir"       value="libs"/>
+	<property name="gen.dir"        value="gen" />
+	<property name="tempGen.dir"    value="tempGen"/>
+	<property name="tempCompile.dir"    value="tempCompile"/>
+	<property name="PMJAR.dir"     value="${gen.dir}/PhotoMosaic"        />
+	<property name="PMEXECJAR"     value="${PMJAR.dir}/PhotoMosaic.jar" />
+	<property name="@PTJAR"      value="${libs.dir}/@PT-1.5.2.jar" />
+	<property name="JOMPJAR"       value="${libs.dir}/jomp-1.0.jar"    />
+	<property name="PJJAR"	       value="${libs.dir}/pyjama-1.5.2.jar"/>
+	<property name="JUJAR" value="${libs.dir}/junit.jar" />
+	<property name="HCJAR" value="${libs.dir}/org.hamcrest.core_1.3.0.v201303031735.jar " />
+	
+	<target name="decideOS">
+		<condition property="isWindows">
+			<os family="windows"/>
+		</condition>
+		<condition property="isLinux">
+			<os family="unix"/>
+		</condition>
+	</target>
+	
+	<target name="winDelim" depends="decideOS" if="isWindows">
+		<property name="Delimiter" value=";" />
+		<echo message="The OS is identified to be of Windows family!" />
+	</target>
+	
+	<target name="linDelim" depends="decideOS" if="isLinux">
+		<property name="Delimiter" value=":" />
+		<echo message="The OS is identified to be of Unix/Linux family!"/>
+	</target>
+	
+	<target name="clean" depends="winDelim, linDelim">
+		<delete dir="${build.dir}" />
+		<delete dir="${PMJAR.dir}"   />
+	</target>
+	
+	<target name="mkDir" depends="clean">
+		<mkdir dir="${build.dir}"/>
+		<mkdir dir="${gen.dir}"  />
+		<mkdir dir="${PMJAR.dir}"/>
+	</target>
+	
+	<target name="compile" depends="mkDir">
+		<javac  srcdir="${src.dir}"  destdir="${build.dir}">
+			<classpath>
+				<pathelement path="${@PTJAR}"/>
+				<pathelement path="${PJJAR}"   />
+				<pathelement path="${JOMPJAR}" />
+				<pathelement path="${JUJAR}"/>
+				<pathelement path="${HCJAR}"/>
+			</classpath>
+		</javac>
+	</target>
+	
+	<!-- CREATING AN EXECUTABLE JAR FILE -->
+	
+	<target name="compressJar" depends="compile">
+		<jar destfile="${PMEXECJAR}"  basedir="${build.dir}">
+			<manifest>
+				<attribute name="Main-Class" value="main.Main"/>
+			</manifest>
+			<zipgroupfileset dir=".">
+			    <include name="${@PTJAR}"/>
+				<include name="${PJJAR}" />
+			</zipgroupfileset>
+		</jar>
+	</target>
+	
+	<!-- RUN THE EXECUTABLE JAR FILE -->
+	
+	<target name="main" depends="compressJar">
+		<java jar="${PMEXECJAR}" fork="true"></java>
+	</target>
+	
+	<!-- **************** PROCESSING ANNOTATIONS **************** -->
+	
+	<target name="tempMakeDir" depends="winDelim, linDelim">
+		<delete dir="${tempGen.dir}"/>
+		<delete dir="${gen.dir}"/>
+		<delete dir="${tempCompile.dir}"/>
+		<mkdir dir="${tempCompile.dir}"/>
+		<mkdir dir="${gen.dir}"/>
+		<mkdir dir="${tempGen.dir}"/>
+	</target>
+	
+	<target name="tempCompile" depends="tempMakeDir">
+		<javac srcdir="${src.dir}" destdir="${tempCompile.dir}">
+			<classpath>
+				<pathelement path="${@PTJAR}"/>
+			</classpath>
+		</javac>
+	</target>
+	
+	<target name="process" depends="tempCompile">
+		<exec executable="java">
+			<arg line="-cp ${@PTJAR}${Delimiter}${tempCompile.dir} spoon.Launcher -i ${src.dir} -o ${gen.dir} -p apt.processors.AptInitParaTaskProcessor"/>
+		</exec>
+		<exec executable="java">
+			<arg line=" -cp ${@PTJAR}${Delimiter}${tempCompile.dir} spoon.Launcher -i ${gen.dir} -o ${tempGen.dir} -p apt.processors.AptFutureProcessor"/>
+		</exec>
+		<delete dir="${gen.dir}"/>
+		<mkdir dir="${gen.dir}"/>
+		<exec executable="java">
+			<arg line="-cp ${@PTJAR}${Delimiter}${tempCompile.dir} spoon.Launcher -i ${tempGen.dir} -o ${gen.dir} -p apt.processors.AptGuiProcessor"/>
+		</exec>
+		<delete dir="${tempGen.dir}"/>
+	</target>
+	
+	<target name="deleteTemps" depends="process">
+		<delete dir="${tempCompile.dir}"/>
+	</target>
+	
+	<target name="processAnnotation" depends="deleteTemps">
+		<echo message="Processing Annotations"/>
+	</target>
+</project>
