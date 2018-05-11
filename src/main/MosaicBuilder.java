@@ -19,10 +19,10 @@ public class MosaicBuilder {
 		mosaicMatrix = matrix;
 	}
 	
-	public void createMosaic() {
+	public void createMosaic(double scale) {
 		BufferedImage cell = imglib.getImage(mosaicMatrix[0][0]);
-		int cellHeight = cell.getHeight();
-		int cellWidth = cell.getWidth();
+		int cellHeight = (int)(cell.getHeight()*scale);
+		int cellWidth = (int)(cell.getWidth()*scale);
 		BufferedImage output = new BufferedImage(cellWidth*mosaicMatrix[0].length,cellHeight*mosaicMatrix.length,BufferedImage.TYPE_INT_RGB);
 		Graphics2D g2d = output.createGraphics();
 		for(int row=0; row<mosaicMatrix.length; row++) {
@@ -38,5 +38,9 @@ public class MosaicBuilder {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+	}
+	
+	public void createMosaic() {
+		createMosaic(1.0);
 	}
 }
