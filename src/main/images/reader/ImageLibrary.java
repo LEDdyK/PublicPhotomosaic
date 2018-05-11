@@ -1,5 +1,6 @@
 package main.images.reader;
 
+import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -25,6 +26,9 @@ public class ImageLibrary {
 	public ImageLibrary(String dirPath) {
 		processDirectory(dirPath);
 	}
+	public ImageLibrary(String dirPath,double scale) {
+		processDirectory(dirPath,scale);
+	}
 	
 	/**
 	 * processes a directory
@@ -43,6 +47,37 @@ public class ImageLibrary {
 				} catch (IOException e) {
 					System.err.println("File is not compatible or is not an image file.");
 					e.printStackTrace();
+				}catch(IllegalArgumentException e){
+					System.err.println("Bad Image detected: "+file.getName());
+				}
+			}
+		}
+	}
+	
+	/**
+	 * processes a directory
+	 * @param dirPath
+	 */
+	public void processDirectory(String dirPath, double scale) {
+		File directory = new File(dirPath);
+		File[] directoryListing = directory.listFiles();
+		library = new HashMap<String,BufferedImage>();
+		
+		if(directoryListing != null) {
+			for(File file : directoryListing) {
+				try {
+					BufferedImage image = ImageIO.read(file);
+					int w = (int)(image.getWidth()*scale);
+					int h = (int)(image.getHeight()*scale);
+					BufferedImage scaledImage = new BufferedImage(w,h,BufferedImage.TYPE_INT_RGB);
+					Graphics2D g2d = scaledImage.createGraphics();
+					g2d.drawImage(image,0,0,w,h,null);
+					library.put(file.getName(),scaledImage);
+				} catch (IOException e) {
+					System.err.println("File is not compatible or is not an image file.");
+					e.printStackTrace();
+				}catch(IllegalArgumentException e){
+					System.err.println("Bad Image detected: "+file.getName());
 				}
 			}
 		}

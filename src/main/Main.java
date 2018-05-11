@@ -17,16 +17,17 @@ public class Main {
 	try {
 			long startTime = System.currentTimeMillis();
 			
-			new ImageDownloader().downloadRecentImages();
+			//new ImageDownloader().downloadRecentImages();
 			
-			ImageLibrary imglib = new ImageLibrary("photos");
+			ImageLibrary imglib = new ImageLibrary("photos",0.45);
 			
 			RGBLibrary rgbLib = new RGBLibrary(imglib.getLibrary());
 			
-			BufferedImage image = ImageIO.read(new File("anime.png"));
-			ImageGrid imgGrid = new ImageGrid(false, 8, 8, image);
+			BufferedImage image = ImageIO.read(new File("input.png"));
+			ImageGrid imgGrid = new ImageGrid(false, 3,3, image);
 			
 			ImageTinder imgTinder = new ImageTinder(rgbLib.getRGBList(), imgGrid);
+			
 			
 			MosaicBuilder mosaicBuilder = new MosaicBuilder(imglib, imgTinder.findMatches('R'));
 			mosaicBuilder.createMosaic();
