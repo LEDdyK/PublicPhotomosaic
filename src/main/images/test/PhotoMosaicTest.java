@@ -19,7 +19,7 @@ public class PhotoMosaicTest {
 
 	@Test
 	public void testPhotoMosaicWithDownload() throws Exception {
-		new ImageDownloader().downloadRecentImages();
+		new ImageDownloader().downloadRecentImages(1);
 		createPhotoMosaic();
 	}
 	

@@ -34,14 +34,15 @@ public class ImageDownloader {
 	
 	@Future
 	public Void[] futureGroup = new Void[1];
-	public void downloadRecentImages() {
+	
+	public void downloadRecentImages(int numOfThreads) {
 		try {
 			
 			String xmlResult = getRecentPhotosMetaDataXML();
 			List<PhotoMetaData> photoMetaDataList = parseXMLResult(xmlResult);
 			new File("photos").mkdir();
 			
-			LoopScheduler scheduler = LoopSchedulerFactory.createLoopScheduler(0, photoMetaDataList.size(), 1, 4, pu.loopScheduler.AbstractLoopScheduler.LoopCondition.LessThan, pu.loopScheduler.LoopSchedulerFactory.LoopSchedulingType.Static);
+			LoopScheduler scheduler = LoopSchedulerFactory.createLoopScheduler(0, photoMetaDataList.size(), 1, numOfThreads, pu.loopScheduler.AbstractLoopScheduler.LoopCondition.LessThan, pu.loopScheduler.LoopSchedulerFactory.LoopSchedulingType.Static);
 			@Future(taskType = TaskInfoType.MULTI)
 			Void task = downloadImages(scheduler, photoMetaDataList);
 			futureGroup[0] = task;

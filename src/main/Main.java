@@ -22,7 +22,7 @@ public class Main {
 	try {
 			long startTime = System.currentTimeMillis();
 			
-			new ImageDownloader().downloadRecentImages();
+			new ImageDownloader().downloadRecentImages(4);
 			
 			ImageLibrary imglib = new ImageLibrary("photos",0.45);
 			
