@@ -35,17 +35,20 @@ public class ImageDownloader {
 	@Future
 	public Void[] futureGroup = new Void[1];
 	
-	public void downloadRecentImages(int numOfThreads) {
+	public Void downloadRecentImages(int numOfThreads) {
 		try {
 			
 			String xmlResult = getRecentPhotosMetaDataXML();
 			List<PhotoMetaData> photoMetaDataList = parseXMLResult(xmlResult);
 			new File("photos").mkdir();
-			
+
 			LoopScheduler scheduler = LoopSchedulerFactory.createLoopScheduler(0, photoMetaDataList.size(), 1, numOfThreads, pu.loopScheduler.AbstractLoopScheduler.LoopCondition.LessThan, pu.loopScheduler.LoopSchedulerFactory.LoopSchedulingType.Static);
 			@Future(taskType = TaskInfoType.MULTI)
 			Void task = downloadImages(scheduler, photoMetaDataList);
 			futureGroup[0] = task;
+			
+
+			//downloadImages(photoMetaDataList);
 		
 			
 		} catch (MalformedURLException e) {
@@ -55,6 +58,12 @@ public class ImageDownloader {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} 
+		
+		return null;
+	}
+	
+	public void waitTillFinished() {
+		Void barrier = futureGroup[0];
 	}
 	
 	public Void downloadImages(LoopScheduler scheduler, List<PhotoMetaData> list) {
@@ -79,6 +88,22 @@ public class ImageDownloader {
 		
 		return null;
 		
+	}
+	
+	public void downloadImages(List<PhotoMetaData> list) {
+		for (int i = 0; i < list.size(); i++) {
+			PhotoMetaData photoMetaData = list.get(i);
+			
+			String link = String.format(DOWNLOAD_URL, 
+					photoMetaData.getFarm(),
+					photoMetaData.getServer(),
+					photoMetaData.getId(),
+					photoMetaData.getSecret(),
+					"q", "jpg");
+			
+			System.out.println(link);
+			downloadImage(link, photoMetaData);
+		}
 	}
 	
 	/**
