@@ -35,23 +35,8 @@ public class ImageLibrary {
 	 * @param dirPath
 	 */
 	public void processDirectory(String dirPath) {
-		File directory = new File(dirPath);
-		File[] directoryListing = directory.listFiles();
-		library = new HashMap<String,BufferedImage>();
+		processDirectory(dirPath,1.0);
 		
-		if(directoryListing != null) {
-			for(File file : directoryListing) {
-				try {
-					BufferedImage image = ImageIO.read(file);
-					library.put(file.getName(),image);
-				} catch (IOException e) {
-					System.err.println("File is not compatible or is not an image file.");
-					e.printStackTrace();
-				}catch(IllegalArgumentException e){
-					System.err.println("Bad Image detected: "+file.getName());
-				}
-			}
-		}
 	}
 	
 	/**
@@ -62,7 +47,7 @@ public class ImageLibrary {
 		File directory = new File(dirPath);
 		File[] directoryListing = directory.listFiles();
 		library = new HashMap<String,BufferedImage>();
-		
+		List<File> toDelete = new ArrayList<File>();
 		if(directoryListing != null) {
 			for(File file : directoryListing) {
 				try {
@@ -72,13 +57,24 @@ public class ImageLibrary {
 					BufferedImage scaledImage = new BufferedImage(w,h,BufferedImage.TYPE_INT_RGB);
 					Graphics2D g2d = scaledImage.createGraphics();
 					g2d.drawImage(image,0,0,w,h,null);
-					library.put(file.getName(),scaledImage);
+					
+					if(image.getHeight() == image.getWidth()) {
+						library.put(file.getName(),scaledImage);
+					}else{
+						toDelete.add(file);
+					}
 				} catch (IOException e) {
 					System.err.println("File is not compatible or is not an image file.");
 					e.printStackTrace();
 				}catch(IllegalArgumentException e){
 					System.err.println("Bad Image detected: "+file.getName());
 				}
+			}
+		}
+
+		for(File deletable: toDelete) {
+			if(!deletable.delete()) {
+				System.err.println("Image " + deletable.getName() + " deletion failed");
 			}
 		}
 	}

@@ -43,7 +43,7 @@ public class Main {
 			printTimeStamp("ImageTinder");
 			
 			MosaicBuilder mosaicBuilder = new MosaicBuilder(imglib, imgTinder.findMatches('R'));
-			mosaicBuilder.createMosaic();
+			mosaicBuilder.createMosaic(4);
 			printTimeStamp("MosaicBuilder");
 			
 			
