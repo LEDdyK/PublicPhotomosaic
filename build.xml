@@ -6,8 +6,10 @@
 	<property name="gen.dir"        value="gen" />
 	<property name="tempGen.dir"    value="tempGen"/>
 	<property name="tempCompile.dir"    value="tempCompile"/>
+	<property name="paraTaskGen.dir" value="paraTaskCompile"/>
 	<property name="PMJAR.dir"     value="${gen.dir}/PhotoMosaic"        />
 	<property name="PMEXECJAR"     value="${PMJAR.dir}/PhotoMosaic.jar" />
+	<property name="PMPTJAR" value="${paraTaskGen.dir}/PhotoMosaicParaTask.jar" />
 	<property name="@PTJAR"      value="${libs.dir}/@PT-1.5.2.jar" />
 	<property name="JOMPJAR"       value="${libs.dir}/jomp-1.0.jar"    />
 	<property name="PJJAR"	       value="${libs.dir}/pyjama-1.5.2.jar"/>
@@ -121,4 +123,41 @@
 	<target name="processAnnotation" depends="deleteTemps">
 		<echo message="Processing Annotations"/>
 	</target>
+	
+	
+	<!-- Compiling and running the ParaTask code -->
+	
+	<target name="paraTaskClean" depends="processAnnotation">
+		<delete dir="${paraTaskGen.dir}" />
+		<mkdir dir="${paraTaskGen.dir}" />
+	</target>
+	
+	<target name="compileParaTask" depends="paraTaskClean">
+			<javac srcdir="${gen.dir}" destdir="${paraTaskGen.dir}" excludes="**/*Test.java">
+				<classpath>
+					<pathelement path="${@PTJAR}"/>
+					<pathelement path="${PJJAR}"   />
+					<pathelement path="${JOMPJAR}" />
+					<pathelement path="${JUJAR}"/>
+					<pathelement path="${HCJAR}"/>
+				</classpath>
+			</javac>
+		</target>
+	
+	<target name="createParaTaskJar" depends="compileParaTask">
+		<jar destfile="${PMPTJAR}"  basedir="${paraTaskGen.dir}">
+			<manifest>
+				<attribute name="Main-Class" value="main.Main"/>
+			</manifest>
+			<zipgroupfileset dir=".">
+			    <include name="${@PTJAR}"/>
+				<include name="${PJJAR}" />
+			</zipgroupfileset>
+		</jar>
+	</target>
+	
+	<target name="runParaTaskJar" depends="createParaTaskJar">
+			<java jar="${PMPTJAR}" fork="true"></java>
+	</target>
+		
 </project>
