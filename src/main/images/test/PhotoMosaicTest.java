@@ -15,7 +15,7 @@ import main.images.RGBLibrary;
 import main.images.downloader.ImageDownloader;
 import main.images.reader.ImageLibrary;
 
-public class TestPhotoMosaic {
+public class PhotoMosaicTest {
 
 	@Test
 	public void testPhotoMosaicWithDownload() throws Exception {
