@@ -39,7 +39,6 @@ public class ImageGrid {
 				rgbList[y][x] = new AvgRGB(image.getSubimage(x*cellWidth, y*cellHeight, cellWidth, cellHeight));
 			}
 		}
-		System.out.println();
 	}
 	
 	

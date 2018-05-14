@@ -16,33 +16,35 @@ import main.images.reader.ImageLibrary;
 import pt.runtime.ParaTask;
 
 public class Main {
+	static long startTime;
+	static long endTime;
 	
 	@InitParaTask
 	public static void main(String[] args) {
 	try {
-			long startTime = System.currentTimeMillis();
+			startTime = System.currentTimeMillis();
 
 			ImageDownloader imageDownloader = new ImageDownloader();
-			imageDownloader.downloadRecentImages(1);
-			imageDownloader.waitTillFinished();
+			imageDownloader.downloadRecentImages(4);
+			imageDownloader.waitTillFinished();		
+			printTimeStamp("ImageDownloader");
 			
-			long endTime = System.currentTimeMillis() - startTime;
-			System.out.println(endTime);
-			
-			ImageLibrary imglib = new ImageLibrary("photos",1);
+			ImageLibrary imglib = new ImageLibrary("photos", 1);		
+			printTimeStamp("ImageLibrary");
 			
 			RGBLibrary rgbLib = new RGBLibrary(imglib.getLibrary());
+			printTimeStamp("RGBLibrary");
 			
 			BufferedImage image = ImageIO.read(new File("testPhotos/oliver.png"));
-			ImageGrid imgGrid = new ImageGrid(false, 2,2, image);
+			ImageGrid imgGrid = new ImageGrid(false, 2, 2, image);			
+			printTimeStamp("ImageGrid");
 			
 			ImageTinder imgTinder = new ImageTinder(rgbLib.getRGBList(), imgGrid);
-			
+			printTimeStamp("ImageTinder");
 			
 			MosaicBuilder mosaicBuilder = new MosaicBuilder(imglib, imgTinder.findMatches('R'));
 			mosaicBuilder.createMosaic();
-			
-	
+			printTimeStamp("MosaicBuilder");
 			
 			
 			
@@ -52,7 +54,8 @@ public class Main {
 		}
 	}
 	
-	public static Void waitUp() {
-		return null;
+	private static void printTimeStamp(String str) {
+		endTime = System.currentTimeMillis() - startTime;
+		System.out.println(str + " - " + endTime);
 	}
 }
