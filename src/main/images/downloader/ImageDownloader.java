@@ -14,6 +14,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
+import apt.annotations.Future;
+import apt.annotations.TaskInfoType;
+import pt.runtime.WorkerThread;
+import pu.loopScheduler.LoopRange;
+import pu.loopScheduler.LoopScheduler;
+import pu.loopScheduler.LoopSchedulerFactory;
+
 public class ImageDownloader {
 	
 	public static final String API_KEY = "&api_key=89290e67c97452eacabe885466495603";
@@ -25,7 +32,8 @@ public class ImageDownloader {
 	
 	public static final String DOWNLOAD_URL = "https://farm%d.staticflickr.com/%d/%s_%s_%s.%s";
 	
-	
+	@Future
+	public Void[] futureGroup = new Void[1];
 	public void downloadRecentImages() {
 		try {
 			
@@ -33,19 +41,11 @@ public class ImageDownloader {
 			List<PhotoMetaData> photoMetaDataList = parseXMLResult(xmlResult);
 			new File("photos").mkdir();
 			
-			for (PhotoMetaData photoMetaData: photoMetaDataList) {
-				String link = String.format(DOWNLOAD_URL, 
-						photoMetaData.getFarm(),
-						photoMetaData.getServer(),
-						photoMetaData.getId(),
-						photoMetaData.getSecret(),
-						"q", "jpg");
-				
-				System.out.println(link);
-				downloadImage(link, photoMetaData);
-			}
-
-			
+			LoopScheduler scheduler = LoopSchedulerFactory.createLoopScheduler(0, photoMetaDataList.size(), 1, 4, pu.loopScheduler.AbstractLoopScheduler.LoopCondition.LessThan, pu.loopScheduler.LoopSchedulerFactory.LoopSchedulingType.Static);
+			@Future(taskType = TaskInfoType.MULTI)
+			Void task = downloadImages(scheduler, photoMetaDataList);
+			futureGroup[0] = task;
+		
 			
 		} catch (MalformedURLException e) {
 			// TODO Auto-generated catch block
@@ -54,6 +54,30 @@ public class ImageDownloader {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} 
+	}
+	
+	public Void downloadImages(LoopScheduler scheduler, List<PhotoMetaData> list) {
+		WorkerThread worker = (WorkerThread) Thread.currentThread();
+		LoopRange range = scheduler.getChunk(worker.getThreadID());
+		
+		if (range != null) {
+			for (int i = range.loopStart; i < range.loopEnd; i++) {
+				PhotoMetaData photoMetaData = list.get(i);
+				
+				String link = String.format(DOWNLOAD_URL, 
+						photoMetaData.getFarm(),
+						photoMetaData.getServer(),
+						photoMetaData.getId(),
+						photoMetaData.getSecret(),
+						"q", "jpg");
+				
+				System.out.println(worker.getThreadID() + ": " + link);
+				downloadImage(link, photoMetaData);
+			}
+		}
+		
+		return null;
+		
 	}
 	
 	/**

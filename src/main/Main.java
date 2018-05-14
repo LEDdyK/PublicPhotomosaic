@@ -17,17 +17,18 @@ import pt.runtime.ParaTask;
 
 public class Main {
 	
+	@InitParaTask
 	public static void main(String[] args) {
 	try {
 			long startTime = System.currentTimeMillis();
 			
-			//new ImageDownloader().downloadRecentImages();
+			new ImageDownloader().downloadRecentImages();
 			
 			ImageLibrary imglib = new ImageLibrary("photos",0.45);
 			
 			RGBLibrary rgbLib = new RGBLibrary(imglib.getLibrary());
 			
-			BufferedImage image = ImageIO.read(new File("input.png"));
+			BufferedImage image = ImageIO.read(new File("testPhotos/oliver.png"));
 			ImageGrid imgGrid = new ImageGrid(false, 3,3, image);
 			
 			ImageTinder imgTinder = new ImageTinder(rgbLib.getRGBList(), imgGrid);
