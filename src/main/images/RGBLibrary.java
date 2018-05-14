@@ -11,6 +11,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Scanner;
 
+import apt.annotations.Future;
+import apt.annotations.TaskInfoType;
+import pu.loopScheduler.LoopScheduler;
+import pu.loopScheduler.LoopSchedulerFactory;
+
 /**
  * stores the image RGB of all the images in the directory
  * @author DarkIris3196
@@ -26,11 +31,20 @@ public class RGBLibrary {
 	 */
 	public RGBLibrary(HashMap<String,BufferedImage> library) {
 		rgbList = new HashMap<String,AvgRGB>();
+		
+		//int numOfThreads=4;
+		//LoopScheduler scheduler = LoopSchedulerFactory.createLoopScheduler(0, library.size(), 1, numOfThreads, pu.loopScheduler.AbstractLoopScheduler.LoopCondition.LessThan, pu.loopScheduler.LoopSchedulerFactory.LoopSchedulingType.Static);
+		//@Future(taskType=TaskInfoType.MULTI)
+		Void task = calculateRGB(library);
+	}
+	
+	public Void calculateRGB(HashMap<String,BufferedImage> library) {
 		for(String imageKey: library.keySet()) {
 			BufferedImage image = library.get(imageKey);
 			AvgRGB rgb = new AvgRGB(image);
 			rgbList.put(imageKey,rgb);
 		}
+		return null;
 	}
 	
 	/**

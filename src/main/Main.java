@@ -16,29 +16,36 @@ import main.images.reader.ImageLibrary;
 import pt.runtime.ParaTask;
 
 public class Main {
+	static long startTime;
+	static long endTime;
 	
 	@InitParaTask
 	public static void main(String[] args) {
 	try {
-			long startTime = System.currentTimeMillis();
-			
-			new ImageDownloader().downloadRecentImages(4);
+			startTime = System.currentTimeMillis();
+			//new ImageDownloader().downloadRecentImages(4);
 			
 			ImageLibrary imglib = new ImageLibrary("photos",0.45);
 			
+			printTimeStamp("ImageLibrary");
+			
 			RGBLibrary rgbLib = new RGBLibrary(imglib.getLibrary());
 			
-			BufferedImage image = ImageIO.read(new File("testPhotos/oliver.png"));
+			printTimeStamp("RGBLibrary");
+			
+			BufferedImage image = ImageIO.read(new File("testPhotos/anime.png"));
 			ImageGrid imgGrid = new ImageGrid(false, 3,3, image);
+			
+			printTimeStamp("ImageGrid");
 			
 			ImageTinder imgTinder = new ImageTinder(rgbLib.getRGBList(), imgGrid);
 			
+			printTimeStamp("ImageTinder");
 			
 			MosaicBuilder mosaicBuilder = new MosaicBuilder(imglib, imgTinder.findMatches('R'));
 			mosaicBuilder.createMosaic();
 			
-			long endTime = System.currentTimeMillis() - startTime;
-			System.out.println(endTime);
+			printTimeStamp("MosaicBuilder");
 			
 			
 			
@@ -46,5 +53,10 @@ public class Main {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+	}
+	
+	private static void printTimeStamp(String str) {
+		endTime = System.currentTimeMillis() - startTime;
+		System.out.println(str + " - " + endTime);
 	}
 }

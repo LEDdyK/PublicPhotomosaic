@@ -8,7 +8,7 @@ public class ImageDownloaderTest {
 	
 	@Test
 	public void testDownloadRecentPhotos() {
-		new ImageDownloader().downloadRecentImages(1);
+		new ImageDownloader().downloadRecentImages(4);
 	}
 
 }
