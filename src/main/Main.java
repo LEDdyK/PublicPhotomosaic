@@ -24,9 +24,9 @@ public class Main {
 	try {
 			startTime = System.currentTimeMillis();
 
-			ImageDownloader imageDownloader = new ImageDownloader();
+			/*ImageDownloader imageDownloader = new ImageDownloader();
 			imageDownloader.downloadRecentImages(4);
-			imageDownloader.waitTillFinished();		
+			imageDownloader.waitTillFinished();	*/	
 			printTimeStamp("ImageDownloader");
 			
 			ImageLibrary imglib = new ImageLibrary("photos", 1);		
@@ -43,7 +43,7 @@ public class Main {
 			printTimeStamp("ImageTinder");
 			
 			MosaicBuilder mosaicBuilder = new MosaicBuilder(imglib, imgTinder.findMatches('R'));
-			mosaicBuilder.createMosaic(4);
+			mosaicBuilder.createMosaic(1);
 			printTimeStamp("MosaicBuilder");
 			
 			

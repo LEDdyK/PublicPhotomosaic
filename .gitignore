@@ -24,10 +24,12 @@ hs_err_pid*
 /photos/
 /photosbackup/
 
+# Image Files
 output.png
 input.png
 
 output1.png
+output.jpg
 
 gen/
 paraTaskCompile/
