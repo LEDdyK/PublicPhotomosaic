@@ -1,6 +1,7 @@
 package main;
 
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 
 import main.images.AvgRGB;
@@ -21,7 +22,7 @@ public class ImageTinder {
 		//2. The number of cells in the reference image does not exceed 2 147 483 648
 
 	//Inputs
-	HashMap<String, AvgRGB> libraryIndex;
+	Map<String, AvgRGB> libraryIndex;
 	ImageGrid cellMatrix;
 
 	//Outputs
@@ -33,7 +34,7 @@ public class ImageTinder {
 
 	//Methods
 	//Constructor
-	public ImageTinder(HashMap<String, AvgRGB> libraryIndex, ImageGrid cellMatrix) {
+	public ImageTinder(Map<String, AvgRGB> libraryIndex, ImageGrid cellMatrix) {
 		this.libraryIndex = libraryIndex;
 		this.cellMatrix = cellMatrix;
 		makeDefault();

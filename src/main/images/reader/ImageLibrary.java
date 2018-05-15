@@ -5,10 +5,20 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.imageio.ImageIO;
+
+import apt.annotations.Future;
+import apt.annotations.TaskInfoType;
+import main.images.downloader.PhotoMetaData;
+import pt.runtime.WorkerThread;
+import pu.loopScheduler.LoopRange;
+import pu.loopScheduler.LoopScheduler;
+import pu.loopScheduler.LoopSchedulerFactory;
 
 /**
  * This class will take in all image files in a certain folder and put them in a BufferedImage.
@@ -17,25 +27,30 @@ import javax.imageio.ImageIO;
  */
 public class ImageLibrary {
 	
-	HashMap<String,BufferedImage> library;
+	Map<String,BufferedImage> library;
+	File[] directoryListing;
+	private List<File> toDelete = null;
+	
+	@Future
+	public Void[] futureGroup = new Void[1];
 	
 	/**
 	 * loop through all the files in the directory specified in the path
 	 * @param dirPath
 	 */
 	public ImageLibrary(String dirPath) {
-		processDirectory(dirPath);
+		readDirectory(dirPath);
 	}
-	public ImageLibrary(String dirPath,double scale) {
-		processDirectory(dirPath,scale);
+	public ImageLibrary(String dirPath,double scale,int numOfThreads) {
+		readDirectory(dirPath,scale, numOfThreads);
 	}
 	
 	/**
 	 * processes a directory
 	 * @param dirPath
 	 */
-	public void processDirectory(String dirPath) {
-		processDirectory(dirPath,1.0);
+	public void readDirectory(String dirPath) {
+		readDirectory(dirPath,1.0,1);
 		
 	}
 	
@@ -43,14 +58,35 @@ public class ImageLibrary {
 	 * processes a directory
 	 * @param dirPath
 	 */
-	public void processDirectory(String dirPath, double scale) {
+	public void readDirectory(String dirPath, double scale, int numOfThreads) {
 		File directory = new File(dirPath);
-		File[] directoryListing = directory.listFiles();
-		library = new HashMap<String,BufferedImage>();
-		List<File> toDelete = new ArrayList<File>();
-		if(directoryListing != null) {
-			for(File file : directoryListing) {
+		directoryListing = directory.listFiles();
+		library = Collections.synchronizedMap(new HashMap<String,BufferedImage>());
+		toDelete = new ArrayList<File>();
+		
+		LoopScheduler scheduler = LoopSchedulerFactory.createLoopScheduler(0, directoryListing.length, 1, numOfThreads, pu.loopScheduler.AbstractLoopScheduler.LoopCondition.LessThan, pu.loopScheduler.LoopSchedulerFactory.LoopSchedulingType.Static);
+		@Future(taskType = TaskInfoType.MULTI)
+		Void task = processDirectory(scheduler,scale);
+		futureGroup[0] = task;
+		
+		waitTillFinished();
+		System.out.println(library.size() + " images in library");
+		
+		for(File deletable: toDelete) {
+			if(!deletable.delete()) {
+				System.err.println("Image " + deletable.getName() + " deletion failed");
+			}
+		}
+	}
+	
+	public Void processDirectory(LoopScheduler scheduler, double scale) {
+		WorkerThread worker = (WorkerThread) Thread.currentThread();
+		LoopRange range = scheduler.getChunk(worker.getThreadID());
+		File file = null;
+		if(range != null && directoryListing != null) {
+			for(int i = range.loopStart; i<range.loopEnd; i++) {
 				try {
+					file = directoryListing[i];
 					BufferedImage image = ImageIO.read(file);
 					int w = (int)(image.getWidth()*scale);
 					int h = (int)(image.getHeight()*scale);
@@ -71,19 +107,16 @@ public class ImageLibrary {
 				}
 			}
 		}
-
-		for(File deletable: toDelete) {
-			if(!deletable.delete()) {
-				System.err.println("Image " + deletable.getName() + " deletion failed");
-			}
-		}
+		
+		
+		return null;
 	}
 	
 	/**
 	 * processes a single image
 	 * @param path
 	 */
-	public void processFile(String path) {
+	public void readFile(String path) {
 		File file = new File(path);
 		library = new HashMap<String,BufferedImage>();
 		BufferedImage image;
@@ -96,11 +129,16 @@ public class ImageLibrary {
 		}
 	}
 	
-	public HashMap<String,BufferedImage> getLibrary(){
+	public Map<String,BufferedImage> getLibrary(){
 		return library;
 	}
 	
 	public BufferedImage getImage(String key) {
 		return library.get(key);
 	}
+	
+	public void waitTillFinished() {
+		Void barrier = futureGroup[0];
+	}
+	
 }

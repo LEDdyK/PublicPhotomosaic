@@ -29,7 +29,7 @@ public class Main {
 			imageDownloader.waitTillFinished();	*/	
 			printTimeStamp("ImageDownloader");
 			
-			ImageLibrary imglib = new ImageLibrary("photos", 1);		
+			ImageLibrary imglib = new ImageLibrary("photos", 1.0, 4);		
 			printTimeStamp("ImageLibrary");
 			
 			RGBLibrary rgbLib = new RGBLibrary(imglib.getLibrary());
