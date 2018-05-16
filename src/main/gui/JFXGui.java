@@ -11,6 +11,8 @@ import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.ScrollPane;
+import javafx.scene.control.ScrollPane.ScrollBarPolicy;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -22,7 +24,6 @@ import javafx.scene.layout.CornerRadii;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
 import javafx.scene.shape.Rectangle;
 import javafx.stage.FileChooser;
@@ -33,6 +34,7 @@ public class JFXGui extends Application {
 	
 	public static File selectedFile;
 	public static Boolean downState;
+	public static Boolean paraGCState;
 	public static TextField refPath;
 	public static TextField libScale;
 	public static TextField threadCount;
@@ -116,9 +118,9 @@ public class JFXGui extends Application {
 //		image display box
 		ImageView display = new ImageView();
 			//set details
-		display.setFitWidth(500);
-		display.setFitHeight(500);
-		display.setPreserveRatio(true);
+//		display.setFitWidth(500);
+//		display.setFitHeight(500);
+		display.setPreserveRatio(false);//TODO revert
 			//set position and border
 		HBox hbox = new HBox();
 		hbox.setBorder(new Border(new BorderStroke(Color.BLUE, BorderStrokeStyle.SOLID, CornerRadii.EMPTY, BorderWidths.DEFAULT)));
@@ -126,7 +128,13 @@ public class JFXGui extends Application {
 		hbox.setLayoutY(135);
 		hbox.setPrefHeight(500);
 		hbox.setPrefWidth(500);
-		hbox.getChildren().add(display);
+		//TODO adjust to fit
+		ScrollPane scrollPane = new ScrollPane();
+        scrollPane.setPrefSize(500, 500);
+        scrollPane.setVbarPolicy(ScrollBarPolicy.AS_NEEDED);
+        scrollPane.setHbarPolicy(ScrollBarPolicy.AS_NEEDED);
+        scrollPane.setContent(display);
+		hbox.getChildren().add(scrollPane);
 		
 //		downloader toggle switch
 		Rectangle downBack = new Rectangle(15, 647, 502, 23);
@@ -139,7 +147,19 @@ public class JFXGui extends Application {
 		downLabel.setLayoutX(20);
 		downLabel.setLayoutY(650);
 		downToggleBox.setLayoutX(480);
-		downToggleBox.setLayoutY(650);		
+		downToggleBox.setLayoutY(650);
+		
+//		GUI-computation parallelisation toggle switch
+		Rectangle paraGCBack = new Rectangle(15, 670, 502, 23);
+		paraGCBack.setFill(Color.WHITE);
+		Label paraGCLabel = new Label("Parallelise GUI with Computations");
+		JFXToggle paraGC = new JFXToggle();
+		Pane paraGCBox = paraGC.makeToggle(34);
+			//set position
+		paraGCLabel.setLayoutX(20);
+		paraGCLabel.setLayoutY(673);
+		paraGCBox.setLayoutX(480);
+		paraGCBox.setLayoutY(673);
 		
 //		set actions on browse button click
 		browse.setOnAction(new EventHandler<ActionEvent>() {
@@ -154,21 +174,23 @@ public class JFXGui extends Application {
 					FileInputStream filePath = new FileInputStream(refPath.getText());
 					Image refImage = new Image(filePath);
 					display.setImage(refImage);
+	                scrollPane.setContent(null);
+	                scrollPane.setContent(display);
 					//center image position within box
-					if (refImage.getHeight() > refImage.getWidth()) {
-						double ratio = refImage.getHeight()/500;
-						display.setTranslateX(250 - refImage.getWidth()/(ratio*2));
-						display.setTranslateY(0);
-					}
-					else if (refImage.getHeight() < refImage.getWidth()) {
-						double ratio = refImage.getWidth()/500;
-						display.setTranslateX(0);
-						display.setTranslateY(250 - refImage.getHeight()/(ratio*2));
-					}
-					else {
-						display.setTranslateX(0);
-						display.setTranslateY(0);
-					}
+//					if (refImage.getHeight() > refImage.getWidth()) {
+//						double ratio = refImage.getHeight()/500;
+//						display.setTranslateX(250 - refImage.getWidth()/(ratio*2));
+//						display.setTranslateY(0);
+//					}
+//					else if (refImage.getHeight() < refImage.getWidth()) {
+//						double ratio = refImage.getWidth()/500;
+//						display.setTranslateX(0);
+//						display.setTranslateY(250 - refImage.getHeight()/(ratio*2));
+//					}
+//					else {
+//						display.setTranslateX(0);
+//						display.setTranslateY(0);
+//					}
 				} catch (FileNotFoundException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -180,6 +202,12 @@ public class JFXGui extends Application {
 		downToggleBox.setOnMouseClicked(event -> {
 			downToggle.getState().set(!downToggle.getStateBool());
 			downState = downToggle.getStateBool();
+		});
+		
+//		set actions on GUI-computation parallelisation toggle click
+		paraGCBox.setOnMouseClicked(event -> {
+			paraGC.getState().set(!paraGC.getStateBool());
+			paraGCState = paraGC.getStateBool();
 		});
 		
 //		add GUI elements
@@ -201,6 +229,8 @@ public class JFXGui extends Application {
 		root.getChildren().add(hbox);
 		//add download toggle
 		root.getChildren().addAll(downBack, downLabel, downToggleBox);
+		//add GUI-computation parallelisation toggle
+		root.getChildren().addAll(paraGCBack, paraGCLabel, paraGCBox);
 		
 		Scene scene = new Scene(root, width, height);
 		
