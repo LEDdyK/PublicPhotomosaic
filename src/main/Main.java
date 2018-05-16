@@ -29,21 +29,21 @@ public class Main {
 			imageDownloader.waitTillFinished();	*/	
 			printTimeStamp("ImageDownloader");
 			
-			ImageLibrary imglib = new ImageLibrary("photos", 1.0, 4);		
+			ImageLibrary imglib = new ImageLibrary("photos", 0.5, 12);		
 			printTimeStamp("ImageLibrary");
 			
 			RGBLibrary rgbLib = new RGBLibrary(imglib.getLibrary());
 			printTimeStamp("RGBLibrary");
 			
 			BufferedImage image = ImageIO.read(new File("testPhotos/oliver.png"));
-			ImageGrid imgGrid = new ImageGrid(false, 2, 2, image);			
-			printTimeStamp("ImageGrid");
+			ImageGrid imgGrid = new ImageGrid(false, 1, 1, image);			
+			printTimeStamp("ImageGrid "+imgGrid.getHeight()*imgGrid.getWidth()+" cells");
 			
 			ImageTinder imgTinder = new ImageTinder(rgbLib.getRGBList(), imgGrid);
 			printTimeStamp("ImageTinder");
 			
 			MosaicBuilder mosaicBuilder = new MosaicBuilder(imglib, imgTinder.findMatches('R'));
-			mosaicBuilder.createMosaic(1);
+			mosaicBuilder.createMosaic(12);
 			printTimeStamp("MosaicBuilder");
 			
 			
