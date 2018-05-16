@@ -30,19 +30,12 @@ public class Main {
 	try {
 			startTime = System.currentTimeMillis();
 
-//<<<<<<< HEAD
-//			if (JFXGui.enableDown == true) {
-//				ImageDownloader imageDownloader = new ImageDownloader();
-//				imageDownloader.downloadRecentImages(4);
-//				imageDownloader.waitTillFinished();		
-//				printTimeStamp("ImageDownloader");
-//			}
-//=======
-			/*ImageDownloader imageDownloader = new ImageDownloader();
-			imageDownloader.downloadRecentImages(4);
-			imageDownloader.waitTillFinished();	*/	
-			printTimeStamp("ImageDownloader");
-//>>>>>>> master
+			if (JFXGui.downState) {
+				ImageDownloader imageDownloader = new ImageDownloader();
+				imageDownloader.downloadRecentImages(4);
+				imageDownloader.waitTillFinished();		
+				printTimeStamp("ImageDownloader");
+			}
 			
 			ImageLibrary imglib = new ImageLibrary("photos", 1.0, 4);		
 			printTimeStamp("ImageLibrary");
@@ -52,7 +45,7 @@ public class Main {
 
 			BufferedImage image = ImageIO.read(new File(JFXGui.refPath.getText()));
 			//BufferedImage image = ImageIO.read(new File("testPhotos/oliver.png"));
-			ImageGrid imgGrid = new ImageGrid(false, 8, 8, image);			
+			ImageGrid imgGrid = new ImageGrid(false, 20, 20, image);			
 			printTimeStamp("ImageGrid");
 			
 			ImageTinder imgTinder = new ImageTinder(rgbLib.getRGBList(), imgGrid);
