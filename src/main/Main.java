@@ -30,29 +30,36 @@ public class Main {
 	try {
 			startTime = System.currentTimeMillis();
 
-			if (JFXGui.enableDown == true) {
-				ImageDownloader imageDownloader = new ImageDownloader();
-				imageDownloader.downloadRecentImages(4);
-				imageDownloader.waitTillFinished();		
-				printTimeStamp("ImageDownloader");
-			}
+//<<<<<<< HEAD
+//			if (JFXGui.enableDown == true) {
+//				ImageDownloader imageDownloader = new ImageDownloader();
+//				imageDownloader.downloadRecentImages(4);
+//				imageDownloader.waitTillFinished();		
+//				printTimeStamp("ImageDownloader");
+//			}
+//=======
+			/*ImageDownloader imageDownloader = new ImageDownloader();
+			imageDownloader.downloadRecentImages(4);
+			imageDownloader.waitTillFinished();	*/	
+			printTimeStamp("ImageDownloader");
+//>>>>>>> master
 			
-			ImageLibrary imglib = new ImageLibrary("photos", 1);		
+			ImageLibrary imglib = new ImageLibrary("photos", 1.0, 4);		
 			printTimeStamp("ImageLibrary");
 			
 			RGBLibrary rgbLib = new RGBLibrary(imglib.getLibrary());
 			printTimeStamp("RGBLibrary");
 
-			BufferedImage image = ImageIO.read(new File(JFXGui.selectedFile.getAbsolutePath()));
+			BufferedImage image = ImageIO.read(new File(JFXGui.refPath.getText()));
 			//BufferedImage image = ImageIO.read(new File("testPhotos/oliver.png"));
-			ImageGrid imgGrid = new ImageGrid(false, 20, 20, image);			
+			ImageGrid imgGrid = new ImageGrid(false, 8, 8, image);			
 			printTimeStamp("ImageGrid");
 			
 			ImageTinder imgTinder = new ImageTinder(rgbLib.getRGBList(), imgGrid);
 			printTimeStamp("ImageTinder");
 			
 			MosaicBuilder mosaicBuilder = new MosaicBuilder(imglib, imgTinder.findMatches('R'));
-			mosaicBuilder.createMosaic(4);
+			mosaicBuilder.createMosaic(1);
 			printTimeStamp("MosaicBuilder");
 			
 			

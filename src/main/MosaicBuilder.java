@@ -14,7 +14,11 @@ import pt.runtime.WorkerThread;
 import pu.loopScheduler.LoopRange;
 import pu.loopScheduler.LoopScheduler;
 import pu.loopScheduler.LoopSchedulerFactory;
-
+/**
+ * 
+ * @author DarkIris3196
+ *
+ */
 public class MosaicBuilder {
 	private ImageLibrary imglib;
 	
@@ -25,6 +29,10 @@ public class MosaicBuilder {
 	BufferedImage output;
 	Graphics2D g2d ;
 	
+
+	static long startTime;
+	static long endTime;
+	
 	@Future
 	private Void[] futureGroup = new Void[1];
 	
@@ -34,26 +42,33 @@ public class MosaicBuilder {
 	}
 	
 	public void createMosaic(double scale, int numOfThreads) {
+		startTime = System.currentTimeMillis();
+		
 		BufferedImage cell = imglib.getImage(mosaicMatrix[0][0]);
 		cellHeight = (int)(cell.getHeight()*scale);
 		cellWidth = (int)(cell.getWidth()*scale);
 		output = new BufferedImage(cellWidth*mosaicMatrix[0].length,cellHeight*mosaicMatrix.length,BufferedImage.TYPE_INT_RGB);
 		g2d = output.createGraphics();
 		
+		printTimeStamp("MosaicInit");
+		
 		LoopScheduler scheduler = LoopSchedulerFactory.createLoopScheduler(0, mosaicMatrix.length, 1, numOfThreads, pu.loopScheduler.AbstractLoopScheduler.LoopCondition.LessThan, pu.loopScheduler.LoopSchedulerFactory.LoopSchedulingType.Static);
 		@Future(taskType = TaskInfoType.MULTI)
 		Void task = processMatrix(scheduler);
 		futureGroup[0] = task;
-
 		waitTillFinished();
 		g2d.dispose();
+		
+		printTimeStamp("MosaicSubstitution " + numOfThreads);
+		
 		try {
-			ImageIO.write(output, "png", new File("output.png"));
+			ImageIO.write(output, "jpg", new File("output.jpg"));
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
+
+		printTimeStamp("MosaicWrite");
 	}
 
 	public void createMosaic() {
@@ -67,16 +82,25 @@ public class MosaicBuilder {
 		WorkerThread worker = (WorkerThread) Thread.currentThread();
 		LoopRange range = scheduler.getChunk(worker.getThreadID());
 		
-		for(int row=0; row<mosaicMatrix.length; row++) {
-			for(int col=0; col<mosaicMatrix[0].length; col++) {
-				g2d.drawImage(imglib.getImage(mosaicMatrix[row][col]), 
-						col*cellWidth, row*cellHeight,  null);
+		if(range != null) {
+			for(int row=range.loopStart; row<range.loopEnd; row++) {
+				for(int col=0; col<mosaicMatrix[0].length; col++) {
+					g2d.drawImage(imglib.getImage(mosaicMatrix[row][col]), 
+							col*cellWidth, row*cellHeight,  null);
+				}
 			}
 		}
+		
 		return null;
 	}
 	
 	public void waitTillFinished() {
 		Void barrier = futureGroup[0];
+	}
+	
+	private static void printTimeStamp(String str) {
+		endTime = System.currentTimeMillis() - startTime;
+		System.out.println(str + " - " + endTime);
+		startTime = System.currentTimeMillis();
 	}
 }

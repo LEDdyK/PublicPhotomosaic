@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Scanner;
 
 import apt.annotations.Future;
@@ -23,13 +24,13 @@ import pu.loopScheduler.LoopSchedulerFactory;
  */
 public class RGBLibrary {
 	
-	private HashMap<String,AvgRGB> rgbList;
+	private Map<String,AvgRGB> rgbList;
 	
 	/**
 	 * takes in a library of images and converts them into a library of RGBs paired with their filename
 	 * @param library
 	 */
-	public RGBLibrary(HashMap<String,BufferedImage> library) {
+	public RGBLibrary(Map<String,BufferedImage> library) {
 		rgbList = new HashMap<String,AvgRGB>();
 		
 		//int numOfThreads=4;
@@ -38,7 +39,7 @@ public class RGBLibrary {
 		Void task = calculateRGB(library);
 	}
 	
-	public Void calculateRGB(HashMap<String,BufferedImage> library) {
+	public Void calculateRGB(Map<String,BufferedImage> library) {
 		for(String imageKey: library.keySet()) {
 			BufferedImage image = library.get(imageKey);
 			AvgRGB rgb = new AvgRGB(image);
@@ -94,7 +95,7 @@ public class RGBLibrary {
 	}
 	
 	
-	public HashMap<String,AvgRGB> getRGBList(){
+	public Map<String,AvgRGB> getRGBList(){
 		return rgbList;
 	}
 	
