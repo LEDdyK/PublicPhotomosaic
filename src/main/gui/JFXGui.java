@@ -10,6 +10,7 @@ import javafx.event.EventHandler;
 import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -22,6 +23,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
+import javafx.scene.shape.Line;
 import javafx.scene.shape.Rectangle;
 import javafx.stage.FileChooser;
 import javafx.stage.FileChooser.ExtensionFilter;
@@ -32,34 +34,86 @@ public class JFXGui extends Application {
 	public static File selectedFile;
 	public static Boolean downState;
 	public static TextField refPath;
+	public static TextField libScale;
+	public static TextField threadCount;
+	public static TextField gridWidth;
+	public static TextField gridHeight;
 	
 	@Override
 	public void start(Stage stage) {
 		double height = 750;
 		double width = 1500;
 		
-		//set window properties
+//		set window properties
 		stage.setTitle("SOFTENG 751: Photomosaic - Development mode");
 		stage.setMinWidth(width);
 		stage.setMinHeight(height);
 		
 		Group root = new Group();
 
-		//reference image path text field
+//		reference image path text field
 		refPath = new TextField();
 			//set position
 		refPath.setLayoutX(15);
 		refPath.setLayoutY(15);
 			//set details
-		refPath.setPrefWidth(300);
+		refPath.setPrefWidth(375);
 		
-		//browse for reference image button
+//		browse for reference image button
 		Button browse = new Button("Choose Reference");
 			//set position
-		browse.setLayoutX(330);
+		browse.setLayoutX(405);
 		browse.setLayoutY(15);
 		
-		//image display box
+//		library scale input
+		Label libScaleLabel = new Label ("Library Scale");
+		libScale = new TextField();
+			//set position
+		libScaleLabel.setLayoutX(15);
+		libScaleLabel.setLayoutY(59);
+		libScale.setLayoutX(200);
+		libScale.setLayoutY(55);
+			//set details
+		libScale.setPrefWidth(50);
+		
+//		thread count input
+		Label threadCountLabel = new Label ("Number of Threads");
+		threadCount = new TextField();
+			//set position
+		threadCountLabel.setLayoutX(280);
+		threadCountLabel.setLayoutY(59);
+		threadCount.setLayoutX(465);
+		threadCount.setLayoutY(55);
+			//set details
+		threadCount.setPrefWidth(50);
+		
+//		grid width input
+		Label gridWidthLabel = new Label ("Grid Width");
+		gridWidth = new TextField();
+			//set position
+		gridWidthLabel.setLayoutX(15);
+		gridWidthLabel.setLayoutY(99);
+		gridWidth.setLayoutX(200);
+		gridWidth.setLayoutY(95);
+			//set details
+		gridWidth.setPrefWidth(50);
+		
+//		grid height input
+		Label gridHeightLabel = new Label ("Grid Height");
+		gridHeight = new TextField();
+			//set position
+		gridHeightLabel.setLayoutX(280);
+		gridHeightLabel.setLayoutY(99);
+		gridHeight.setLayoutX(465);
+		gridHeight.setLayoutY(95);
+			//set details
+		gridHeight.setPrefWidth(50);
+		
+//		separator
+		Line line = new Line(265, 55, 265, 120);
+		line.setStroke(Color.LIGHTGRAY);
+		
+//		image display box
 		ImageView display = new ImageView();
 			//set details
 		display.setFitWidth(500);
@@ -69,23 +123,25 @@ public class JFXGui extends Application {
 		HBox hbox = new HBox();
 		hbox.setBorder(new Border(new BorderStroke(Color.BLUE, BorderStrokeStyle.SOLID, CornerRadii.EMPTY, BorderWidths.DEFAULT)));
 		hbox.setLayoutX(15);
-		hbox.setLayoutY(100);
+		hbox.setLayoutY(135);
 		hbox.setPrefHeight(500);
 		hbox.setPrefWidth(500);
 		hbox.getChildren().add(display);
 		
-		//downloader toggle switch
+//		downloader toggle switch
+		Rectangle downBack = new Rectangle(15, 647, 502, 23);
+		downBack.setFill(Color.STEELBLUE);
+		Label downLabel = new Label ("Enable Download");
+		downLabel.setTextFill(Color.WHITE);
 		JFXToggle downToggle = new JFXToggle();
-		Pane toggleBox = downToggle.makeToggle(50);
+		Pane downToggleBox = downToggle.makeToggle(34);
 			//set position
-		toggleBox.setLayoutX(465);
-		toggleBox.setLayoutY(615);
+		downLabel.setLayoutX(20);
+		downLabel.setLayoutY(650);
+		downToggleBox.setLayoutX(480);
+		downToggleBox.setLayoutY(650);		
 		
-		System.out.println(browse.getHeight());
-		System.out.println(refPath.getHeight());
-		
-		
-		//set actions on browse button click
+//		set actions on browse button click
 		browse.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent arg0) {
@@ -120,19 +176,31 @@ public class JFXGui extends Application {
 			}
 		});
 		
-		toggleBox.setOnMouseClicked(event -> {
+//		set actions on download toggle click
+		downToggleBox.setOnMouseClicked(event -> {
 			downToggle.getState().set(!downToggle.getStateBool());
 			downState = downToggle.getStateBool();
 		});
 		
+//		add GUI elements
 		//add browse button to UI object group
 		root.getChildren().add(browse);
 		//add reference image path to GUI
 		root.getChildren().add(refPath);
+		//add library scale input to GUI
+		root.getChildren().addAll(libScaleLabel, libScale);
+		//add thread count input to GUI
+		root.getChildren().addAll(threadCountLabel, threadCount);
+		//add grid width input to GUI
+		root.getChildren().addAll(gridWidthLabel, gridWidth);
+		//add grid height input to GUI
+		root.getChildren().addAll(gridHeightLabel, gridHeight);
+		//add separator
+		root.getChildren().add(line);
 		//add image display to GUI
 		root.getChildren().add(hbox);
 		//add download toggle
-		root.getChildren().add(toggleBox);
+		root.getChildren().addAll(downBack, downLabel, downToggleBox);
 		
 		Scene scene = new Scene(root, width, height);
 		

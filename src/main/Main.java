@@ -37,7 +37,8 @@ public class Main {
 				printTimeStamp("ImageDownloader");
 			}
 			
-			ImageLibrary imglib = new ImageLibrary("photos", 1.0, 4);		
+			ImageLibrary imglib = new ImageLibrary("photos", Double.parseDouble(JFXGui.libScale.getText()), Integer.parseInt(JFXGui.threadCount.getText()));		
+			//ImageLibrary imglib = new ImageLibrary("photos", 0.2, 4);		
 			printTimeStamp("ImageLibrary");
 			
 			RGBLibrary rgbLib = new RGBLibrary(imglib.getLibrary());
@@ -45,7 +46,8 @@ public class Main {
 
 			BufferedImage image = ImageIO.read(new File(JFXGui.refPath.getText()));
 			//BufferedImage image = ImageIO.read(new File("testPhotos/oliver.png"));
-			ImageGrid imgGrid = new ImageGrid(false, 20, 20, image);			
+			ImageGrid imgGrid = new ImageGrid(false, Integer.parseInt(JFXGui.gridWidth.getText()), Integer.parseInt(JFXGui.gridHeight.getText()), image);
+			//ImageGrid imgGrid = new ImageGrid(false, 2, 2, image);			
 			printTimeStamp("ImageGrid");
 			
 			ImageTinder imgTinder = new ImageTinder(rgbLib.getRGBList(), imgGrid);
@@ -53,9 +55,7 @@ public class Main {
 			
 			MosaicBuilder mosaicBuilder = new MosaicBuilder(imglib, imgTinder.findMatches('R'));
 			mosaicBuilder.createMosaic(1);
-			printTimeStamp("MosaicBuilder");
-			
-			
+			printTimeStamp("MosaicBuilder");			
 			
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
