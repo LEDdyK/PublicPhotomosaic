@@ -34,11 +34,8 @@ public class ImageTinder {
 
 	//Methods
 	//Constructor
-	public ImageTinder(Map<String, AvgRGB> libraryIndex, ImageGrid cellMatrix) {
-		this.libraryIndex = libraryIndex;
-		this.cellMatrix = cellMatrix;
-		makeDefault();
-		mosaicMatrix = new String[cellMatrix.getHeight()][cellMatrix.getWidth()];
+	public ImageTinder() {
+		
 	}
 	//Reset pointer positions and distance to compare
 	public void makeDefault() {
@@ -46,7 +43,12 @@ public class ImageTinder {
 		minDistance = Math.pow(256, 3);
 	}
 	//generate the mosaic matrix
-	public String[][] findMatches(char type) {
+	public int findMatches(Map<String, AvgRGB> libraryIndex, ImageGrid cellMatrix, char type) {
+		this.libraryIndex = libraryIndex;
+		this.cellMatrix = cellMatrix;
+		makeDefault();
+		mosaicMatrix = new String[cellMatrix.getHeight()][cellMatrix.getWidth()];
+		
 		for (int i = 0; i < cellMatrix.getHeight(); ++i) {
 			for (int j = 0; j < cellMatrix.getWidth(); ++j) {
 				
@@ -67,8 +69,13 @@ public class ImageTinder {
 				mosaicMatrix[i][j] = minPointer;
 			}
 		}
+		return 1;
+	}
+	
+	public String[][] getMosaicMatrix() {
 		return mosaicMatrix;
 	}
+	
 	//calculate RGB distance
 	double calcDist(AvgRGB a, AvgRGB b, char type) {
 		int aR = a.getR();
