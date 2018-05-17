@@ -49,7 +49,7 @@ public class ImageLibrary {
 	 * processes a directory
 	 * @param dirPath
 	 */
-	public int readDirectory(String dirPath) {
+	public Map<String, BufferedImage> readDirectory(String dirPath) {
 		return readDirectory(dirPath,1.0,1);
 		
 	}
@@ -58,7 +58,8 @@ public class ImageLibrary {
 	 * processes a directory
 	 * @param dirPath
 	 */
-	public int readDirectory(String dirPath, double scale, int numOfThreads) {
+	public Map<String, BufferedImage> readDirectory(String dirPath, double scale, int numOfThreads) {
+		System.out.println("Starting ImageLibrary");
 		File directory = new File(dirPath);
 		directoryListing = directory.listFiles();
 		JFXGui.numberOfImages = directoryListing.length;
@@ -73,13 +74,14 @@ public class ImageLibrary {
 		
 		waitTillFinished();
 		System.out.println(library.size() + " images in library");
+		System.out.println("Finished ImageLibrary");
 		
 		for(File deletable: toDelete) {
 			if(!deletable.delete()) {
 				System.err.println("Image " + deletable.getName() + " deletion failed");
 			}
 		}
-		return 0;
+		return library;
 	}
 	
 	public Void processDirectory(LoopScheduler scheduler, double scale) {

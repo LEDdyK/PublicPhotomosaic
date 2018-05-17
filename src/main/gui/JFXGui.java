@@ -45,6 +45,7 @@ public class JFXGui extends Application {
 	public static Progress downProp;
 	public static Progress imgLibProp;
 	public static int numberOfImages;
+	public static Progress tinSubProp;
 	
 	@Override
 	public void start(Stage stage) {
@@ -179,12 +180,19 @@ public class JFXGui extends Application {
 		downProgress.setLayoutY(15);
 		downProgress.setProgress(0F);
 		
-//		download progress bar
+//		image library progress bar
 		imgLibProp = new Progress();
 		ProgressBar imgLibProgress = new ProgressBar();
 		imgLibProgress.setLayoutX(800);
 		imgLibProgress.setLayoutY(55);
 		imgLibProgress.setProgress(0F);
+		
+//		imageTinder and substitution progress bar
+		tinSubProp = new Progress();
+		ProgressBar tinSubProgress = new ProgressBar();
+		tinSubProgress.setLayoutX(800);
+		tinSubProgress.setLayoutY(95);
+		tinSubProgress.setProgress(0F);
 		
 //		set actions on browse button click
 		browse.setOnAction(new EventHandler<ActionEvent>() {
@@ -257,6 +265,13 @@ public class JFXGui extends Application {
             }
 		});
 		
+//		set actions when grid block variable changes
+		tinSubProp.countProperty().addListener((obs, oldVal, newVal) -> {
+            if (newVal != oldVal) {
+        		tinSubProgress.setProgress((float)imgLibProp.getCount()/numberOfImages);
+            }
+		});
+		
 //		add GUI elements
 		//add browse button to UI object group
 		root.getChildren().add(browse);
@@ -284,6 +299,8 @@ public class JFXGui extends Application {
 		root.getChildren().add(downProgress);
 		//add image library progress bar
 		root.getChildren().add(imgLibProgress);
+		//add tinder/substitution porgress bar
+		root.getChildren().add(tinSubProgress);
 		
 		Scene scene = new Scene(root, width, height);
 		

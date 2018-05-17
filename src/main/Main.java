@@ -3,6 +3,7 @@ package main;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.util.Map;
 
 import javax.imageio.ImageIO;
 
@@ -11,6 +12,7 @@ import apt.annotations.InitParaTask;
 import apt.annotations.TaskScheduingPolicy;
 import javafx.application.Application;
 import main.gui.JFXGui;
+import main.images.AvgRGB;
 import main.images.ImageGrid;
 import main.images.RGBLibrary;
 import main.images.downloader.ImageDownloader;
@@ -32,32 +34,30 @@ public class Main {
 		try {
 			startTime = System.currentTimeMillis();
 
-			if (JFXGui.downState) {
-				ImageDownloader imageDownloader = new ImageDownloader();
-				imageDownloader.downloadRecentImages(4);
-				//imageDownloader.waitTillFinished();		
-				printTimeStamp("ImageDownloader");
-			}
+			ImageDownloader imageDownloader = new ImageDownloader();
+			@Future
+			int imageDownload = imageDownloader.downloadRecentImages(4);		
+		
+			ImageLibrary imglib = new ImageLibrary();
+			@Future(depends="imageDownload")
+			Map<String, BufferedImage> imgLibrary = imglib.readDirectory("photos", Double.parseDouble(JFXGui.libScale.getText()), Integer.parseInt(JFXGui.threadCount.getText()));	
+						
+			BufferedImage image = ImageIO.read(new File(JFXGui.refPath.getText()));
+			ImageGrid imgGrid = new ImageGrid(image);
+			@Future()
+			int imageGrid = imgGrid.createGrid(false, Integer.parseInt(JFXGui.gridWidth.getText()), Integer.parseInt(JFXGui.gridHeight.getText()));	
 			
-//			ImageLibrary imglib = new ImageLibrary("photos", Double.parseDouble(JFXGui.libScale.getText()), Integer.parseInt(JFXGui.threadCount.getText()));		
-//			//ImageLibrary imglib = new ImageLibrary("photos", 0.2, 4);		
-//			printTimeStamp("ImageLibrary");
-//			
-//			RGBLibrary rgbLib = new RGBLibrary(imglib.getLibrary());
-//			printTimeStamp("RGBLibrary");
-//
-//			BufferedImage image = ImageIO.read(new File(JFXGui.refPath.getText()));
-//			//BufferedImage image = ImageIO.read(new File("testPhotos/oliver.png"));
-//			ImageGrid imgGrid = new ImageGrid(false, Integer.parseInt(JFXGui.gridWidth.getText()), Integer.parseInt(JFXGui.gridHeight.getText()), image);
-//			//ImageGrid imgGrid = new ImageGrid(false, 2, 2, image);			
-//			printTimeStamp("ImageGrid");
-//			
-//			ImageTinder imgTinder = new ImageTinder(rgbLib.getRGBList(), imgGrid);
-//			printTimeStamp("ImageTinder");
-//			
-//			MosaicBuilder mosaicBuilder = new MosaicBuilder(imglib, imgTinder.findMatches('R'));
-//			mosaicBuilder.createMosaic(1);
-//			printTimeStamp("MosaicBuilder");
+			RGBLibrary rgbLib = new RGBLibrary();
+			@Future()
+			Map<String, AvgRGB> rgbList = rgbLib.calculateRGB(imgLibrary);
+			
+			ImageTinder imgTinder = new ImageTinder();
+			@Future()
+			int imageTinder = imgTinder.findMatches(rgbList, imgGrid, 'R');
+		
+			MosaicBuilder mosaicBuilder = new MosaicBuilder();
+			@Future(depends="imageTinder")
+			int mosaicBuild = mosaicBuilder.createMosaic(imglib, imgTinder.getMosaicMatrix(), 1, Integer.parseInt(JFXGui.threadCount.getText()));
 			
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
