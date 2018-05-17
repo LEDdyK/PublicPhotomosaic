@@ -26,38 +26,40 @@ public class Main {
 	public static void main(String[] args) {
 		
 		Application.launch(JFXGui.class, args);
-		
-	try {
+	}
+
+	public static void runComputations() {
+		try {
 			startTime = System.currentTimeMillis();
 
 			if (JFXGui.downState) {
 				ImageDownloader imageDownloader = new ImageDownloader();
 				imageDownloader.downloadRecentImages(4);
-				imageDownloader.waitTillFinished();		
+				//imageDownloader.waitTillFinished();		
 				printTimeStamp("ImageDownloader");
 			}
 			
-			ImageLibrary imglib = new ImageLibrary("photos", Double.parseDouble(JFXGui.libScale.getText()), Integer.parseInt(JFXGui.threadCount.getText()));		
-			//ImageLibrary imglib = new ImageLibrary("photos", 0.2, 4);		
-			printTimeStamp("ImageLibrary");
+//			ImageLibrary imglib = new ImageLibrary("photos", Double.parseDouble(JFXGui.libScale.getText()), Integer.parseInt(JFXGui.threadCount.getText()));		
+//			//ImageLibrary imglib = new ImageLibrary("photos", 0.2, 4);		
+//			printTimeStamp("ImageLibrary");
+//			
+//			RGBLibrary rgbLib = new RGBLibrary(imglib.getLibrary());
+//			printTimeStamp("RGBLibrary");
+//
+//			BufferedImage image = ImageIO.read(new File(JFXGui.refPath.getText()));
+//			//BufferedImage image = ImageIO.read(new File("testPhotos/oliver.png"));
+//			ImageGrid imgGrid = new ImageGrid(false, Integer.parseInt(JFXGui.gridWidth.getText()), Integer.parseInt(JFXGui.gridHeight.getText()), image);
+//			//ImageGrid imgGrid = new ImageGrid(false, 2, 2, image);			
+//			printTimeStamp("ImageGrid");
+//			
+//			ImageTinder imgTinder = new ImageTinder(rgbLib.getRGBList(), imgGrid);
+//			printTimeStamp("ImageTinder");
+//			
+//			MosaicBuilder mosaicBuilder = new MosaicBuilder(imglib, imgTinder.findMatches('R'));
+//			mosaicBuilder.createMosaic(1);
+//			printTimeStamp("MosaicBuilder");			
 			
-			RGBLibrary rgbLib = new RGBLibrary(imglib.getLibrary());
-			printTimeStamp("RGBLibrary");
-
-			BufferedImage image = ImageIO.read(new File(JFXGui.refPath.getText()));
-			//BufferedImage image = ImageIO.read(new File("testPhotos/oliver.png"));
-			ImageGrid imgGrid = new ImageGrid(false, Integer.parseInt(JFXGui.gridWidth.getText()), Integer.parseInt(JFXGui.gridHeight.getText()), image);
-			//ImageGrid imgGrid = new ImageGrid(false, 2, 2, image);			
-			printTimeStamp("ImageGrid");
-			
-			ImageTinder imgTinder = new ImageTinder(rgbLib.getRGBList(), imgGrid);
-			printTimeStamp("ImageTinder");
-			
-			MosaicBuilder mosaicBuilder = new MosaicBuilder(imglib, imgTinder.findMatches('R'));
-			mosaicBuilder.createMosaic(1);
-			printTimeStamp("MosaicBuilder");			
-			
-		} catch (IOException e) {
+		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}

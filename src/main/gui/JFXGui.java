@@ -28,6 +28,7 @@ import javafx.scene.shape.Line;
 import javafx.scene.shape.Rectangle;
 import javafx.stage.FileChooser;
 import javafx.stage.FileChooser.ExtensionFilter;
+import main.Main;
 import javafx.stage.Stage;
 
 public class JFXGui extends Application {
@@ -66,6 +67,12 @@ public class JFXGui extends Application {
 			//set position
 		browse.setLayoutX(405);
 		browse.setLayoutY(15);
+		
+//		run computations button
+		Button runComp = new Button("Run Computation");
+			//set position
+		runComp.setLayoutX(800);
+		runComp.setLayoutY(400);
 		
 //		library scale input
 		Label libScaleLabel = new Label ("Library Scale");
@@ -198,6 +205,14 @@ public class JFXGui extends Application {
 			}
 		});
 		
+		//run computations
+		runComp.setOnAction(new EventHandler<ActionEvent>() {
+			@Override
+			public void handle(ActionEvent arg0) {
+				Main.runComputations();
+			}
+		});
+		
 //		set actions on download toggle click
 		downToggleBox.setOnMouseClicked(event -> {
 			downToggle.getState().set(!downToggle.getStateBool());
@@ -231,6 +246,8 @@ public class JFXGui extends Application {
 		root.getChildren().addAll(downBack, downLabel, downToggleBox);
 		//add GUI-computation parallelisation toggle
 		root.getChildren().addAll(paraGCBack, paraGCLabel, paraGCBox);
+		//run computations button
+		root.getChildren().add(runComp);
 		
 		Scene scene = new Scene(root, width, height);
 		
