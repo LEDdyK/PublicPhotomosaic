@@ -14,7 +14,6 @@ import javax.imageio.ImageIO;
 
 import apt.annotations.Future;
 import apt.annotations.TaskInfoType;
-import main.images.downloader.PhotoMetaData;
 import pt.runtime.WorkerThread;
 import pu.loopScheduler.LoopRange;
 import pu.loopScheduler.LoopScheduler;
