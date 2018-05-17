@@ -30,9 +30,9 @@ public class RGBLibrary {
 	 * takes in a library of images and converts them into a library of RGBs paired with their filename
 	 * @param library
 	 */
-	public RGBLibrary(Map<String,BufferedImage> library) {
+	public RGBLibrary() {
 		rgbList = new HashMap<String,AvgRGB>();
-		this.library = library;
+		
 		//int numOfThreads=4;
 		//LoopScheduler scheduler = LoopSchedulerFactory.createLoopScheduler(0, library.size(), 1, numOfThreads, pu.loopScheduler.AbstractLoopScheduler.LoopCondition.LessThan, pu.loopScheduler.LoopSchedulerFactory.LoopSchedulingType.Static);
 		//@Future(taskType=TaskInfoType.MULTI)
@@ -41,13 +41,17 @@ public class RGBLibrary {
 	
 	
 	
-	public Void calculateRGB() {
+	public Map<String, AvgRGB> calculateRGB(Map<String,BufferedImage> library) {
+		this.library = library;
+		
+		System.out.println("Starting RGBLibrary");
 		for(String imageKey: library.keySet()) {
 			BufferedImage image = library.get(imageKey);
 			AvgRGB rgb = new AvgRGB(image);
 			rgbList.put(imageKey,rgb);
 		}
-		return null;
+		System.out.println("Finished RGBLibrary");
+		return rgbList;
 	}
 	
 	/**
