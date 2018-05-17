@@ -39,9 +39,9 @@ public class ImageDownloader {
 	@Future
 	public Void[] futureGroup = new Void[1];
 	
-	public Void downloadRecentImages(int numOfThreads) {
+	public int downloadRecentImages(int numOfThreads) {
 		try {
-			
+			System.out.println("Starting ImageDownloader");
 			String xmlResult = getRecentPhotosMetaDataXML();
 			List<PhotoMetaData> photoMetaDataList = parseXMLResult(xmlResult);
 			new File("photos").mkdir();
@@ -52,6 +52,7 @@ public class ImageDownloader {
 			Void task = downloadImages(scheduler, photoMetaDataList);
 			futureGroup[0] = task;
 			
+			waitTillFinished();
 
 			//downloadImages(photoMetaDataList);
 		
@@ -63,8 +64,8 @@ public class ImageDownloader {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} 
-		
-		return null;
+		System.out.println("Finished ImageDownloader");
+		return 1;
 	}
 	
 	public void waitTillFinished() {
@@ -86,7 +87,7 @@ public class ImageDownloader {
 						photoMetaData.getSecret(),
 						"q", "jpg");
 				
-				System.out.println(worker.getThreadID() + ": " + link);
+				//System.out.println(worker.getThreadID() + ": " + link);
 				downloadImage(link, photoMetaData);
 				@Gui
 				Void progress = updateDownProgress();
