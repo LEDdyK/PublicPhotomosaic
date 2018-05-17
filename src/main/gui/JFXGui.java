@@ -5,10 +5,6 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 
 import javafx.application.Application;
-import javafx.beans.property.DoubleProperty;
-import javafx.beans.property.SimpleDoubleProperty;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.Group;
@@ -47,6 +43,8 @@ public class JFXGui extends Application {
 	public static TextField gridWidth;
 	public static TextField gridHeight;
 	public static Progress downProp;
+	public static Progress imgLibProp;
+	public static int numberOfImages;
 	
 	@Override
 	public void start(Stage stage) {
@@ -174,11 +172,19 @@ public class JFXGui extends Application {
 		paraGCBox.setLayoutX(480);
 		paraGCBox.setLayoutY(673);
 		
-//		download progress
+//		download progress bar
 		downProp = new Progress();
 		ProgressBar downProgress = new ProgressBar();
 		downProgress.setLayoutX(800);
+		downProgress.setLayoutY(15);
 		downProgress.setProgress(0F);
+		
+//		download progress bar
+		imgLibProp = new Progress();
+		ProgressBar imgLibProgress = new ProgressBar();
+		imgLibProgress.setLayoutX(800);
+		imgLibProgress.setLayoutY(55);
+		imgLibProgress.setProgress(0F);
 		
 //		set actions on browse button click
 		browse.setOnAction(new EventHandler<ActionEvent>() {
@@ -237,10 +243,17 @@ public class JFXGui extends Application {
 			paraGCState = paraGC.getStateBool();
 		});
 		
-//		set actions when variable changes
+//		set actions when download variable changes
 		downProp.countProperty().addListener((obs, oldVal, newVal) -> {
             if (newVal != oldVal) {
         		downProgress.setProgress((float)downProp.getCount()/100);
+            }
+		});
+		
+//		set actions when image library count variable changes
+		imgLibProp.countProperty().addListener((obs, oldVal, newVal) -> {
+            if (newVal != oldVal) {
+        		imgLibProgress.setProgress((float)imgLibProp.getCount()/numberOfImages);
             }
 		});
 		
@@ -265,10 +278,12 @@ public class JFXGui extends Application {
 		root.getChildren().addAll(downBack, downLabel, downToggleBox);
 		//add GUI-computation parallelisation toggle
 		root.getChildren().addAll(paraGCBack, paraGCLabel, paraGCBox);
-		//run computations button
+		//add run computations button
 		root.getChildren().add(runComp);
-		//download progress bar
+		//add download progress bar
 		root.getChildren().add(downProgress);
+		//add image library progress bar
+		root.getChildren().add(imgLibProgress);
 		
 		Scene scene = new Scene(root, width, height);
 		
