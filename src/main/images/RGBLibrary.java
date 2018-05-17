@@ -25,21 +25,23 @@ import pu.loopScheduler.LoopSchedulerFactory;
 public class RGBLibrary {
 	
 	private Map<String,AvgRGB> rgbList;
-	
+	private Map<String,BufferedImage> library;
 	/**
 	 * takes in a library of images and converts them into a library of RGBs paired with their filename
 	 * @param library
 	 */
 	public RGBLibrary(Map<String,BufferedImage> library) {
 		rgbList = new HashMap<String,AvgRGB>();
-		
+		this.library = library;
 		//int numOfThreads=4;
 		//LoopScheduler scheduler = LoopSchedulerFactory.createLoopScheduler(0, library.size(), 1, numOfThreads, pu.loopScheduler.AbstractLoopScheduler.LoopCondition.LessThan, pu.loopScheduler.LoopSchedulerFactory.LoopSchedulingType.Static);
 		//@Future(taskType=TaskInfoType.MULTI)
-		Void task = calculateRGB(library);
+		//Void task = calculateRGB();
 	}
 	
-	public Void calculateRGB(Map<String,BufferedImage> library) {
+	
+	
+	public Void calculateRGB() {
 		for(String imageKey: library.keySet()) {
 			BufferedImage image = library.get(imageKey);
 			AvgRGB rgb = new AvgRGB(image);
