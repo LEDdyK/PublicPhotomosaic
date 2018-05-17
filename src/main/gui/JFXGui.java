@@ -47,6 +47,8 @@ public class JFXGui extends Application {
 	public static int numberOfImages;
 	public static Progress tinSubProp;
 	public static int numberOfCells;
+	public static Progress outProp;
+	public static Image outImage;
 	
 	@Override
 	public void start(Stage stage) {
@@ -153,6 +155,7 @@ public class JFXGui extends Application {
 		ImageView dispOut = new ImageView();
 			//set details
 		dispOut.setPreserveRatio(true);
+			//set position and border
 		HBox hboxOut = new HBox();
 		hboxOut.setBorder(new Border(new BorderStroke(Color.BLUE, BorderStrokeStyle.SOLID, CornerRadii.EMPTY, BorderWidths.DEFAULT)));
 		hboxOut.setLayoutX(675);
@@ -212,6 +215,9 @@ public class JFXGui extends Application {
 		tinSubProgress.setLayoutX(545);
 		tinSubProgress.setLayoutY(95);
 		tinSubProgress.setProgress(0F);
+		
+//		output progress viewer
+		outProp = new Progress();
 		
 //		set actions on browse button click
 		browse.setOnAction(new EventHandler<ActionEvent>() {
@@ -288,6 +294,15 @@ public class JFXGui extends Application {
 		tinSubProp.countProperty().addListener((obs, oldVal, newVal) -> {
             if (newVal != oldVal) {
         		tinSubProgress.setProgress((float)tinSubProp.getCount()/numberOfCells);
+            }
+		});
+		
+//		set actions when a cell finishes processing
+		outProp.countProperty().addListener((obs, oldVal, newVal) -> {
+            if (newVal != oldVal) {
+            	dispOut.setImage(outImage);
+            	scrollPaneOut.setContent(null);
+            	scrollPaneOut.setContent(dispOut);
             }
 		});
 		

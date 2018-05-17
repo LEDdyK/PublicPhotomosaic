@@ -8,7 +8,10 @@ import java.io.IOException;
 import javax.imageio.ImageIO;
 
 import apt.annotations.Future;
+import apt.annotations.Gui;
 import apt.annotations.TaskInfoType;
+import javafx.embed.swing.SwingFXUtils;
+import main.gui.JFXGui;
 import main.images.reader.ImageLibrary;
 import pt.runtime.WorkerThread;
 import pu.loopScheduler.LoopRange;
@@ -27,7 +30,8 @@ public class MosaicBuilder {
 	int cellHeight;
 	int cellWidth;
 	BufferedImage output;
-	Graphics2D g2d ;
+	Graphics2D g2d;
+	double count;
 	
 
 	static long startTime;
@@ -61,6 +65,7 @@ public class MosaicBuilder {
 		//printTimeStamp("MosaicInit");
 		
 		LoopScheduler scheduler = LoopSchedulerFactory.createLoopScheduler(0, mosaicMatrix.length, 1, numOfThreads, pu.loopScheduler.AbstractLoopScheduler.LoopCondition.LessThan, pu.loopScheduler.LoopSchedulerFactory.LoopSchedulingType.Static);
+		count = 0;
 		@Future(taskType = TaskInfoType.MULTI)
 		Void task = processMatrix(scheduler);
 		futureGroup[0] = task;
@@ -68,17 +73,17 @@ public class MosaicBuilder {
 		g2d.dispose();
 		
 		//printTimeStamp("MosaicSubstitution " + numOfThreads);
-		
+
 		System.out.println("Finish CreateMosaic");
 		
-		try {
-			System.out.println("Saving image to disk");
-			ImageIO.write(output, "jpg", new File("output.jpg"));
-			System.out.println("Finished saving image to disk");
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+//		try {
+//			System.out.println("Saving image to disk");
+//			ImageIO.write(output, "jpg", new File("output.jpg"));
+//			System.out.println("Finished saving image to disk");
+//		} catch (IOException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
 
 		//printTimeStamp("MosaicWrite");
 		return 1;
@@ -106,13 +111,15 @@ public class MosaicBuilder {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
+					@Gui
+					Void progress = updateProgress(output);
 				}
 			}
 		}
 		
 		return null;
 	}
-	
+
 	public void waitTillFinished() {
 		Void barrier = futureGroup[0];
 	}
@@ -121,5 +128,12 @@ public class MosaicBuilder {
 		endTime = System.currentTimeMillis() - startTime;
 		System.out.println(str + " - " + endTime);
 		startTime = System.currentTimeMillis();
+	}
+	
+	public Void updateProgress(BufferedImage capture) {
+		JFXGui.outImage = SwingFXUtils.toFXImage(capture, null);
+		++count;
+		JFXGui.outProp.setCount(count);
+		return null;
 	}
 }
