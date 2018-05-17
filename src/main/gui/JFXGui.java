@@ -46,6 +46,7 @@ public class JFXGui extends Application {
 	public static Progress imgLibProp;
 	public static int numberOfImages;
 	public static Progress tinSubProp;
+	public static int numberOfCells;
 	
 	@Override
 	public void start(Stage stage) {
@@ -268,7 +269,7 @@ public class JFXGui extends Application {
 //		set actions when grid block variable changes
 		tinSubProp.countProperty().addListener((obs, oldVal, newVal) -> {
             if (newVal != oldVal) {
-        		tinSubProgress.setProgress((float)imgLibProp.getCount()/numberOfImages);
+        		tinSubProgress.setProgress((float)tinSubProp.getCount()/numberOfCells);
             }
 		});
 		

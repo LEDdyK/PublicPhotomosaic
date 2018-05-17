@@ -2,6 +2,8 @@ package main.images;
 
 import java.awt.image.BufferedImage;
 
+import main.gui.JFXGui;
+
 /**
  * stores the RGB of the image grid
  * @author DarkIris3196
@@ -33,7 +35,8 @@ public class ImageGrid {
 			h = img.getHeight() / cellHeight;
 			w = img.getWidth() / cellWidth;
 		}
-		
+
+		JFXGui.numberOfCells = h*w;
 		rgbList = new AvgRGB[h][w];
 		
 		for(int y=0; y<h; y++) {
