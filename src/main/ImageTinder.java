@@ -44,6 +44,7 @@ public class ImageTinder {
 	}
 	//generate the mosaic matrix
 	public int findMatches(Map<String, AvgRGB> libraryIndex, ImageGrid cellMatrix, char type) {
+		System.out.println("Starting ImageTinder");
 		this.libraryIndex = libraryIndex;
 		this.cellMatrix = cellMatrix;
 		makeDefault();
@@ -69,6 +70,7 @@ public class ImageTinder {
 				mosaicMatrix[i][j] = minPointer;
 			}
 		}
+		System.out.println("Finished ImageTinder");
 		return 1;
 	}
 	
