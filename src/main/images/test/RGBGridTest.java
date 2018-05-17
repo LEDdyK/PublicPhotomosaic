@@ -20,22 +20,23 @@ public class RGBGridTest {
 	
 	@Before
 	public void before(){
-		BufferedImage image = new BufferedImage(100,100,BufferedImage.TYPE_INT_RGB);
+		BufferedImage image = new BufferedImage(4,1,BufferedImage.TYPE_INT_RGB);
 		Graphics2D g2d = image.createGraphics();
 		g2d.setColor(Color.GREEN);
 		g2d.fillRect(0,0,50,100);
 		g2d.setColor(Color.BLUE);
-		g2d.fillRect(50,0,50,100);
-		/*
+		g2d.fillRect(2,0,50,100);
+		
 		File file = new File("test.png");
 		try {
 			ImageIO.write(image, "png", file);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		}*/
+		}
 		
-		grid = new ImageGrid(true,4,1,image);
+		grid = new ImageGrid(image);
+		grid.createGrid(true,4,1);
 		
 	}
 	
