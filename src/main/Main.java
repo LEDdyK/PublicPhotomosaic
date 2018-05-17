@@ -57,7 +57,7 @@ public class Main {
 //			
 //			MosaicBuilder mosaicBuilder = new MosaicBuilder(imglib, imgTinder.findMatches('R'));
 //			mosaicBuilder.createMosaic(1);
-//			printTimeStamp("MosaicBuilder");			
+//			printTimeStamp("MosaicBuilder");
 			
 		} catch (Exception e) {
 			// TODO Auto-generated catch block

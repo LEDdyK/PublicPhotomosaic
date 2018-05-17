@@ -5,12 +5,17 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 
 import javafx.application.Application;
+import javafx.beans.property.DoubleProperty;
+import javafx.beans.property.SimpleDoubleProperty;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.ProgressBar;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.ScrollPane.ScrollBarPolicy;
 import javafx.scene.control.TextField;
@@ -41,6 +46,7 @@ public class JFXGui extends Application {
 	public static TextField threadCount;
 	public static TextField gridWidth;
 	public static TextField gridHeight;
+	public static Progress downProp;
 	
 	@Override
 	public void start(Stage stage) {
@@ -168,6 +174,12 @@ public class JFXGui extends Application {
 		paraGCBox.setLayoutX(480);
 		paraGCBox.setLayoutY(673);
 		
+//		download progress
+		downProp = new Progress();
+		ProgressBar downProgress = new ProgressBar();
+		downProgress.setLayoutX(800);
+		downProgress.setProgress(0F);
+		
 //		set actions on browse button click
 		browse.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
@@ -225,6 +237,13 @@ public class JFXGui extends Application {
 			paraGCState = paraGC.getStateBool();
 		});
 		
+//		set actions when variable changes
+		downProp.countProperty().addListener((obs, oldVal, newVal) -> {
+            if (newVal != oldVal) {
+        		downProgress.setProgress((float)downProp.getCount()/100);
+            }
+		});
+		
 //		add GUI elements
 		//add browse button to UI object group
 		root.getChildren().add(browse);
@@ -248,6 +267,8 @@ public class JFXGui extends Application {
 		root.getChildren().addAll(paraGCBack, paraGCLabel, paraGCBox);
 		//run computations button
 		root.getChildren().add(runComp);
+		//download progress bar
+		root.getChildren().add(downProgress);
 		
 		Scene scene = new Scene(root, width, height);
 		
