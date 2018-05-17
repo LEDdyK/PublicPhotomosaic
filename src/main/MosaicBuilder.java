@@ -41,8 +41,16 @@ public class MosaicBuilder {
 		mosaicMatrix = matrix;
 	}
 	
-	public void createMosaic(double scale, int numOfThreads) {
-		startTime = System.currentTimeMillis();
+	public MosaicBuilder() {
+		
+	}
+	
+	public int createMosaic(ImageLibrary lib, String[][] matrix, double scale, int numOfThreads) {
+		imglib = lib;
+		mosaicMatrix = matrix;
+		
+		System.out.println("Starting CreateMosaic");
+		//startTime = System.currentTimeMillis();
 		
 		BufferedImage cell = imglib.getImage(mosaicMatrix[0][0]);
 		cellHeight = (int)(cell.getHeight()*scale);
@@ -50,7 +58,7 @@ public class MosaicBuilder {
 		output = new BufferedImage(cellWidth*mosaicMatrix[0].length,cellHeight*mosaicMatrix.length,BufferedImage.TYPE_INT_RGB);
 		g2d = output.createGraphics();
 		
-		printTimeStamp("MosaicInit");
+		//printTimeStamp("MosaicInit");
 		
 		LoopScheduler scheduler = LoopSchedulerFactory.createLoopScheduler(0, mosaicMatrix.length, 1, numOfThreads, pu.loopScheduler.AbstractLoopScheduler.LoopCondition.LessThan, pu.loopScheduler.LoopSchedulerFactory.LoopSchedulingType.Static);
 		@Future(taskType = TaskInfoType.MULTI)
@@ -59,24 +67,29 @@ public class MosaicBuilder {
 		waitTillFinished();
 		g2d.dispose();
 		
-		printTimeStamp("MosaicSubstitution " + numOfThreads);
+		//printTimeStamp("MosaicSubstitution " + numOfThreads);
+		
+		System.out.println("Finish CreateMosaic");
 		
 		try {
+			System.out.println("Saving image to disk");
 			ImageIO.write(output, "jpg", new File("output.jpg"));
+			System.out.println("Finished saving image to disk");
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
-		printTimeStamp("MosaicWrite");
+		//printTimeStamp("MosaicWrite");
+		return 1;
 	}
 
-	public void createMosaic() {
-		createMosaic(1.0,1);
-	}
-	public void createMosaic(int numOfThreads) {
-		createMosaic(1.0,numOfThreads);
-	}
+//	public void createMosaic() {
+//		createMosaic(1.0,1);
+//	}
+//	public void createMosaic(int numOfThreads) {
+//		createMosaic(1.0,numOfThreads);
+//	}
 	
 	public Void processMatrix(LoopScheduler scheduler) {
 		WorkerThread worker = (WorkerThread) Thread.currentThread();
