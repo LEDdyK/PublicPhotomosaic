@@ -19,7 +19,7 @@ public class ImageGrid {
 	}
 	
 	public int createGrid(boolean initialiseWithGridSize, int width, int height) {
-		
+		System.out.println("Starting ImageGrid");
 		if (initialiseWithGridSize) {
 			h = height;
 			w = width;
@@ -42,6 +42,7 @@ public class ImageGrid {
 				rgbList[y][x] = new AvgRGB(img.getSubimage(x*cellWidth, y*cellHeight, cellWidth, cellHeight));
 			}
 		}
+		System.out.println("Finished ImageGrid");
 		return 0;
 	}
 	
