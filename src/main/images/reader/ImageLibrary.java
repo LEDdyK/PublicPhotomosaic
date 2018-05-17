@@ -33,23 +33,20 @@ public class ImageLibrary {
 	@Future
 	public Void[] futureGroup = new Void[1];
 	
+	
 	/**
 	 * loop through all the files in the directory specified in the path
 	 * @param dirPath
 	 */
-	public ImageLibrary(String dirPath) {
-		readDirectory(dirPath);
-	}
-	public ImageLibrary(String dirPath,double scale,int numOfThreads) {
-		readDirectory(dirPath,scale, numOfThreads);
+	public ImageLibrary() {
 	}
 	
 	/**
 	 * processes a directory
 	 * @param dirPath
 	 */
-	public void readDirectory(String dirPath) {
-		readDirectory(dirPath,1.0,1);
+	public int readDirectory(String dirPath) {
+		return readDirectory(dirPath,1.0,1);
 		
 	}
 	
@@ -57,7 +54,7 @@ public class ImageLibrary {
 	 * processes a directory
 	 * @param dirPath
 	 */
-	public void readDirectory(String dirPath, double scale, int numOfThreads) {
+	public int readDirectory(String dirPath, double scale, int numOfThreads) {
 		File directory = new File(dirPath);
 		directoryListing = directory.listFiles();
 		library = Collections.synchronizedMap(new HashMap<String,BufferedImage>());
@@ -76,6 +73,7 @@ public class ImageLibrary {
 				System.err.println("Image " + deletable.getName() + " deletion failed");
 			}
 		}
+		return 0;
 	}
 	
 	public Void processDirectory(LoopScheduler scheduler, double scale) {

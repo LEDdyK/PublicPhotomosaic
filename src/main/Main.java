@@ -9,6 +9,8 @@ import javax.imageio.ImageIO;
 import apt.annotations.Future;
 import apt.annotations.InitParaTask;
 import apt.annotations.TaskScheduingPolicy;
+import javafx.application.Application;
+import main.gui.JFXGui;
 import main.images.ImageGrid;
 import main.images.RGBLibrary;
 import main.images.downloader.ImageDownloader;
@@ -17,45 +19,56 @@ import pt.runtime.ParaTask;
 
 public class Main {
 	static long startTime;
-	static long endTime;
+	static long endTime = 0;
+	static long prevTime;
 	
 	@InitParaTask
 	public static void main(String[] args) {
-	try {
+		
+		Application.launch(JFXGui.class, args);
+	}
+
+	public static void runComputations() {
+		try {
 			startTime = System.currentTimeMillis();
 
-			/*ImageDownloader imageDownloader = new ImageDownloader();
-			imageDownloader.downloadRecentImages(4);
-			imageDownloader.waitTillFinished();	*/	
-			printTimeStamp("ImageDownloader");
+			if (JFXGui.downState) {
+				ImageDownloader imageDownloader = new ImageDownloader();
+				imageDownloader.downloadRecentImages(4);
+				//imageDownloader.waitTillFinished();		
+				printTimeStamp("ImageDownloader");
+			}
 			
-			ImageLibrary imglib = new ImageLibrary("photos", 0.5, 12);		
-			printTimeStamp("ImageLibrary");
+//			ImageLibrary imglib = new ImageLibrary("photos", Double.parseDouble(JFXGui.libScale.getText()), Integer.parseInt(JFXGui.threadCount.getText()));		
+//			//ImageLibrary imglib = new ImageLibrary("photos", 0.2, 4);		
+//			printTimeStamp("ImageLibrary");
+//			
+//			RGBLibrary rgbLib = new RGBLibrary(imglib.getLibrary());
+//			printTimeStamp("RGBLibrary");
+//
+//			BufferedImage image = ImageIO.read(new File(JFXGui.refPath.getText()));
+//			//BufferedImage image = ImageIO.read(new File("testPhotos/oliver.png"));
+//			ImageGrid imgGrid = new ImageGrid(false, Integer.parseInt(JFXGui.gridWidth.getText()), Integer.parseInt(JFXGui.gridHeight.getText()), image);
+//			//ImageGrid imgGrid = new ImageGrid(false, 2, 2, image);			
+//			printTimeStamp("ImageGrid");
+//			
+//			ImageTinder imgTinder = new ImageTinder(rgbLib.getRGBList(), imgGrid);
+//			printTimeStamp("ImageTinder");
+//			
+//			MosaicBuilder mosaicBuilder = new MosaicBuilder(imglib, imgTinder.findMatches('R'));
+//			mosaicBuilder.createMosaic(1);
+//			printTimeStamp("MosaicBuilder");
 			
-			RGBLibrary rgbLib = new RGBLibrary(imglib.getLibrary());
-			printTimeStamp("RGBLibrary");
-			
-			BufferedImage image = ImageIO.read(new File("testPhotos/oliver.png"));
-			ImageGrid imgGrid = new ImageGrid(false, 1, 1, image);			
-			printTimeStamp("ImageGrid "+imgGrid.getHeight()*imgGrid.getWidth()+" cells");
-			
-			ImageTinder imgTinder = new ImageTinder(rgbLib.getRGBList(), imgGrid);
-			printTimeStamp("ImageTinder");
-			
-			MosaicBuilder mosaicBuilder = new MosaicBuilder(imglib, imgTinder.findMatches('R'));
-			mosaicBuilder.createMosaic(12);
-			printTimeStamp("MosaicBuilder");
-			
-			
-			
-		} catch (IOException e) {
+		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
 	
 	private static void printTimeStamp(String str) {
+		prevTime = endTime;
 		endTime = System.currentTimeMillis() - startTime;
-		System.out.println(str + " - " + endTime);
+		System.out.println(str + "\n " + endTime);
+		System.out.println("\tprocess time: " + (endTime-prevTime));
 	}
 }

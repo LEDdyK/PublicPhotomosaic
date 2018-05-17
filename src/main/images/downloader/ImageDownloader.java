@@ -15,7 +15,9 @@ import java.util.List;
 import java.util.Scanner;
 
 import apt.annotations.Future;
+import apt.annotations.Gui;
 import apt.annotations.TaskInfoType;
+import main.gui.JFXGui;
 import pt.runtime.WorkerThread;
 import pu.loopScheduler.LoopRange;
 import pu.loopScheduler.LoopScheduler;
@@ -32,6 +34,8 @@ public class ImageDownloader {
 	
 	public static final String DOWNLOAD_URL = "https://farm%d.staticflickr.com/%d/%s_%s_%s.%s";
 	
+	public static double downCount;
+	
 	@Future
 	public Void[] futureGroup = new Void[1];
 	
@@ -43,6 +47,7 @@ public class ImageDownloader {
 			new File("photos").mkdir();
 
 			LoopScheduler scheduler = LoopSchedulerFactory.createLoopScheduler(0, photoMetaDataList.size(), 1, numOfThreads, pu.loopScheduler.AbstractLoopScheduler.LoopCondition.LessThan, pu.loopScheduler.LoopSchedulerFactory.LoopSchedulingType.Static);
+			downCount = 0;
 			@Future(taskType = TaskInfoType.MULTI)
 			Void task = downloadImages(scheduler, photoMetaDataList);
 			futureGroup[0] = task;
@@ -83,6 +88,8 @@ public class ImageDownloader {
 				
 				System.out.println(worker.getThreadID() + ": " + link);
 				downloadImage(link, photoMetaData);
+				@Gui
+				Void progress = updateDownProgress();
 			}
 		}
 		
@@ -169,6 +176,10 @@ public class ImageDownloader {
 		
 	}
 	
-	
+	private Void updateDownProgress() {
+		++downCount;
+		JFXGui.downProp.setCount(downCount);
+		return null;
+	}
 
 }
