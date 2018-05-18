@@ -28,6 +28,7 @@ public class Main {
 	public static void main(String[] args) {
 		
 		Application.launch(JFXGui.class, args);
+		//runComputations();
 	}
 
 	public static void runComputations() {
@@ -45,8 +46,8 @@ public class Main {
 
 			ImageDownloader imageDownloader = new ImageDownloader();
 			@Future
-			int imageDownload = imageDownloader.downloadRecentImages(4);		
-		
+			int imageDownload = imageDownloader.downloadRecentImages(4);
+
 			ImageLibrary imglib = new ImageLibrary();
 			@Future(depends="imageDownload")
 			Map<String, BufferedImage> imgLibrary = imglib.readDirectory("photos", Double.parseDouble(JFXGui.libScale.getText()), Integer.parseInt(JFXGui.threadCount.getText()));	
@@ -55,18 +56,16 @@ public class Main {
 			ImageGrid imgGrid = new ImageGrid(image);
 			@Future()
 			int imageGrid = imgGrid.createGrid(false, Integer.parseInt(JFXGui.gridWidth.getText()), Integer.parseInt(JFXGui.gridHeight.getText()));	
+
 			
 			RGBLibrary rgbLib = new RGBLibrary();
 			@Future()
 			Map<String, AvgRGB> rgbList = rgbLib.calculateRGB(imgLibrary);
 			
-			ImageTinder imgTinder = new ImageTinder();
-			@Future()
-			int imageTinder = imgTinder.findMatches(rgbList, imgGrid, 'R');
-		
+			
 			MosaicBuilder mosaicBuilder = new MosaicBuilder();
-			@Future(depends="imageTinder")
-			int mosaicBuild = mosaicBuilder.createMosaic(imglib, imgTinder.getMosaicMatrix(), 1, Integer.parseInt(JFXGui.threadCount.getText()));
+			@Future()
+			int mosaicBuild = mosaicBuilder.createMosaic(imglib, rgbList, imgGrid, Integer.parseInt(JFXGui.threadCount.getText()), 'R');
 			
 		} catch (Exception e) {
 			// TODO Auto-generated catch block

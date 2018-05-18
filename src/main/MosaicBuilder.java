@@ -4,6 +4,8 @@ import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.util.Map;
+import java.util.Set;
 
 import javax.imageio.ImageIO;
 
@@ -12,6 +14,8 @@ import apt.annotations.Gui;
 import apt.annotations.TaskInfoType;
 import javafx.embed.swing.SwingFXUtils;
 import main.gui.JFXGui;
+import main.images.AvgRGB;
+import main.images.ImageGrid;
 import main.images.reader.ImageLibrary;
 import pt.runtime.WorkerThread;
 import pu.loopScheduler.LoopRange;
@@ -23,9 +27,13 @@ import pu.loopScheduler.LoopSchedulerFactory;
  *
  */
 public class MosaicBuilder {
-	private ImageLibrary imglib;
-	
-	private String[][] mosaicMatrix;
+	//Inputs
+	private Map<String, AvgRGB> libraryIndex = null;
+	private ImageGrid cellMatrix = null;
+	private ImageLibrary imglib = null;
+	Set<String> keySet = null;
+	private char type;
+	//private String[][] mosaicMatrix;
 	
 	int cellHeight;
 	int cellWidth;
@@ -42,31 +50,37 @@ public class MosaicBuilder {
 	
 	public MosaicBuilder(ImageLibrary lib, String[][] matrix) {
 		imglib = lib;
-		mosaicMatrix = matrix;
 	}
 	
 	public MosaicBuilder() {
 		
 	}
 	
-	public int createMosaic(ImageLibrary lib, String[][] matrix, double scale, int numOfThreads) {
-		imglib = lib;
-		mosaicMatrix = matrix;
-//		output.getGraphics().clearRect();
+	public int createMosaic(ImageLibrary lib, Map<String, AvgRGB> libraryIndex, ImageGrid cellMatrix, int numOfThreads, char type) {
+		this.imglib = lib;
+		this.libraryIndex = libraryIndex;
+		this.cellMatrix = cellMatrix;
+		this.type = type;
 		
 		System.out.println("Starting CreateMosaic");
 		//startTime = System.currentTimeMillis();
 		
-		BufferedImage cell = imglib.getImage(mosaicMatrix[0][0]);
-		cellHeight = (int)(cell.getHeight()*scale);
-		cellWidth = (int)(cell.getWidth()*scale);
-		output = new BufferedImage(cellWidth*mosaicMatrix[0].length,cellHeight*mosaicMatrix.length,BufferedImage.TYPE_INT_RGB);
+		keySet = libraryIndex.keySet();
+		
+		
+		BufferedImage cell = imglib.getImage(keySet.iterator().next());
+		cellHeight = (int)(cell.getHeight());
+		cellWidth = (int)(cell.getWidth());
+		output = new BufferedImage(cellWidth*cellMatrix.getWidth(),cellHeight*cellMatrix.getHeight(),BufferedImage.TYPE_INT_RGB);
 		g2d = output.createGraphics();
 		
+		JFXGui.numberOfCells = cellMatrix.getWidth() * cellMatrix.getHeight();
 		//printTimeStamp("MosaicInit");
 		
-		LoopScheduler scheduler = LoopSchedulerFactory.createLoopScheduler(0, mosaicMatrix.length, 1, numOfThreads, pu.loopScheduler.AbstractLoopScheduler.LoopCondition.LessThan, pu.loopScheduler.LoopSchedulerFactory.LoopSchedulingType.Static);
 		count = 0;
+		
+		LoopScheduler scheduler = LoopSchedulerFactory.createLoopScheduler(0, cellMatrix.getHeight(), 1, numOfThreads, pu.loopScheduler.AbstractLoopScheduler.LoopCondition.LessThan, pu.loopScheduler.LoopSchedulerFactory.LoopSchedulingType.Static);
+		
 		@Future(taskType = TaskInfoType.MULTI)
 		Void task = processMatrix(scheduler);
 		futureGroup[0] = task;
@@ -103,8 +117,26 @@ public class MosaicBuilder {
 		
 		if(range != null) {
 			for(int row=range.loopStart; row<range.loopEnd; row++) {
-				for(int col=0; col<mosaicMatrix[0].length; col++) {
-					g2d.drawImage(imglib.getImage(mosaicMatrix[row][col]), 
+				for(int col=0; col<cellMatrix.getWidth(); col++) {
+					
+					String minPointer = "";
+					double minDistance = Math.pow(256, 3);
+					
+					
+					for (String key: keySet) {
+						double checkDistance = calcDist(cellMatrix.getGridCell(col, row), libraryIndex.get(key), type);
+			
+							if (checkDistance < minDistance) {	
+								minPointer = key;
+								minDistance = checkDistance;
+							}
+					}
+					
+					
+					
+					
+					
+					g2d.drawImage(imglib.getImage(minPointer), 
 							col*cellWidth, row*cellHeight,  null);
 //					try {
 //						Thread.sleep(1000);
@@ -120,7 +152,37 @@ public class MosaicBuilder {
 		
 		return null;
 	}
+	
+	double calcDist(AvgRGB a, AvgRGB b, char type) {
+		//System.out.println(libraryIndex);
+		int aR = a.getR();
+		int aG = a.getG();
+		int aB = a.getB();
+		int bR = b.getR();
+		int bG = b.getG();
+		int bB = b.getB();
 
+		int delR = aR - bR;
+		int delG = aG - bG;
+		int delB = aB - bB;
+		
+		if (type == 'E') {
+			//Euclidean algorithm
+			return (Math.pow(delR, 2) + Math.pow(delG, 2) + Math.pow(delB, 2));
+		}
+
+		else if (type == 'R') {
+			//Riemersma Metric
+			double rAverage = (aR + bR)/2.0;
+			double secR = 2 + rAverage/256 * Math.pow(delR, 2);
+			double secG = 4 * Math.pow(delG, 2);
+			double secB = 2 + 255 * rAverage/256 * Math.pow(delB, 2);
+			return (secR + secG + secB);
+		}
+		
+		else return 256*256*256;
+	}
+	
 	public void waitTillFinished() {
 		Void barrier = futureGroup[0];
 	}
@@ -134,7 +196,7 @@ public class MosaicBuilder {
 	public Void updateProgress(BufferedImage capture) {
 		JFXGui.outImage = SwingFXUtils.toFXImage(capture, null);
 		++count;
-		JFXGui.outProp.setCount(count);
+		JFXGui.tinSubProp.setCount(count);
 		return null;
 	}
 }
