@@ -32,6 +32,15 @@ public class Main {
 
 	public static void runComputations() {
 		try {
+			
+			//reset settings
+			JFXGui.downProp.setCount(0);
+			JFXGui.imgLibProp.setCount(0);
+			JFXGui.tinSubProp.setCount(0);
+			JFXGui.outProp.setCount(0);
+			JFXGui.outImage = null;
+			JFXGui.hboxOut.getChildren().remove(JFXGui.dispOut);
+			
 			startTime = System.currentTimeMillis();
 
 			ImageDownloader imageDownloader = new ImageDownloader();

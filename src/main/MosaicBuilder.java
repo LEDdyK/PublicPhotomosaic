@@ -52,6 +52,7 @@ public class MosaicBuilder {
 	public int createMosaic(ImageLibrary lib, String[][] matrix, double scale, int numOfThreads) {
 		imglib = lib;
 		mosaicMatrix = matrix;
+//		output.getGraphics().clearRect();
 		
 		System.out.println("Starting CreateMosaic");
 		//startTime = System.currentTimeMillis();

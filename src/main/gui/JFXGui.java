@@ -50,6 +50,8 @@ public class JFXGui extends Application {
 	public static int numberOfCells;
 	public static Progress outProp;
 	public static Image outImage;
+	public static HBox hboxOut;
+	public static ImageView dispOut;
 	
 	@Override
 	public void start(Stage stage) {
@@ -153,13 +155,13 @@ public class JFXGui extends Application {
 //		hbox.getChildren().add(scrollPane);
 		
 //		output display box
-		ImageView dispOut = new ImageView();
+		dispOut = new ImageView();
 			//set details
 		dispOut.setFitWidth(810);
 		dispOut.setFitHeight(720);
 		dispOut.setPreserveRatio(true);
 			//set position and border
-		HBox hboxOut = new HBox();
+		hboxOut = new HBox();
 		hboxOut.setBorder(new Border(new BorderStroke(Color.BLUE, BorderStrokeStyle.SOLID, CornerRadii.EMPTY, BorderWidths.DEFAULT)));
 		hboxOut.setLayoutX(675);
 		hboxOut.setLayoutY(15);
