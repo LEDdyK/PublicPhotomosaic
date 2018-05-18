@@ -52,6 +52,7 @@ public class JFXGui extends Application {
 	public static Image outImage;
 	public static HBox hboxOut;
 	public static ImageView dispOut;
+	public static double frameCounting;
 	
 	@Override
 	public void start(Stage stage) {
@@ -262,7 +263,7 @@ public class JFXGui extends Application {
 			}
 		});
 		
-		//run computations
+//		run computations
 		runComp.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent arg0) {
@@ -345,15 +346,18 @@ public class JFXGui extends Application {
 		root.getChildren().add(hboxOut);
 		
 		Scene scene = new Scene(root, width, height);
-		
 		new AnimationTimer() {
 			@Override
 			public void handle(long arg0) {
-				dispOut.setImage(outImage);
-//            	scrollPaneOut.setContent(null);
-//            	scrollPaneOut.setContent(dispOut);
-				hboxOut.getChildren().remove(dispOut);
-				hboxOut.getChildren().add(dispOut);
+				++frameCounting;
+				if (frameCounting % 60 == 0) {
+					dispOut.setImage(outImage);
+//	            	scrollPaneOut.setContent(null);
+//	            	scrollPaneOut.setContent(dispOut);
+					hboxOut.getChildren().remove(dispOut);
+					hboxOut.getChildren().add(dispOut);
+					frameCounting = 0;
+				}				
 			}
 		}.start();
 		

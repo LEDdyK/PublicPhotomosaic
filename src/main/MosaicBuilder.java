@@ -74,7 +74,7 @@ public class MosaicBuilder {
 		g2d.dispose();
 		
 		//printTimeStamp("MosaicSubstitution " + numOfThreads);
-
+		
 		System.out.println("Finish CreateMosaic");
 		
 //		try {
@@ -106,12 +106,12 @@ public class MosaicBuilder {
 				for(int col=0; col<mosaicMatrix[0].length; col++) {
 					g2d.drawImage(imglib.getImage(mosaicMatrix[row][col]), 
 							col*cellWidth, row*cellHeight,  null);
-					try {
-						Thread.sleep(1);
-					} catch (InterruptedException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
+//					try {
+//						Thread.sleep(1000);
+//					} catch (InterruptedException e) {
+//						// TODO Auto-generated catch block
+//						e.printStackTrace();
+//					}
 					@Gui
 					Void progress = updateProgress(output);
 				}
