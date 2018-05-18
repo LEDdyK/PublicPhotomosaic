@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 
+import javafx.animation.AnimationTimer;
 import javafx.application.Application;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -133,8 +134,8 @@ public class JFXGui extends Application {
 //		image display box
 		ImageView display = new ImageView();
 			//set details
-//		display.setFitWidth(500);
-//		display.setFitHeight(500);
+		display.setFitWidth(500);
+		display.setFitHeight(500);
 		display.setPreserveRatio(true);//TODO revert
 			//set position and border
 		HBox hbox = new HBox();
@@ -144,16 +145,18 @@ public class JFXGui extends Application {
 		hbox.setPrefWidth(500);
 		hbox.setPrefHeight(500);
 		//TODO adjust to fit
-		ScrollPane scrollPane = new ScrollPane();
-        scrollPane.setPrefSize(500, 500);
-        scrollPane.setVbarPolicy(ScrollBarPolicy.AS_NEEDED);
-        scrollPane.setHbarPolicy(ScrollBarPolicy.AS_NEEDED);
-        scrollPane.setContent(display);
-		hbox.getChildren().add(scrollPane);
+//		ScrollPane scrollPane = new ScrollPane();
+//		scrollPane.setPrefSize(500, 500);
+//		scrollPane.setVbarPolicy(ScrollBarPolicy.AS_NEEDED);
+//		scrollPane.setHbarPolicy(ScrollBarPolicy.AS_NEEDED);
+//		scrollPane.setContent(display);
+//		hbox.getChildren().add(scrollPane);
 		
 //		output display box
 		ImageView dispOut = new ImageView();
 			//set details
+		dispOut.setFitWidth(810);
+		dispOut.setFitHeight(720);
 		dispOut.setPreserveRatio(true);
 			//set position and border
 		HBox hboxOut = new HBox();
@@ -163,12 +166,12 @@ public class JFXGui extends Application {
 		hboxOut.setPrefWidth(810);
 		hboxOut.setPrefHeight(720);
 		//TODO adjust to fit
-		ScrollPane scrollPaneOut = new ScrollPane();
-        scrollPaneOut.setPrefSize(810, 720);
-        scrollPaneOut.setVbarPolicy(ScrollBarPolicy.AS_NEEDED);
-        scrollPaneOut.setHbarPolicy(ScrollBarPolicy.AS_NEEDED);
-        scrollPaneOut.setContent(dispOut);
-		hboxOut.getChildren().add(scrollPaneOut);
+//		ScrollPane scrollPaneOut = new ScrollPane();
+//        scrollPaneOut.setPrefSize(810, 720);
+//        scrollPaneOut.setVbarPolicy(ScrollBarPolicy.AS_NEEDED);
+//        scrollPaneOut.setHbarPolicy(ScrollBarPolicy.AS_NEEDED);
+//        scrollPaneOut.setContent(dispOut);
+//		hboxOut.getChildren().add(scrollPaneOut);
 		
 //		downloader toggle switch
 		Rectangle downBack = new Rectangle(15, 647, 502, 23);
@@ -232,23 +235,24 @@ public class JFXGui extends Application {
 					FileInputStream filePath = new FileInputStream(refPath.getText());
 					Image refImage = new Image(filePath);
 					display.setImage(refImage);
-	                scrollPane.setContent(null);
-	                scrollPane.setContent(display);
+//	                scrollPane.setContent(null);
+//	                scrollPane.setContent(display);
 					//center image position within box
-//					if (refImage.getHeight() > refImage.getWidth()) {
-//						double ratio = refImage.getHeight()/500;
-//						display.setTranslateX(250 - refImage.getWidth()/(ratio*2));
-//						display.setTranslateY(0);
-//					}
-//					else if (refImage.getHeight() < refImage.getWidth()) {
-//						double ratio = refImage.getWidth()/500;
-//						display.setTranslateX(0);
-//						display.setTranslateY(250 - refImage.getHeight()/(ratio*2));
-//					}
-//					else {
-//						display.setTranslateX(0);
-//						display.setTranslateY(0);
-//					}
+					if (refImage.getHeight() > refImage.getWidth()) {
+						double ratio = refImage.getHeight()/500;
+						display.setTranslateX(250 - refImage.getWidth()/(ratio*2));
+						display.setTranslateY(0);
+					}
+					else if (refImage.getHeight() < refImage.getWidth()) {
+						double ratio = refImage.getWidth()/500;
+						display.setTranslateX(0);
+						display.setTranslateY(250 - refImage.getHeight()/(ratio*2));
+					}
+					else {
+						display.setTranslateX(0);
+						display.setTranslateY(0);
+					}
+					hbox.getChildren().add(display);
 				} catch (FileNotFoundException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -297,14 +301,14 @@ public class JFXGui extends Application {
             }
 		});
 		
-//		set actions when a cell finishes processing
-		outProp.countProperty().addListener((obs, oldVal, newVal) -> {
-            if (newVal != oldVal) {
-            	dispOut.setImage(outImage);
-            	scrollPaneOut.setContent(null);
-            	scrollPaneOut.setContent(dispOut);
-            }
-		});
+//	set actions when a cell finishes processing
+//		outProp.countProperty().addListener((obs, oldVal, newVal) -> {
+//            if (newVal != oldVal) {
+//            	dispOut.setImage(outImage);
+//            	scrollPaneOut.setContent(null);
+//            	scrollPaneOut.setContent(dispOut);
+//            }
+//		});
 		
 //		add GUI elements
 		//add browse button to UI object group
@@ -339,6 +343,17 @@ public class JFXGui extends Application {
 		root.getChildren().add(hboxOut);
 		
 		Scene scene = new Scene(root, width, height);
+		
+		new AnimationTimer() {
+			@Override
+			public void handle(long arg0) {
+				dispOut.setImage(outImage);
+//            	scrollPaneOut.setContent(null);
+//            	scrollPaneOut.setContent(dispOut);
+				hboxOut.getChildren().remove(dispOut);
+				hboxOut.getChildren().add(dispOut);
+			}
+		}.start();
 		
 		//display UI
 		stage.setScene(scene);

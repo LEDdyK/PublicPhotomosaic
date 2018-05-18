@@ -34,9 +34,9 @@ public class Main {
 		try {
 			startTime = System.currentTimeMillis();
 
-//			ImageDownloader imageDownloader = new ImageDownloader();
-//			@Future
-//			int imageDownload = imageDownloader.downloadRecentImages(4);		
+			ImageDownloader imageDownloader = new ImageDownloader();
+			@Future
+			int imageDownload = imageDownloader.downloadRecentImages(4);		
 		
 			ImageLibrary imglib = new ImageLibrary();
 			@Future(depends="imageDownload")
