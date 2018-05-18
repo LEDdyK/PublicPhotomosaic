@@ -28,33 +28,36 @@ public class Main {
 	public static void main(String[] args) {
 		
 		Application.launch(JFXGui.class, args);
+		//runComputations();
 	}
 
 	public static void runComputations() {
 		try {
 			startTime = System.currentTimeMillis();
 
-			ImageDownloader imageDownloader = new ImageDownloader();
+			/*ImageDownloader imageDownloader = new ImageDownloader();
 			@Future
-			int imageDownload = imageDownloader.downloadRecentImages(4);		
-		
+			int imageDownload = imageDownloader.downloadRecentImages(4);*/
+
 			ImageLibrary imglib = new ImageLibrary();
 			@Future(depends="imageDownload")
-			Map<String, BufferedImage> imgLibrary = imglib.readDirectory("photos", Double.parseDouble(JFXGui.libScale.getText()), Integer.parseInt(JFXGui.threadCount.getText()));	
+			//Map<String, BufferedImage> imgLibrary = imglib.readDirectory("photos", Double.parseDouble(JFXGui.libScale.getText()), Integer.parseInt(JFXGui.threadCount.getText()));	
+			Map<String, BufferedImage> imgLibrary = imglib.readDirectory("photos", 0.2, 4);	
 						
 			BufferedImage image = ImageIO.read(new File(JFXGui.refPath.getText()));
 			ImageGrid imgGrid = new ImageGrid(image);
 			@Future()
-			int imageGrid = imgGrid.createGrid(false, Integer.parseInt(JFXGui.gridWidth.getText()), Integer.parseInt(JFXGui.gridHeight.getText()));	
+			int imageGrid = imgGrid.createGrid(false, 2, 2);	
+
 			
 			RGBLibrary rgbLib = new RGBLibrary();
 			@Future()
 			Map<String, AvgRGB> rgbList = rgbLib.calculateRGB(imgLibrary);
 			
-		
+			
 			MosaicBuilder mosaicBuilder = new MosaicBuilder();
-			//@Future(depends="imageTinder")
-			//int mosaicBuild = mosaicBuilder.createMosaic(imglib, rgbList, imgGrid, 1, Integer.parseInt(JFXGui.threadCount.getText()));
+			@Future(depends="imageTinder")
+			int mosaicBuild = mosaicBuilder.createMosaic(imglib, rgbList, imgGrid, 1, 'R');
 			
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
