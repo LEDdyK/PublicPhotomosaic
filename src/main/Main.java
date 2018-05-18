@@ -51,13 +51,10 @@ public class Main {
 			@Future()
 			Map<String, AvgRGB> rgbList = rgbLib.calculateRGB(imgLibrary);
 			
-			ImageTinder imgTinder = new ImageTinder();
-			@Future()
-			int imageTinder = imgTinder.findMatches(rgbList, imgGrid, 'R');
 		
 			MosaicBuilder mosaicBuilder = new MosaicBuilder();
-			@Future(depends="imageTinder")
-			int mosaicBuild = mosaicBuilder.createMosaic(imglib, imgTinder.getMosaicMatrix(), 1, Integer.parseInt(JFXGui.threadCount.getText()));
+			//@Future(depends="imageTinder")
+			//int mosaicBuild = mosaicBuilder.createMosaic(imglib, rgbList, imgGrid, 1, Integer.parseInt(JFXGui.threadCount.getText()));
 			
 		} catch (Exception e) {
 			// TODO Auto-generated catch block

@@ -21,12 +21,10 @@ public class ImageTinder {
 		//1. The number of items in the library does not exceed 2 147 483 648
 		//2. The number of cells in the reference image does not exceed 2 147 483 648
 
-	//Inputs
-	Map<String, AvgRGB> libraryIndex;
-	ImageGrid cellMatrix;
+	/*
 
 	//Outputs
-	String[][] mosaicMatrix;
+	//String[][] mosaicMatrix;
 
 	//Variables
 	String minPointer;
@@ -43,7 +41,7 @@ public class ImageTinder {
 		minDistance = Math.pow(256, 3);
 	}
 	//generate the mosaic matrix
-	public int findMatches(Map<String, AvgRGB> libraryIndex, ImageGrid cellMatrix, char type) {
+	public int findMatches() {
 		System.out.println("Starting ImageTinder");
 		this.libraryIndex = libraryIndex;
 		this.cellMatrix = cellMatrix;
@@ -106,5 +104,5 @@ public class ImageTinder {
 		}
 		
 		else return 256*256*256;
-	}
+	}*/
 }
