@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
+import main.gui.JFXGui;
 import main.images.AvgRGB;
 import main.images.ImageGrid;
 
@@ -29,6 +30,7 @@ public class ImageTinder {
 	//Variables
 	String minPointer;
 	double minDistance;
+	double cellCount;
 
 	//Methods
 	//Constructor
@@ -47,6 +49,7 @@ public class ImageTinder {
 		this.cellMatrix = cellMatrix;
 		makeDefault();
 		mosaicMatrix = new String[cellMatrix.getHeight()][cellMatrix.getWidth()];
+		cellCount = 0;
 		
 		for (int i = 0; i < cellMatrix.getHeight(); ++i) {
 			for (int j = 0; j < cellMatrix.getWidth(); ++j) {
@@ -66,6 +69,7 @@ public class ImageTinder {
 				
 				//process mosaic matrix cell
 				mosaicMatrix[i][j] = minPointer;
+				updateCellCount();
 			}
 		}
 		System.out.println("Finished ImageTinder");
@@ -104,5 +108,13 @@ public class ImageTinder {
 		}
 		
 		else return 256*256*256;
+<<<<<<< HEAD
+	}
+	
+	public void updateCellCount() {
+		++cellCount;
+		JFXGui.tinSubProp.setCount(cellCount);
+	}
+=======
 	}*/
 }

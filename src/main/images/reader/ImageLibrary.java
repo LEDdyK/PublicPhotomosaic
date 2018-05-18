@@ -13,7 +13,9 @@ import java.util.Map;
 import javax.imageio.ImageIO;
 
 import apt.annotations.Future;
+import apt.annotations.Gui;
 import apt.annotations.TaskInfoType;
+import main.gui.JFXGui;
 import pt.runtime.WorkerThread;
 import pu.loopScheduler.LoopRange;
 import pu.loopScheduler.LoopScheduler;
@@ -25,6 +27,8 @@ import pu.loopScheduler.LoopSchedulerFactory;
  *
  */
 public class ImageLibrary {
+	
+	public static double libCount;
 	
 	Map<String,BufferedImage> library;
 	File[] directoryListing;
@@ -58,10 +62,12 @@ public class ImageLibrary {
 		System.out.println("Starting ImageLibrary");
 		File directory = new File(dirPath);
 		directoryListing = directory.listFiles();
+		JFXGui.numberOfImages = directoryListing.length;
 		library = Collections.synchronizedMap(new HashMap<String,BufferedImage>());
 		toDelete = new ArrayList<File>();
 		
 		LoopScheduler scheduler = LoopSchedulerFactory.createLoopScheduler(0, directoryListing.length, 1, numOfThreads, pu.loopScheduler.AbstractLoopScheduler.LoopCondition.LessThan, pu.loopScheduler.LoopSchedulerFactory.LoopSchedulingType.Static);
+		libCount = 0;
 		@Future(taskType = TaskInfoType.MULTI)
 		Void task = processDirectory(scheduler,scale);
 		futureGroup[0] = task;
@@ -95,15 +101,17 @@ public class ImageLibrary {
 					
 					if(image.getHeight() == image.getWidth()) {
 						library.put(file.getName(),scaledImage);
-					}else{
+					}else {
 						toDelete.add(file);
 					}
 				} catch (IOException e) {
 					System.err.println("File is not compatible or is not an image file.");
 					e.printStackTrace();
-				}catch(IllegalArgumentException e){
+				} catch(IllegalArgumentException e) {
 					System.err.println("Bad Image detected: "+file.getName());
 				}
+				@Gui
+				Void progress = updateProgress();
 			}
 		}
 		
@@ -138,6 +146,12 @@ public class ImageLibrary {
 	
 	public void waitTillFinished() {
 		Void barrier = futureGroup[0];
+	}
+	
+	private Void updateProgress() {
+		++libCount;
+		JFXGui.imgLibProp.setCount(libCount);
+		return null;
 	}
 	
 }

@@ -4,11 +4,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 
+import javafx.animation.AnimationTimer;
 import javafx.application.Application;
-import javafx.beans.property.DoubleProperty;
-import javafx.beans.property.SimpleDoubleProperty;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.Group;
@@ -47,6 +44,15 @@ public class JFXGui extends Application {
 	public static TextField gridWidth;
 	public static TextField gridHeight;
 	public static Progress downProp;
+	public static Progress imgLibProp;
+	public static int numberOfImages;
+	public static Progress tinSubProp;
+	public static int numberOfCells;
+	public static Progress outProp;
+	public static Image outImage;
+	public static HBox hboxOut;
+	public static ImageView dispOut;
+	public static double frameCounting;
 	
 	@Override
 	public void start(Stage stage) {
@@ -77,7 +83,7 @@ public class JFXGui extends Application {
 //		run computations button
 		Button runComp = new Button("Run Computation");
 			//set position
-		runComp.setLayoutX(800);
+		runComp.setLayoutX(545);
 		runComp.setLayoutY(400);
 		
 //		library scale input
@@ -131,23 +137,44 @@ public class JFXGui extends Application {
 //		image display box
 		ImageView display = new ImageView();
 			//set details
-//		display.setFitWidth(500);
-//		display.setFitHeight(500);
-		display.setPreserveRatio(false);//TODO revert
+		display.setFitWidth(500);
+		display.setFitHeight(500);
+		display.setPreserveRatio(true);//TODO revert
 			//set position and border
 		HBox hbox = new HBox();
 		hbox.setBorder(new Border(new BorderStroke(Color.BLUE, BorderStrokeStyle.SOLID, CornerRadii.EMPTY, BorderWidths.DEFAULT)));
 		hbox.setLayoutX(15);
 		hbox.setLayoutY(135);
-		hbox.setPrefHeight(500);
 		hbox.setPrefWidth(500);
+		hbox.setPrefHeight(500);
 		//TODO adjust to fit
-		ScrollPane scrollPane = new ScrollPane();
-        scrollPane.setPrefSize(500, 500);
-        scrollPane.setVbarPolicy(ScrollBarPolicy.AS_NEEDED);
-        scrollPane.setHbarPolicy(ScrollBarPolicy.AS_NEEDED);
-        scrollPane.setContent(display);
-		hbox.getChildren().add(scrollPane);
+//		ScrollPane scrollPane = new ScrollPane();
+//		scrollPane.setPrefSize(500, 500);
+//		scrollPane.setVbarPolicy(ScrollBarPolicy.AS_NEEDED);
+//		scrollPane.setHbarPolicy(ScrollBarPolicy.AS_NEEDED);
+//		scrollPane.setContent(display);
+//		hbox.getChildren().add(scrollPane);
+		
+//		output display box
+		dispOut = new ImageView();
+			//set details
+		dispOut.setFitWidth(810);
+		dispOut.setFitHeight(720);
+		dispOut.setPreserveRatio(true);
+			//set position and border
+		hboxOut = new HBox();
+		hboxOut.setBorder(new Border(new BorderStroke(Color.BLUE, BorderStrokeStyle.SOLID, CornerRadii.EMPTY, BorderWidths.DEFAULT)));
+		hboxOut.setLayoutX(675);
+		hboxOut.setLayoutY(15);
+		hboxOut.setPrefWidth(810);
+		hboxOut.setPrefHeight(720);
+		//TODO adjust to fit
+//		ScrollPane scrollPaneOut = new ScrollPane();
+//        scrollPaneOut.setPrefSize(810, 720);
+//        scrollPaneOut.setVbarPolicy(ScrollBarPolicy.AS_NEEDED);
+//        scrollPaneOut.setHbarPolicy(ScrollBarPolicy.AS_NEEDED);
+//        scrollPaneOut.setContent(dispOut);
+//		hboxOut.getChildren().add(scrollPaneOut);
 		
 //		downloader toggle switch
 		Rectangle downBack = new Rectangle(15, 647, 502, 23);
@@ -174,11 +201,29 @@ public class JFXGui extends Application {
 		paraGCBox.setLayoutX(480);
 		paraGCBox.setLayoutY(673);
 		
-//		download progress
+//		download progress bar
 		downProp = new Progress();
 		ProgressBar downProgress = new ProgressBar();
-		downProgress.setLayoutX(800);
+		downProgress.setLayoutX(545);
+		downProgress.setLayoutY(15);
 		downProgress.setProgress(0F);
+		
+//		image library progress bar
+		imgLibProp = new Progress();
+		ProgressBar imgLibProgress = new ProgressBar();
+		imgLibProgress.setLayoutX(545);
+		imgLibProgress.setLayoutY(55);
+		imgLibProgress.setProgress(0F);
+		
+//		imageTinder and substitution progress bar
+		tinSubProp = new Progress();
+		ProgressBar tinSubProgress = new ProgressBar();
+		tinSubProgress.setLayoutX(545);
+		tinSubProgress.setLayoutY(95);
+		tinSubProgress.setProgress(0F);
+		
+//		output progress viewer
+		outProp = new Progress();
 		
 //		set actions on browse button click
 		browse.setOnAction(new EventHandler<ActionEvent>() {
@@ -193,23 +238,24 @@ public class JFXGui extends Application {
 					FileInputStream filePath = new FileInputStream(refPath.getText());
 					Image refImage = new Image(filePath);
 					display.setImage(refImage);
-	                scrollPane.setContent(null);
-	                scrollPane.setContent(display);
+//	                scrollPane.setContent(null);
+//	                scrollPane.setContent(display);
 					//center image position within box
-//					if (refImage.getHeight() > refImage.getWidth()) {
-//						double ratio = refImage.getHeight()/500;
-//						display.setTranslateX(250 - refImage.getWidth()/(ratio*2));
-//						display.setTranslateY(0);
-//					}
-//					else if (refImage.getHeight() < refImage.getWidth()) {
-//						double ratio = refImage.getWidth()/500;
-//						display.setTranslateX(0);
-//						display.setTranslateY(250 - refImage.getHeight()/(ratio*2));
-//					}
-//					else {
-//						display.setTranslateX(0);
-//						display.setTranslateY(0);
-//					}
+					if (refImage.getHeight() > refImage.getWidth()) {
+						double ratio = refImage.getHeight()/500;
+						display.setTranslateX(250 - refImage.getWidth()/(ratio*2));
+						display.setTranslateY(0);
+					}
+					else if (refImage.getHeight() < refImage.getWidth()) {
+						double ratio = refImage.getWidth()/500;
+						display.setTranslateX(0);
+						display.setTranslateY(250 - refImage.getHeight()/(ratio*2));
+					}
+					else {
+						display.setTranslateX(0);
+						display.setTranslateY(0);
+					}
+					hbox.getChildren().add(display);
 				} catch (FileNotFoundException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -217,7 +263,7 @@ public class JFXGui extends Application {
 			}
 		});
 		
-		//run computations
+//		run computations
 		runComp.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent arg0) {
@@ -237,12 +283,35 @@ public class JFXGui extends Application {
 			paraGCState = paraGC.getStateBool();
 		});
 		
-//		set actions when variable changes
+//		set actions when download variable changes
 		downProp.countProperty().addListener((obs, oldVal, newVal) -> {
             if (newVal != oldVal) {
         		downProgress.setProgress((float)downProp.getCount()/100);
             }
 		});
+		
+//		set actions when image library count variable changes
+		imgLibProp.countProperty().addListener((obs, oldVal, newVal) -> {
+            if (newVal != oldVal) {
+        		imgLibProgress.setProgress((float)imgLibProp.getCount()/numberOfImages);
+            }
+		});
+		
+//		set actions when grid block variable changes
+		tinSubProp.countProperty().addListener((obs, oldVal, newVal) -> {
+            if (newVal != oldVal) {
+        		tinSubProgress.setProgress((float)tinSubProp.getCount()/numberOfCells);
+            }
+		});
+		
+//	set actions when a cell finishes processing
+//		outProp.countProperty().addListener((obs, oldVal, newVal) -> {
+//            if (newVal != oldVal) {
+//            	dispOut.setImage(outImage);
+//            	scrollPaneOut.setContent(null);
+//            	scrollPaneOut.setContent(dispOut);
+//            }
+//		});
 		
 //		add GUI elements
 		//add browse button to UI object group
@@ -265,12 +334,32 @@ public class JFXGui extends Application {
 		root.getChildren().addAll(downBack, downLabel, downToggleBox);
 		//add GUI-computation parallelisation toggle
 		root.getChildren().addAll(paraGCBack, paraGCLabel, paraGCBox);
-		//run computations button
+		//add run computations button
 		root.getChildren().add(runComp);
-		//download progress bar
+		//add download progress bar
 		root.getChildren().add(downProgress);
+		//add image library progress bar
+		root.getChildren().add(imgLibProgress);
+		//add tinder/substitution porgress bar
+		root.getChildren().add(tinSubProgress);
+		//add image output display to GUI
+		root.getChildren().add(hboxOut);
 		
 		Scene scene = new Scene(root, width, height);
+		new AnimationTimer() {
+			@Override
+			public void handle(long arg0) {
+				++frameCounting;
+				if (frameCounting % 60 == 0) {
+					dispOut.setImage(outImage);
+//	            	scrollPaneOut.setContent(null);
+//	            	scrollPaneOut.setContent(dispOut);
+					hboxOut.getChildren().remove(dispOut);
+					hboxOut.getChildren().add(dispOut);
+					frameCounting = 0;
+				}				
+			}
+		}.start();
 		
 		//display UI
 		stage.setScene(scene);

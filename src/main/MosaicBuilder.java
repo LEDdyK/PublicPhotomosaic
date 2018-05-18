@@ -10,7 +10,10 @@ import java.util.Set;
 import javax.imageio.ImageIO;
 
 import apt.annotations.Future;
+import apt.annotations.Gui;
 import apt.annotations.TaskInfoType;
+import javafx.embed.swing.SwingFXUtils;
+import main.gui.JFXGui;
 import main.images.AvgRGB;
 import main.images.ImageGrid;
 import main.images.reader.ImageLibrary;
@@ -35,7 +38,8 @@ public class MosaicBuilder {
 	int cellHeight;
 	int cellWidth;
 	BufferedImage output;
-	Graphics2D g2d ;
+	Graphics2D g2d;
+	double count;
 	
 
 	static long startTime;
@@ -61,7 +65,7 @@ public class MosaicBuilder {
 		System.out.println("Starting CreateMosaic");
 		//startTime = System.currentTimeMillis();
 		
-		Set<String> keySet = libraryIndex.keySet();
+		keySet = libraryIndex.keySet();
 		
 		
 		BufferedImage cell = imglib.getImage(keySet.iterator().next());
@@ -70,9 +74,13 @@ public class MosaicBuilder {
 		output = new BufferedImage(cellWidth*cellMatrix.getWidth(),cellHeight*cellMatrix.getHeight(),BufferedImage.TYPE_INT_RGB);
 		g2d = output.createGraphics();
 		
+		JFXGui.numberOfCells = cellMatrix.getWidth() * cellMatrix.getHeight();
 		//printTimeStamp("MosaicInit");
 		
+		count = 0;
+		
 		LoopScheduler scheduler = LoopSchedulerFactory.createLoopScheduler(0, cellMatrix.getHeight(), 1, numOfThreads, pu.loopScheduler.AbstractLoopScheduler.LoopCondition.LessThan, pu.loopScheduler.LoopSchedulerFactory.LoopSchedulingType.Static);
+		
 		@Future(taskType = TaskInfoType.MULTI)
 		Void task = processMatrix(scheduler);
 		futureGroup[0] = task;
@@ -83,14 +91,14 @@ public class MosaicBuilder {
 		
 		System.out.println("Finish CreateMosaic");
 		
-		try {
-			System.out.println("Saving image to disk");
-			ImageIO.write(output, "jpg", new File("output.jpg"));
-			System.out.println("Finished saving image to disk");
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+//		try {
+//			System.out.println("Saving image to disk");
+//			ImageIO.write(output, "jpg", new File("output.jpg"));
+//			System.out.println("Finished saving image to disk");
+//		} catch (IOException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
 
 		//printTimeStamp("MosaicWrite");
 		return 1;
@@ -111,10 +119,9 @@ public class MosaicBuilder {
 			for(int row=range.loopStart; row<range.loopEnd; row++) {
 				for(int col=0; col<cellMatrix.getWidth(); col++) {
 					
-					
-
 					String minPointer = "";
 					double minDistance = Math.pow(256, 3);
+					
 					
 					for (String key: keySet) {
 						double checkDistance = calcDist(cellMatrix.getGridCell(col, row), libraryIndex.get(key), type);
@@ -127,14 +134,18 @@ public class MosaicBuilder {
 					
 					
 					
+					
+					
 					g2d.drawImage(imglib.getImage(minPointer), 
 							col*cellWidth, row*cellHeight,  null);
-					try {
-						Thread.sleep(1);
-					} catch (InterruptedException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
+//					try {
+//						Thread.sleep(1000);
+//					} catch (InterruptedException e) {
+//						// TODO Auto-generated catch block
+//						e.printStackTrace();
+//					}
+					@Gui
+					Void progress = updateProgress(output);
 				}
 			}
 		}
@@ -143,6 +154,7 @@ public class MosaicBuilder {
 	}
 	
 	double calcDist(AvgRGB a, AvgRGB b, char type) {
+		//System.out.println(libraryIndex);
 		int aR = a.getR();
 		int aG = a.getG();
 		int aB = a.getB();
@@ -179,5 +191,12 @@ public class MosaicBuilder {
 		endTime = System.currentTimeMillis() - startTime;
 		System.out.println(str + " - " + endTime);
 		startTime = System.currentTimeMillis();
+	}
+	
+	public Void updateProgress(BufferedImage capture) {
+		JFXGui.outImage = SwingFXUtils.toFXImage(capture, null);
+		++count;
+		JFXGui.tinSubProp.setCount(count);
+		return null;
 	}
 }

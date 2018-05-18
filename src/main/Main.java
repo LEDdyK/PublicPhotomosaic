@@ -33,21 +33,29 @@ public class Main {
 
 	public static void runComputations() {
 		try {
+			
+			//reset settings
+			JFXGui.downProp.setCount(0);
+			JFXGui.imgLibProp.setCount(0);
+			JFXGui.tinSubProp.setCount(0);
+			JFXGui.outProp.setCount(0);
+			JFXGui.outImage = null;
+			JFXGui.hboxOut.getChildren().remove(JFXGui.dispOut);
+			
 			startTime = System.currentTimeMillis();
 
-			/*ImageDownloader imageDownloader = new ImageDownloader();
+			ImageDownloader imageDownloader = new ImageDownloader();
 			@Future
-			int imageDownload = imageDownloader.downloadRecentImages(4);*/
+			int imageDownload = imageDownloader.downloadRecentImages(4);
 
 			ImageLibrary imglib = new ImageLibrary();
 			@Future(depends="imageDownload")
-			//Map<String, BufferedImage> imgLibrary = imglib.readDirectory("photos", Double.parseDouble(JFXGui.libScale.getText()), Integer.parseInt(JFXGui.threadCount.getText()));	
-			Map<String, BufferedImage> imgLibrary = imglib.readDirectory("photos", 0.2, 4);	
+			Map<String, BufferedImage> imgLibrary = imglib.readDirectory("photos", Double.parseDouble(JFXGui.libScale.getText()), Integer.parseInt(JFXGui.threadCount.getText()));	
 						
 			BufferedImage image = ImageIO.read(new File(JFXGui.refPath.getText()));
 			ImageGrid imgGrid = new ImageGrid(image);
 			@Future()
-			int imageGrid = imgGrid.createGrid(false, 2, 2);	
+			int imageGrid = imgGrid.createGrid(false, Integer.parseInt(JFXGui.gridWidth.getText()), Integer.parseInt(JFXGui.gridHeight.getText()));	
 
 			
 			RGBLibrary rgbLib = new RGBLibrary();
@@ -56,13 +64,14 @@ public class Main {
 			
 			
 			MosaicBuilder mosaicBuilder = new MosaicBuilder();
-			@Future(depends="imageTinder")
-			int mosaicBuild = mosaicBuilder.createMosaic(imglib, rgbList, imgGrid, 1, 'R');
+			@Future()
+			int mosaicBuild = mosaicBuilder.createMosaic(imglib, rgbList, imgGrid, Integer.parseInt(JFXGui.threadCount.getText()), 'R');
 			
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		
 	}
 	
 	private static void printTimeStamp(String str) {
