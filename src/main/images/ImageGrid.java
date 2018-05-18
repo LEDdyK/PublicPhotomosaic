@@ -14,6 +14,9 @@ public class ImageGrid {
 	private int cellWidth;
 	private BufferedImage img;
 	private AvgRGB[][] rgbList;
+	
+	
+	
 	public ImageGrid(BufferedImage image ) {
 		img = image;
 	}
