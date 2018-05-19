@@ -17,6 +17,7 @@ import java.util.Scanner;
 import apt.annotations.Future;
 import apt.annotations.Gui;
 import apt.annotations.TaskInfoType;
+import javafx.application.Platform;
 import main.gui.JFXGui;
 import pt.runtime.WorkerThread;
 import pu.loopScheduler.LoopRange;
@@ -179,7 +180,8 @@ public class ImageDownloader {
 	
 	private Void updateDownProgress() {
 		++downCount;
-		JFXGui.downProp.setCount(downCount);
+		//System.out.println(Platform.isFxApplicationThread());
+		JFXGui.downProgress.setProgress((float)downCount/100);
 		return null;
 	}
 

@@ -150,7 +150,7 @@ public class ImageLibrary {
 	
 	private Void updateProgress() {
 		++libCount;
-		JFXGui.imgLibProp.setCount(libCount);
+		JFXGui.imgLibProgress.setProgress((float)libCount/JFXGui.numberOfImages);
 		return null;
 	}
 	
