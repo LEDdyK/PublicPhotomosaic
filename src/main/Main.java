@@ -8,6 +8,7 @@ import java.util.Map;
 import javax.imageio.ImageIO;
 
 import apt.annotations.Future;
+import apt.annotations.Gui;
 import apt.annotations.InitParaTask;
 import apt.annotations.TaskScheduingPolicy;
 import javafx.application.Application;
@@ -34,14 +35,6 @@ public class Main {
 	public static void runComputations() {
 		try {
 			
-			//reset settings
-			JFXGui.downProp.setCount(0);
-			JFXGui.imgLibProp.setCount(0);
-			JFXGui.tinSubProp.setCount(0);
-			JFXGui.outProp.setCount(0);
-			JFXGui.outImage = null;
-			JFXGui.hboxOut.getChildren().remove(JFXGui.dispOut);
-			
 			startTime = System.currentTimeMillis();
 
 			ImageDownloader imageDownloader = new ImageDownloader();
@@ -67,6 +60,8 @@ public class Main {
 			@Future()
 			int mosaicBuild = mosaicBuilder.createMosaic(imglib, rgbList, imgGrid, Integer.parseInt(JFXGui.threadCount.getText()), 'R');
 			
+			@Gui(notifiedBy="mosaicBuild")
+			Void guiUpdate = mosaicBuilder.displayOnGUI();
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
