@@ -144,9 +144,11 @@ public class MosaicBuilder {
 //						// TODO Auto-generated catch block
 //						e.printStackTrace();
 //					}
-					@Gui
-					Void progress = updateProgress(output);
+					
 				}
+				JFXGui.outImage = SwingFXUtils.toFXImage(output, null);
+				@Gui
+				Void gui = updateProgress();
 			}
 		}
 		
@@ -193,10 +195,18 @@ public class MosaicBuilder {
 		startTime = System.currentTimeMillis();
 	}
 	
-	public Void updateProgress(BufferedImage capture) {
-		JFXGui.outImage = SwingFXUtils.toFXImage(capture, null);
-		++count;
-		JFXGui.tinSubProp.setCount(count);
+	public Void updateProgress() {
+
+		count += cellMatrix.getWidth();
+		JFXGui.tinSubProgress.setProgress((float)count / JFXGui.numberOfCells);
+		//System.out.println("HELLO");
+		//JFXGui.tinSubProp.setCount(count);
+		return null;
+	}
+	
+	public Void displayOnGUI() {
+		JFXGui.isFinished = true;
+		JFXGui.dispOut.setImage(SwingFXUtils.toFXImage(output, null));
 		return null;
 	}
 }
