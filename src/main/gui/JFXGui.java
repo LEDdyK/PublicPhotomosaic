@@ -54,6 +54,12 @@ public class JFXGui extends Application {
 	public static ImageView dispOut;
 	public static double frameCounting;
 	
+	public static ProgressBar imgLibProgress;
+	public static ProgressBar downProgress;
+	public static ProgressBar tinSubProgress;
+	
+	public static boolean isFinished = false;
+	
 	@Override
 	public void start(Stage stage) {
 		double height = 750;
@@ -203,21 +209,21 @@ public class JFXGui extends Application {
 		
 //		download progress bar
 		downProp = new Progress();
-		ProgressBar downProgress = new ProgressBar();
+		downProgress = new ProgressBar();
 		downProgress.setLayoutX(545);
 		downProgress.setLayoutY(15);
 		downProgress.setProgress(0F);
 		
 //		image library progress bar
 		imgLibProp = new Progress();
-		ProgressBar imgLibProgress = new ProgressBar();
+		imgLibProgress = new ProgressBar();
 		imgLibProgress.setLayoutX(545);
 		imgLibProgress.setLayoutY(55);
 		imgLibProgress.setProgress(0F);
 		
 //		imageTinder and substitution progress bar
 		tinSubProp = new Progress();
-		ProgressBar tinSubProgress = new ProgressBar();
+		tinSubProgress = new ProgressBar();
 		tinSubProgress.setLayoutX(545);
 		tinSubProgress.setLayoutY(95);
 		tinSubProgress.setProgress(0F);
@@ -267,6 +273,12 @@ public class JFXGui extends Application {
 		runComp.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent arg0) {
+				imgLibProgress.setProgress(0);
+				downProgress.setProgress(0);
+				tinSubProgress.setProgress(0);
+				outImage = null;
+				hboxOut.getChildren().remove(JFXGui.dispOut);
+				isFinished = false;
 				Main.runComputations();
 			}
 		});
@@ -283,19 +295,19 @@ public class JFXGui extends Application {
 			paraGCState = paraGC.getStateBool();
 		});
 		
-//		set actions when download variable changes
-		downProp.countProperty().addListener((obs, oldVal, newVal) -> {
-            if (newVal != oldVal) {
-        		downProgress.setProgress((float)downProp.getCount()/100);
-            }
-		});
+////		set actions when download variable changes
+//		downProp.countProperty().addListener((obs, oldVal, newVal) -> {
+//            if (newVal != oldVal) {
+//        		downProgress.setProgress((float)downProp.getCount()/100);
+//            }
+//		});
 		
 //		set actions when image library count variable changes
-		imgLibProp.countProperty().addListener((obs, oldVal, newVal) -> {
-            if (newVal != oldVal) {
-        		imgLibProgress.setProgress((float)imgLibProp.getCount()/numberOfImages);
-            }
-		});
+//		imgLibProp.countProperty().addListener((obs, oldVal, newVal) -> {
+//            if (newVal != oldVal) {
+//        		imgLibProgress.setProgress((float)imgLibProp.getCount()/numberOfImages);
+//            }
+//		});
 		
 //		set actions when grid block variable changes
 		tinSubProp.countProperty().addListener((obs, oldVal, newVal) -> {
@@ -349,15 +361,18 @@ public class JFXGui extends Application {
 		new AnimationTimer() {
 			@Override
 			public void handle(long arg0) {
-				++frameCounting;
-				if (frameCounting % 60 == 0) {
-					dispOut.setImage(outImage);
-//	            	scrollPaneOut.setContent(null);
-//	            	scrollPaneOut.setContent(dispOut);
-					hboxOut.getChildren().remove(dispOut);
-					hboxOut.getChildren().add(dispOut);
-					frameCounting = 0;
-				}				
+				if (!isFinished) {
+					++frameCounting;
+					if (frameCounting % 60 == 0) {
+						dispOut.setImage(outImage);
+//		            	scrollPaneOut.setContent(null);
+//		            	scrollPaneOut.setContent(dispOut);
+						hboxOut.getChildren().remove(dispOut);
+						hboxOut.getChildren().add(dispOut);
+						frameCounting = 0;
+					}	
+				}
+							
 			}
 		}.start();
 		
