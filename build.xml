@@ -10,7 +10,7 @@
 	<property name="PMJAR.dir"     value="${gen.dir}/PhotoMosaic"        />
 	<property name="PMEXECJAR"     value="${PMJAR.dir}/PhotoMosaic.jar" />
 	<property name="PMPTJAR" value="${paraTaskGen.dir}/PhotoMosaicParaTask.jar" />
-	<property name="@PTJAR"      value="${libs.dir}/@PT-1.5.2.jar" />
+	<property name="@PTJAR"      value="${libs.dir}/PT-javafx.jar" />
 	<property name="JOMPJAR"       value="${libs.dir}/jomp-1.0.jar"    />
 	<property name="PJJAR"	       value="${libs.dir}/pyjama-1.5.2.jar"/>
 	<property name="JUJAR" value="${libs.dir}/junit.jar" />
