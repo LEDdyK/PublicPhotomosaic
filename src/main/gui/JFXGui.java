@@ -1,5 +1,6 @@
 package main.gui;
 
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -62,6 +63,7 @@ public class JFXGui extends Application {
 	public static ProgressBar imgLibProgress;
 	public static ProgressBar downProgress;
 	public static ProgressBar tinSubProgress;
+	public static BufferedImage finishedImage;
 	
 	public static boolean isFinished = false;
 	
@@ -307,7 +309,7 @@ public class JFXGui extends Application {
 				if (saveToFile != null) {
 					try {
 						System.out.println("Saving image to disk");
-						ImageIO.write(SwingFXUtils.fromFXImage(outImage, null), "jpg", saveToFile);
+						ImageIO.write(finishedImage, "jpg", saveToFile);
 						System.out.println("Finished saving image to disk");
 					} catch (IOException e) {
 						// TODO Auto-generated catch block

@@ -90,7 +90,7 @@ public class MosaicBuilder {
 		//printTimeStamp("MosaicSubstitution " + numOfThreads);
 		
 		System.out.println("Finish CreateMosaic");
-		
+		JFXGui.finishedImage = output;
 //		try {
 //			System.out.println("Saving image to disk");
 //			ImageIO.write(output, "jpg", new File("output.jpg"));
