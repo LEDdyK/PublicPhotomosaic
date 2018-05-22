@@ -1,11 +1,17 @@
 package main.gui;
 
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileWriter;
+import java.io.IOException;
+
+import javax.imageio.ImageIO;
 
 import javafx.animation.AnimationTimer;
 import javafx.application.Application;
+import javafx.embed.swing.SwingFXUtils;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.Group;
@@ -36,6 +42,7 @@ import javafx.stage.Stage;
 public class JFXGui extends Application {
 	
 	public static File selectedFile;
+	public static File saveToFile;
 	public static Boolean downState;
 	public static Boolean paraGCState;
 	public static TextField refPath;
@@ -53,10 +60,10 @@ public class JFXGui extends Application {
 	public static HBox hboxOut;
 	public static ImageView dispOut;
 	public static double frameCounting;
-	
 	public static ProgressBar imgLibProgress;
 	public static ProgressBar downProgress;
 	public static ProgressBar tinSubProgress;
+	public static BufferedImage finishedImage;
 	
 	public static boolean isFinished = false;
 	
@@ -91,6 +98,12 @@ public class JFXGui extends Application {
 			//set position
 		runComp.setLayoutX(545);
 		runComp.setLayoutY(400);
+		
+//		browse for reference image button
+		Button saveImage = new Button("Save Image To...");
+			//set position
+		saveImage.setLayoutX(545);
+		saveImage.setLayoutY(440);
 		
 //		library scale input
 		Label libScaleLabel = new Label ("Library Scale");
@@ -176,10 +189,10 @@ public class JFXGui extends Application {
 		hboxOut.setPrefHeight(720);
 		//TODO adjust to fit
 //		ScrollPane scrollPaneOut = new ScrollPane();
-//        scrollPaneOut.setPrefSize(810, 720);
-//        scrollPaneOut.setVbarPolicy(ScrollBarPolicy.AS_NEEDED);
-//        scrollPaneOut.setHbarPolicy(ScrollBarPolicy.AS_NEEDED);
-//        scrollPaneOut.setContent(dispOut);
+//      scrollPaneOut.setPrefSize(810, 720);
+//      scrollPaneOut.setVbarPolicy(ScrollBarPolicy.AS_NEEDED);
+//      scrollPaneOut.setHbarPolicy(ScrollBarPolicy.AS_NEEDED);
+//      scrollPaneOut.setContent(dispOut);
 //		hboxOut.getChildren().add(scrollPaneOut);
 		
 //		downloader toggle switch
@@ -236,35 +249,37 @@ public class JFXGui extends Application {
 			@Override
 			public void handle(ActionEvent arg0) {
 				FileChooser fileChooser = new FileChooser();
-				fileChooser.setTitle("Browse");
+				fileChooser.setTitle("Select Reference Image");
 				fileChooser.getExtensionFilters().addAll(new ExtensionFilter("Image Files", "*.png", "*.jpg"));
 				selectedFile = fileChooser.showOpenDialog(stage);
-				refPath.setText(selectedFile.getAbsolutePath());
-				try {
-					FileInputStream filePath = new FileInputStream(refPath.getText());
-					Image refImage = new Image(filePath);
-					display.setImage(refImage);
-//	                scrollPane.setContent(null);
-//	                scrollPane.setContent(display);
-					//center image position within box
-					if (refImage.getHeight() > refImage.getWidth()) {
-						double ratio = refImage.getHeight()/500;
-						display.setTranslateX(250 - refImage.getWidth()/(ratio*2));
-						display.setTranslateY(0);
+				if (selectedFile != null) {
+					refPath.setText(selectedFile.getAbsolutePath());
+					try {
+						FileInputStream filePath = new FileInputStream(refPath.getText());
+						Image refImage = new Image(filePath);
+						display.setImage(refImage);
+//	                	scrollPane.setContent(null);
+//	                	scrollPane.setContent(display);
+						//center image position within box
+						if (refImage.getHeight() > refImage.getWidth()) {
+							double ratio = refImage.getHeight()/500;
+							display.setTranslateX(250 - refImage.getWidth()/(ratio*2));
+							display.setTranslateY(0);
+						}
+						else if (refImage.getHeight() < refImage.getWidth()) {
+							double ratio = refImage.getWidth()/500;
+							display.setTranslateX(0);
+							display.setTranslateY(250 - refImage.getHeight()/(ratio*2));
+						}
+						else {
+							display.setTranslateX(0);
+							display.setTranslateY(0);
+						}
+						hbox.getChildren().add(display);
+					} catch (FileNotFoundException e) {
+						//TODO Auto-generated catch block
+						e.printStackTrace();
 					}
-					else if (refImage.getHeight() < refImage.getWidth()) {
-						double ratio = refImage.getWidth()/500;
-						display.setTranslateX(0);
-						display.setTranslateY(250 - refImage.getHeight()/(ratio*2));
-					}
-					else {
-						display.setTranslateX(0);
-						display.setTranslateY(0);
-					}
-					hbox.getChildren().add(display);
-				} catch (FileNotFoundException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
 				}
 			}
 		});
@@ -280,6 +295,27 @@ public class JFXGui extends Application {
 				hboxOut.getChildren().remove(JFXGui.dispOut);
 				isFinished = false;
 				Main.runComputations();
+			}
+		});
+		
+//		saving image
+		saveImage.setOnAction(new EventHandler<ActionEvent>() {
+			@Override
+			public void handle(ActionEvent arg0) {
+				FileChooser saveChooser = new FileChooser();
+				saveChooser.setTitle("Save Image To...");
+				saveChooser.getExtensionFilters().addAll(new ExtensionFilter("Image Files", "*.jpg"));
+				saveToFile = saveChooser.showOpenDialog(stage);
+				if (saveToFile != null) {
+					try {
+						System.out.println("Saving image to disk");
+						ImageIO.write(finishedImage, "jpg", saveToFile);
+						System.out.println("Finished saving image to disk");
+					} catch (IOException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				}
 			}
 		});
 		
@@ -348,6 +384,8 @@ public class JFXGui extends Application {
 		root.getChildren().addAll(paraGCBack, paraGCLabel, paraGCBox);
 		//add run computations button
 		root.getChildren().add(runComp);
+		//add save image to button
+		root.getChildren().add(saveImage);
 		//add download progress bar
 		root.getChildren().add(downProgress);
 		//add image library progress bar
@@ -371,8 +409,7 @@ public class JFXGui extends Application {
 						hboxOut.getChildren().add(dispOut);
 						frameCounting = 0;
 					}	
-				}
-							
+				}		
 			}
 		}.start();
 		
