@@ -12,6 +12,7 @@ import javax.imageio.ImageIO;
 
 import apt.annotations.Future;
 import apt.annotations.Gui;
+import apt.annotations.TaskInfoType;
 import javafx.animation.AnimationTimer;
 import javafx.application.Application;
 import javafx.embed.swing.SwingFXUtils;
@@ -46,6 +47,7 @@ import main.images.ImageGrid;
 import main.images.RGBLibrary;
 import main.images.downloader.ImageDownloader;
 import main.images.reader.ImageLibrary;
+import pt.runtime.ParaTask.TaskType;
 import javafx.stage.Stage;
 
 public class JFXGui extends Application {
@@ -71,6 +73,8 @@ public class JFXGui extends Application {
 	private ProgressBar imgLibProgress;
 	private ProgressBar downProgress;
 	private ProgressBar tinSubProgress;
+	
+	private Button saveImageButton;
 	
 	private BufferedImage finishedImage;
 	
@@ -113,10 +117,11 @@ public class JFXGui extends Application {
 		runComp.setLayoutY(400);
 		
 //		browse for reference image button
-		Button saveImage = new Button("Save Image To...");
+		saveImageButton = new Button("Save Image To...");
 			//set position
-		saveImage.setLayoutX(545);
-		saveImage.setLayoutY(440);
+		saveImageButton.setLayoutX(545);
+		saveImageButton.setLayoutY(440);
+		saveImageButton.setDisable(true);
 		
 //		library scale input
 		Label libScaleLabel = new Label ("Library Scale");
@@ -234,28 +239,22 @@ public class JFXGui extends Application {
 		paraGCBox.setLayoutY(673);
 		
 //		download progress bar
-		//downProp = new Progress();
 		downProgress = new ProgressBar();
 		downProgress.setLayoutX(545);
 		downProgress.setLayoutY(15);
 		downProgress.setProgress(0F);
 		
 //		image library progress bar
-		//imgLibProp = new Progress();
 		imgLibProgress = new ProgressBar();
 		imgLibProgress.setLayoutX(545);
 		imgLibProgress.setLayoutY(55);
 		imgLibProgress.setProgress(0F);
 		
 //		imageTinder and substitution progress bar
-		//tinSubProp = new Progress();
 		tinSubProgress = new ProgressBar();
 		tinSubProgress.setLayoutX(545);
 		tinSubProgress.setLayoutY(95);
 		tinSubProgress.setProgress(0F);
-		
-//		output progress viewer
-		//outProp = new Progress();
 		
 //		set actions on browse button click
 		browse.setOnAction(new EventHandler<ActionEvent>() {
@@ -311,22 +310,21 @@ public class JFXGui extends Application {
 		});
 		
 //		saving image
-		saveImage.setOnAction(new EventHandler<ActionEvent>() {
+		saveImageButton.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent arg0) {
 				FileChooser saveChooser = new FileChooser();
 				saveChooser.setTitle("Save Image To...");
-				saveChooser.getExtensionFilters().addAll(new ExtensionFilter("Image Files", "*.jpg"));
+				saveChooser.getExtensionFilters().addAll(new ExtensionFilter("Image Files", "*.png"));
 				saveToFile = saveChooser.showOpenDialog(stage);
 				if (saveToFile != null) {
-					try {
-						System.out.println("Saving image to disk");
-						ImageIO.write(finishedImage, "jpg", saveToFile);
-						System.out.println("Finished saving image to disk");
-					} catch (IOException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
+					((Button)arg0.getSource()).setDisable(true);
+					
+					@Future(taskType = TaskInfoType.INTERACTIVE)
+					int ioTask = mosaicBuilder.saveImageOnDisk(saveToFile);
+					
+					@Gui(notifiedBy = "ioTask")
+					Void enableSave = mosaicBuilder.enableSave((Button)arg0.getSource());
 				}
 			}
 		});
@@ -397,7 +395,7 @@ public class JFXGui extends Application {
 		//add run computations button
 		root.getChildren().add(runComp);
 		//add save image to button
-		root.getChildren().add(saveImage);
+		root.getChildren().add(saveImageButton);
 		//add download progress bar
 		root.getChildren().add(downProgress);
 		//add image library progress bar
@@ -471,7 +469,7 @@ public class JFXGui extends Application {
 		int mosaicBuild = mosaicBuilder.createMosaic(imageLibrary, rgbList, imageGrid, Integer.parseInt(threadCount.getText()), 'R');
 		
 		@Gui(notifiedBy="mosaicBuild")
-		Void guiUpdate = mosaicBuilder.displayOnGUI(dispOut);
+		Void guiUpdate = mosaicBuilder.displayOnGUI(dispOut, saveImageButton);
 		
 	}
 }

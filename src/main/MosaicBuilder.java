@@ -13,6 +13,7 @@ import apt.annotations.Future;
 import apt.annotations.Gui;
 import apt.annotations.TaskInfoType;
 import javafx.embed.swing.SwingFXUtils;
+import javafx.scene.control.Button;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -194,9 +195,29 @@ public class MosaicBuilder {
 		return null;
 	}
 	
-	public Void displayOnGUI(ImageView imageView) {
+	public Void displayOnGUI(ImageView imageView, Button saveButton) {
 		isFinished = true;
+		enableSave(saveButton);
 		imageView.setImage(SwingFXUtils.toFXImage(output, null));
+		return null;
+	}
+	
+	public int saveImageOnDisk(File saveToFile) {
+		try {
+			System.out.println("Saving image to disk");
+			ImageIO.write(output, "png", saveToFile);
+			System.out.println("Finished saving image to disk");
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		return 1;
+	}
+	
+	public Void enableSave(Button saveButton) {
+		System.out.println("enabling save button");
+		saveButton.setDisable(false);
 		return null;
 	}
 	
