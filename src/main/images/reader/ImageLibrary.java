@@ -39,14 +39,7 @@ public class ImageLibrary {
 	
 	@Future
 	private Void[] futureGroup = new Void[1];
-	
 
-	
-	
-	/**
-	 * loop through all the files in the directory specified in the path
-	 * @param dirPath
-	 */
 	public ImageLibrary(ProgressBar progressBar) {
 		this.progressBar = progressBar;
 	}

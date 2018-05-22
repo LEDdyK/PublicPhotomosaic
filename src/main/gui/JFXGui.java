@@ -184,13 +184,6 @@ public class JFXGui extends Application {
 		hbox.setLayoutY(135);
 		hbox.setPrefWidth(500);
 		hbox.setPrefHeight(500);
-		//TODO adjust to fit
-//		ScrollPane scrollPane = new ScrollPane();
-//		scrollPane.setPrefSize(500, 500);
-//		scrollPane.setVbarPolicy(ScrollBarPolicy.AS_NEEDED);
-//		scrollPane.setHbarPolicy(ScrollBarPolicy.AS_NEEDED);
-//		scrollPane.setContent(display);
-//		hbox.getChildren().add(scrollPane);
 		
 //		output display box
 		dispOut = new ImageView();
@@ -205,14 +198,7 @@ public class JFXGui extends Application {
 		hboxOut.setLayoutY(15);
 		hboxOut.setPrefWidth(810);
 		hboxOut.setPrefHeight(720);
-		//TODO adjust to fit
-//		ScrollPane scrollPaneOut = new ScrollPane();
-//      scrollPaneOut.setPrefSize(810, 720);
-//      scrollPaneOut.setVbarPolicy(ScrollBarPolicy.AS_NEEDED);
-//      scrollPaneOut.setHbarPolicy(ScrollBarPolicy.AS_NEEDED);
-//      scrollPaneOut.setContent(dispOut);
-//		hboxOut.getChildren().add(scrollPaneOut);
-		
+
 //		downloader toggle switch
 		Rectangle downBack = new Rectangle(15, 647, 502, 23);
 		downBack.setFill(Color.STEELBLUE);
@@ -270,8 +256,7 @@ public class JFXGui extends Application {
 						FileInputStream filePath = new FileInputStream(refPath.getText());
 						Image refImage = new Image(filePath);
 						display.setImage(refImage);
-//	                	scrollPane.setContent(null);
-//	                	scrollPane.setContent(display);
+
 						//center image position within box
 						if (refImage.getHeight() > refImage.getWidth()) {
 							double ratio = refImage.getHeight()/500;
@@ -303,6 +288,7 @@ public class JFXGui extends Application {
 				imgLibProgress.setProgress(0);
 				downProgress.setProgress(0);
 				tinSubProgress.setProgress(0);
+				saveImageButton.setDisable(true);
 				hboxOut.getChildren().remove(dispOut);
 				initialiseProcessingObjects(false);
 				runComputations();
@@ -340,36 +326,6 @@ public class JFXGui extends Application {
 			paraGC.getState().set(!paraGC.getStateBool());
 			paraGCState = paraGC.getStateBool();
 		});
-		
-////		set actions when download variable changes
-//		downProp.countProperty().addListener((obs, oldVal, newVal) -> {
-//            if (newVal != oldVal) {
-//        		downProgress.setProgress((float)downProp.getCount()/100);
-//            }
-//		});
-		
-//		set actions when image library count variable changes
-//		imgLibProp.countProperty().addListener((obs, oldVal, newVal) -> {
-//            if (newVal != oldVal) {
-//        		imgLibProgress.setProgress((float)imgLibProp.getCount()/numberOfImages);
-//            }
-//		});
-		
-//		set actions when grid block variable changes
-//		tinSubProp.countProperty().addListener((obs, oldVal, newVal) -> {
-//            if (newVal != oldVal) {
-//        		tinSubProgress.setProgress((float)tinSubProp.getCount()/numberOfCells);
-//            }
-//		});
-		
-//	set actions when a cell finishes processing
-//		outProp.countProperty().addListener((obs, oldVal, newVal) -> {
-//            if (newVal != oldVal) {
-//            	dispOut.setImage(outImage);
-//            	scrollPaneOut.setContent(null);
-//            	scrollPaneOut.setContent(dispOut);
-//            }
-//		});
 		
 //		add GUI elements
 		//add browse button to UI object group
@@ -416,8 +372,6 @@ public class JFXGui extends Application {
 					++frameCounting;
 					if (frameCounting % 60 == 0) {
 						dispOut.setImage(mosaicBuilder.getOutputImage());
-//		            	scrollPaneOut.setContent(null);
-//		            	scrollPaneOut.setContent(dispOut);
 						hboxOut.getChildren().remove(dispOut);
 						hboxOut.getChildren().add(dispOut);
 						frameCounting = 0;
@@ -425,9 +379,7 @@ public class JFXGui extends Application {
 				}		
 			}
 		}.start();
-		
-
-		
+	
 		//display UI
 		stage.setScene(scene);
         stage.show();

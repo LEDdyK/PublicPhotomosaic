@@ -32,11 +32,6 @@ public class RGBLibrary {
 	 */
 	public RGBLibrary() {
 		rgbList = new HashMap<String,AvgRGB>();
-		
-		//int numOfThreads=4;
-		//LoopScheduler scheduler = LoopSchedulerFactory.createLoopScheduler(0, library.size(), 1, numOfThreads, pu.loopScheduler.AbstractLoopScheduler.LoopCondition.LessThan, pu.loopScheduler.LoopSchedulerFactory.LoopSchedulingType.Static);
-		//@Future(taskType=TaskInfoType.MULTI)
-		//Void task = calculateRGB();
 	}
 	
 	

@@ -17,7 +17,6 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import main.gui.JFXGui;
 import main.images.AvgRGB;
 import main.images.ImageGrid;
 import main.images.reader.ImageLibrary;
@@ -37,7 +36,6 @@ public class MosaicBuilder {
 	private ImageLibrary imglib = null;
 	private Set<String> keySet = null;
 	private char type;
-	//private String[][] mosaicMatrix;
 	
 	private int cellHeight;
 	private int cellWidth;
@@ -68,7 +66,6 @@ public class MosaicBuilder {
 		this.type = type;
 		
 		System.out.println("Starting CreateMosaic");
-		//startTime = System.currentTimeMillis();
 		
 		keySet = libraryIndex.keySet();
 		
@@ -80,7 +77,6 @@ public class MosaicBuilder {
 		g2d = output.createGraphics();
 		
 		numberOfCells = cellMatrix.getWidth() * cellMatrix.getHeight();
-		//printTimeStamp("MosaicInit");
 		
 		count = 0;
 		
@@ -92,30 +88,10 @@ public class MosaicBuilder {
 		waitTillFinished();
 		g2d.dispose();
 		
-		//printTimeStamp("MosaicSubstitution " + numOfThreads);
-		
 		System.out.println("Finish CreateMosaic");
-		//JFXGui.finishedImage = output;
-//		try {
-//			System.out.println("Saving image to disk");
-//			ImageIO.write(output, "jpg", new File("output.jpg"));
-//			System.out.println("Finished saving image to disk");
-//		} catch (IOException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
-
-		//printTimeStamp("MosaicWrite");
 		return 1;
 	}
 
-//	public void createMosaic() {
-//		createMosaic(1.0,1);
-//	}
-//	public void createMosaic(int numOfThreads) {
-//		createMosaic(1.0,numOfThreads);
-//	}
-	
 	public Void processMatrix(LoopScheduler scheduler) {
 		WorkerThread worker = (WorkerThread) Thread.currentThread();
 		LoopRange range = scheduler.getChunk(worker.getThreadID());
@@ -150,7 +126,6 @@ public class MosaicBuilder {
 	}
 	
 	double calcDist(AvgRGB a, AvgRGB b, char type) {
-		//System.out.println(libraryIndex);
 		int aR = a.getR();
 		int aG = a.getG();
 		int aB = a.getB();
@@ -181,12 +156,6 @@ public class MosaicBuilder {
 	
 	public void waitTillFinished() {
 		Void barrier = futureGroup[0];
-	}
-	
-	private static void printTimeStamp(String str) {
-		endTime = System.currentTimeMillis() - startTime;
-		System.out.println(str + " - " + endTime);
-		startTime = System.currentTimeMillis();
 	}
 	
 	public Void updateProgress() {

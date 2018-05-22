@@ -17,8 +17,6 @@ public class ImageGrid {
 	private BufferedImage img;
 	private AvgRGB[][] rgbList;
 	
-	
-	
 	public ImageGrid(BufferedImage image ) {
 		img = image;
 	}

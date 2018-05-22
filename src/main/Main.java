@@ -21,21 +21,11 @@ import main.images.reader.ImageLibrary;
 import pt.runtime.ParaTask;
 
 public class Main {
-	static long startTime;
-	static long endTime = 0;
-	static long prevTime;
 	
 	@InitParaTask
-	public static void main(String[] args) {
-		
+	public static void main(String[] args) {	
 		Application.launch(JFXGui.class, args);
-		//runComputations();
+
 	}
-	
-	private static void printTimeStamp(String str) {
-		prevTime = endTime;
-		endTime = System.currentTimeMillis() - startTime;
-		System.out.println(str + "\n " + endTime);
-		System.out.println("\tprocess time: " + (endTime-prevTime));
-	}
+
 }
