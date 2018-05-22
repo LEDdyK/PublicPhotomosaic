@@ -15,6 +15,7 @@ import javax.imageio.ImageIO;
 import apt.annotations.Future;
 import apt.annotations.Gui;
 import apt.annotations.TaskInfoType;
+import javafx.scene.control.ProgressBar;
 import main.gui.JFXGui;
 import pt.runtime.WorkerThread;
 import pu.loopScheduler.LoopRange;
@@ -28,21 +29,26 @@ import pu.loopScheduler.LoopSchedulerFactory;
  */
 public class ImageLibrary {
 	
-	public static double libCount;
+	private double libCount;
 	
-	Map<String,BufferedImage> library;
-	File[] directoryListing;
+	private Map<String,BufferedImage> library;
+	private File[] directoryListing;
 	private List<File> toDelete = null;
 	
+	private ProgressBar progressBar;
+	
 	@Future
-	public Void[] futureGroup = new Void[1];
+	private Void[] futureGroup = new Void[1];
+	
+
 	
 	
 	/**
 	 * loop through all the files in the directory specified in the path
 	 * @param dirPath
 	 */
-	public ImageLibrary() {
+	public ImageLibrary(ProgressBar progressBar) {
+		this.progressBar = progressBar;
 	}
 	
 	/**
@@ -62,7 +68,6 @@ public class ImageLibrary {
 		System.out.println("Starting ImageLibrary");
 		File directory = new File(dirPath);
 		directoryListing = directory.listFiles();
-		JFXGui.numberOfImages = directoryListing.length;
 		library = Collections.synchronizedMap(new HashMap<String,BufferedImage>());
 		toDelete = new ArrayList<File>();
 		
@@ -150,7 +155,7 @@ public class ImageLibrary {
 	
 	private Void updateProgress() {
 		++libCount;
-		JFXGui.imgLibProgress.setProgress((float)libCount/JFXGui.numberOfImages);
+		progressBar.setProgress((float)libCount/directoryListing.length);
 		return null;
 	}
 	

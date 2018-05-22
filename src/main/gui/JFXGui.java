@@ -6,9 +6,12 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.Map;
 
 import javax.imageio.ImageIO;
 
+import apt.annotations.Future;
+import apt.annotations.Gui;
 import javafx.animation.AnimationTimer;
 import javafx.application.Application;
 import javafx.embed.swing.SwingFXUtils;
@@ -37,35 +40,45 @@ import javafx.scene.shape.Rectangle;
 import javafx.stage.FileChooser;
 import javafx.stage.FileChooser.ExtensionFilter;
 import main.Main;
+import main.MosaicBuilder;
+import main.images.AvgRGB;
+import main.images.ImageGrid;
+import main.images.RGBLibrary;
+import main.images.downloader.ImageDownloader;
+import main.images.reader.ImageLibrary;
 import javafx.stage.Stage;
 
 public class JFXGui extends Application {
 	
-	public static File selectedFile;
-	public static File saveToFile;
-	public static Boolean downState;
-	public static Boolean paraGCState;
-	public static TextField refPath;
-	public static TextField libScale;
-	public static TextField threadCount;
-	public static TextField gridWidth;
-	public static TextField gridHeight;
-	public static Progress downProp;
-	public static Progress imgLibProp;
-	public static int numberOfImages;
-	public static Progress tinSubProp;
-	public static int numberOfCells;
-	public static Progress outProp;
-	public static Image outImage;
-	public static HBox hboxOut;
-	public static ImageView dispOut;
-	public static double frameCounting;
-	public static ProgressBar imgLibProgress;
-	public static ProgressBar downProgress;
-	public static ProgressBar tinSubProgress;
-	public static BufferedImage finishedImage;
+	private File selectedFile;
+	private File saveToFile;
 	
-	public static boolean isFinished = false;
+	private Boolean downState;
+	private Boolean paraGCState;
+	
+	private TextField refPath;
+	private TextField libScale;
+	private TextField threadCount;
+	private TextField gridWidth;
+	private TextField gridHeight;
+	
+	private int numberOfCells;
+
+	private HBox hboxOut;
+	private ImageView dispOut;
+	private double frameCounting;
+	
+	private ProgressBar imgLibProgress;
+	private ProgressBar downProgress;
+	private ProgressBar tinSubProgress;
+	
+	private BufferedImage finishedImage;
+	
+	private ImageDownloader imageDownloader;
+	private ImageLibrary imageLibrary;
+	private ImageGrid imageGrid;
+	private RGBLibrary rgbLibrary;
+	private MosaicBuilder mosaicBuilder;
 	
 	@Override
 	public void start(Stage stage) {
@@ -221,28 +234,28 @@ public class JFXGui extends Application {
 		paraGCBox.setLayoutY(673);
 		
 //		download progress bar
-		downProp = new Progress();
+		//downProp = new Progress();
 		downProgress = new ProgressBar();
 		downProgress.setLayoutX(545);
 		downProgress.setLayoutY(15);
 		downProgress.setProgress(0F);
 		
 //		image library progress bar
-		imgLibProp = new Progress();
+		//imgLibProp = new Progress();
 		imgLibProgress = new ProgressBar();
 		imgLibProgress.setLayoutX(545);
 		imgLibProgress.setLayoutY(55);
 		imgLibProgress.setProgress(0F);
 		
 //		imageTinder and substitution progress bar
-		tinSubProp = new Progress();
+		//tinSubProp = new Progress();
 		tinSubProgress = new ProgressBar();
 		tinSubProgress.setLayoutX(545);
 		tinSubProgress.setLayoutY(95);
 		tinSubProgress.setProgress(0F);
 		
 //		output progress viewer
-		outProp = new Progress();
+		//outProp = new Progress();
 		
 //		set actions on browse button click
 		browse.setOnAction(new EventHandler<ActionEvent>() {
@@ -291,10 +304,9 @@ public class JFXGui extends Application {
 				imgLibProgress.setProgress(0);
 				downProgress.setProgress(0);
 				tinSubProgress.setProgress(0);
-				outImage = null;
-				hboxOut.getChildren().remove(JFXGui.dispOut);
-				isFinished = false;
-				Main.runComputations();
+				hboxOut.getChildren().remove(dispOut);
+				initialiseProcessingObjects(false);
+				runComputations();
 			}
 		});
 		
@@ -346,11 +358,11 @@ public class JFXGui extends Application {
 //		});
 		
 //		set actions when grid block variable changes
-		tinSubProp.countProperty().addListener((obs, oldVal, newVal) -> {
-            if (newVal != oldVal) {
-        		tinSubProgress.setProgress((float)tinSubProp.getCount()/numberOfCells);
-            }
-		});
+//		tinSubProp.countProperty().addListener((obs, oldVal, newVal) -> {
+//            if (newVal != oldVal) {
+//        		tinSubProgress.setProgress((float)tinSubProp.getCount()/numberOfCells);
+//            }
+//		});
 		
 //	set actions when a cell finishes processing
 //		outProp.countProperty().addListener((obs, oldVal, newVal) -> {
@@ -395,14 +407,17 @@ public class JFXGui extends Application {
 		//add image output display to GUI
 		root.getChildren().add(hboxOut);
 		
+		initialiseProcessingObjects(true);
+		
 		Scene scene = new Scene(root, width, height);
+		
 		new AnimationTimer() {
 			@Override
 			public void handle(long arg0) {
-				if (!isFinished) {
+				if (!mosaicBuilder.isFinished()) {
 					++frameCounting;
 					if (frameCounting % 60 == 0) {
-						dispOut.setImage(outImage);
+						dispOut.setImage(mosaicBuilder.getOutputImage());
 //		            	scrollPaneOut.setContent(null);
 //		            	scrollPaneOut.setContent(dispOut);
 						hboxOut.getChildren().remove(dispOut);
@@ -413,8 +428,50 @@ public class JFXGui extends Application {
 			}
 		}.start();
 		
+
+		
 		//display UI
 		stage.setScene(scene);
         stage.show();
+	}
+	
+	private void initialiseProcessingObjects(boolean firstStartup) {
+		try {
+			imageDownloader = new ImageDownloader(downProgress);
+			imageLibrary = new ImageLibrary(imgLibProgress);
+			
+			if (firstStartup) {
+				imageGrid = new ImageGrid(null);
+			} else {
+				imageGrid = new ImageGrid(ImageIO.read(new File(refPath.getText())));
+			}
+			
+			rgbLibrary = new RGBLibrary();
+			mosaicBuilder = new MosaicBuilder(tinSubProgress);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
+	private void runComputations() {
+		@Future
+		int imageDownload = imageDownloader.downloadRecentImages(4);
+
+		@Future(depends="imageDownload")
+		Map<String, BufferedImage> imageLibraryResult = imageLibrary.readDirectory("photos", Double.parseDouble(libScale.getText()), Integer.parseInt(threadCount.getText()));	
+					
+		@Future()
+		int imageGridTask = imageGrid.createGrid(false, Integer.parseInt(gridWidth.getText()), Integer.parseInt(gridHeight.getText()));	
+		
+		@Future()
+		Map<String, AvgRGB> rgbList = rgbLibrary.calculateRGB(imageLibraryResult);
+					
+		@Future()
+		int mosaicBuild = mosaicBuilder.createMosaic(imageLibrary, rgbList, imageGrid, Integer.parseInt(threadCount.getText()), 'R');
+		
+		@Gui(notifiedBy="mosaicBuild")
+		Void guiUpdate = mosaicBuilder.displayOnGUI(dispOut);
+		
 	}
 }

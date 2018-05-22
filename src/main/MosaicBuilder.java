@@ -13,6 +13,9 @@ import apt.annotations.Future;
 import apt.annotations.Gui;
 import apt.annotations.TaskInfoType;
 import javafx.embed.swing.SwingFXUtils;
+import javafx.scene.control.ProgressBar;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import main.gui.JFXGui;
 import main.images.AvgRGB;
 import main.images.ImageGrid;
@@ -31,29 +34,30 @@ public class MosaicBuilder {
 	private Map<String, AvgRGB> libraryIndex = null;
 	private ImageGrid cellMatrix = null;
 	private ImageLibrary imglib = null;
-	Set<String> keySet = null;
+	private Set<String> keySet = null;
 	private char type;
 	//private String[][] mosaicMatrix;
 	
-	int cellHeight;
-	int cellWidth;
-	BufferedImage output;
-	Graphics2D g2d;
-	double count;
+	private int cellHeight;
+	private int cellWidth;
+	private BufferedImage output;
+	private Graphics2D g2d;
 	
-
+	private int numberOfCells;
+	private double count;
+	private boolean isFinished;
+	
+	private ProgressBar progressBar;
+	private Image outputImage;
+	
 	static long startTime;
 	static long endTime;
 	
 	@Future
 	private Void[] futureGroup = new Void[1];
 	
-	public MosaicBuilder(ImageLibrary lib, String[][] matrix) {
-		imglib = lib;
-	}
-	
-	public MosaicBuilder() {
-		
+	public MosaicBuilder(ProgressBar progressBar) {
+		this.progressBar = progressBar;
 	}
 	
 	public int createMosaic(ImageLibrary lib, Map<String, AvgRGB> libraryIndex, ImageGrid cellMatrix, int numOfThreads, char type) {
@@ -74,7 +78,7 @@ public class MosaicBuilder {
 		output = new BufferedImage(cellWidth*cellMatrix.getWidth(),cellHeight*cellMatrix.getHeight(),BufferedImage.TYPE_INT_RGB);
 		g2d = output.createGraphics();
 		
-		JFXGui.numberOfCells = cellMatrix.getWidth() * cellMatrix.getHeight();
+		numberOfCells = cellMatrix.getWidth() * cellMatrix.getHeight();
 		//printTimeStamp("MosaicInit");
 		
 		count = 0;
@@ -90,7 +94,7 @@ public class MosaicBuilder {
 		//printTimeStamp("MosaicSubstitution " + numOfThreads);
 		
 		System.out.println("Finish CreateMosaic");
-		JFXGui.finishedImage = output;
+		//JFXGui.finishedImage = output;
 //		try {
 //			System.out.println("Saving image to disk");
 //			ImageIO.write(output, "jpg", new File("output.jpg"));
@@ -120,8 +124,7 @@ public class MosaicBuilder {
 				for(int col=0; col<cellMatrix.getWidth(); col++) {
 					
 					String minPointer = "";
-					double minDistance = Math.pow(256, 3);
-					
+					double minDistance = Math.pow(256, 3);					
 					
 					for (String key: keySet) {
 						double checkDistance = calcDist(cellMatrix.getGridCell(col, row), libraryIndex.get(key), type);
@@ -130,23 +133,13 @@ public class MosaicBuilder {
 								minPointer = key;
 								minDistance = checkDistance;
 							}
-					}
-					
-					
-					
-					
+					}	
 					
 					g2d.drawImage(imglib.getImage(minPointer), 
 							col*cellWidth, row*cellHeight,  null);
-//					try {
-//						Thread.sleep(1000);
-//					} catch (InterruptedException e) {
-//						// TODO Auto-generated catch block
-//						e.printStackTrace();
-//					}
-					
 				}
-				JFXGui.outImage = SwingFXUtils.toFXImage(output, null);
+				
+				outputImage = SwingFXUtils.toFXImage(output, null);
 				@Gui
 				Void gui = updateProgress();
 			}
@@ -196,17 +189,22 @@ public class MosaicBuilder {
 	}
 	
 	public Void updateProgress() {
-
 		count += cellMatrix.getWidth();
-		JFXGui.tinSubProgress.setProgress((float)count / JFXGui.numberOfCells);
-		//System.out.println("HELLO");
-		//JFXGui.tinSubProp.setCount(count);
+		progressBar.setProgress((float)count / numberOfCells);
 		return null;
 	}
 	
-	public Void displayOnGUI() {
-		JFXGui.isFinished = true;
-		JFXGui.dispOut.setImage(SwingFXUtils.toFXImage(output, null));
+	public Void displayOnGUI(ImageView imageView) {
+		isFinished = true;
+		imageView.setImage(SwingFXUtils.toFXImage(output, null));
 		return null;
+	}
+	
+	public boolean isFinished() {
+		return isFinished;
+	}
+	
+	public Image getOutputImage() { 
+		return outputImage;
 	}
 }

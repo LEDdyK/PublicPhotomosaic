@@ -18,6 +18,7 @@ import apt.annotations.Future;
 import apt.annotations.Gui;
 import apt.annotations.TaskInfoType;
 import javafx.application.Platform;
+import javafx.scene.control.ProgressBar;
 import main.gui.JFXGui;
 import pt.runtime.WorkerThread;
 import pu.loopScheduler.LoopRange;
@@ -26,25 +27,30 @@ import pu.loopScheduler.LoopSchedulerFactory;
 
 public class ImageDownloader {
 	
-	public static final String API_KEY = "&api_key=89290e67c97452eacabe885466495603";
-	public static final String REST_FORMAT = "&format=rest";
-	public static final String SECRET = "6fea535f82bba7de";
+	private static final String API_KEY = "&api_key=89290e67c97452eacabe885466495603";
+	private static final String REST_FORMAT = "&format=rest";
+	private static final String SECRET = "6fea535f82bba7de";
 	
-	public static final String BASE_URL = "https://api.flickr.com/services/rest/?method=";
-	public static final String RECENT_IMAGES = BASE_URL + "flickr.photos.getRecent";
+	private static final String BASE_URL = "https://api.flickr.com/services/rest/?method=";
+	private static final String RECENT_IMAGES = BASE_URL + "flickr.photos.getRecent";
 	
-	public static final String DOWNLOAD_URL = "https://farm%d.staticflickr.com/%d/%s_%s_%s.%s";
+	private static final String DOWNLOAD_URL = "https://farm%d.staticflickr.com/%d/%s_%s_%s.%s";
 	
-	public static double downCount;
+	private List<PhotoMetaData> photoMetaDataList;
+	private double downCount;
+	private ProgressBar progressBar;
 	
 	@Future
 	public Void[] futureGroup = new Void[1];
 	
+	public ImageDownloader(ProgressBar progressBar) {
+		this.progressBar = progressBar;
+	}
 	public int downloadRecentImages(int numOfThreads) {
 		try {
 			System.out.println("Starting ImageDownloader");
 			String xmlResult = getRecentPhotosMetaDataXML();
-			List<PhotoMetaData> photoMetaDataList = parseXMLResult(xmlResult);
+			photoMetaDataList = parseXMLResult(xmlResult);
 			new File("photos").mkdir();
 
 			LoopScheduler scheduler = LoopSchedulerFactory.createLoopScheduler(0, photoMetaDataList.size(), 1, numOfThreads, pu.loopScheduler.AbstractLoopScheduler.LoopCondition.LessThan, pu.loopScheduler.LoopSchedulerFactory.LoopSchedulingType.Static);
@@ -53,11 +59,7 @@ public class ImageDownloader {
 			Void task = downloadImages(scheduler, photoMetaDataList);
 			futureGroup[0] = task;
 			
-			waitTillFinished();
-
-			//downloadImages(photoMetaDataList);
-		
-			
+			waitTillFinished();	
 		} catch (MalformedURLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -180,8 +182,7 @@ public class ImageDownloader {
 	
 	private Void updateDownProgress() {
 		++downCount;
-		//System.out.println(Platform.isFxApplicationThread());
-		JFXGui.downProgress.setProgress((float)downCount/100);
+		progressBar.setProgress((float)downCount/photoMetaDataList.size());
 		return null;
 	}
 

@@ -39,7 +39,6 @@ public class ImageGrid {
 			w = img.getWidth() / cellWidth;
 		}
 
-		JFXGui.numberOfCells = h*w;
 		rgbList = new AvgRGB[h][w];
 		
 		for(int y=0; y<h; y++) {

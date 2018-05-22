@@ -31,43 +31,6 @@ public class Main {
 		Application.launch(JFXGui.class, args);
 		//runComputations();
 	}
-
-	public static void runComputations() {
-		try {
-			
-			startTime = System.currentTimeMillis();
-
-			ImageDownloader imageDownloader = new ImageDownloader();
-			@Future
-			int imageDownload = imageDownloader.downloadRecentImages(4);
-
-			ImageLibrary imglib = new ImageLibrary();
-			@Future(depends="imageDownload")
-			Map<String, BufferedImage> imgLibrary = imglib.readDirectory("photos", Double.parseDouble(JFXGui.libScale.getText()), Integer.parseInt(JFXGui.threadCount.getText()));	
-						
-			BufferedImage image = ImageIO.read(new File(JFXGui.refPath.getText()));
-			ImageGrid imgGrid = new ImageGrid(image);
-			@Future()
-			int imageGrid = imgGrid.createGrid(false, Integer.parseInt(JFXGui.gridWidth.getText()), Integer.parseInt(JFXGui.gridHeight.getText()));	
-
-			
-			RGBLibrary rgbLib = new RGBLibrary();
-			@Future()
-			Map<String, AvgRGB> rgbList = rgbLib.calculateRGB(imgLibrary);
-			
-			
-			MosaicBuilder mosaicBuilder = new MosaicBuilder();
-			@Future()
-			int mosaicBuild = mosaicBuilder.createMosaic(imglib, rgbList, imgGrid, Integer.parseInt(JFXGui.threadCount.getText()), 'R');
-			
-			@Gui(notifiedBy="mosaicBuild")
-			Void guiUpdate = mosaicBuilder.displayOnGUI();
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
-	}
 	
 	private static void printTimeStamp(String str) {
 		prevTime = endTime;
