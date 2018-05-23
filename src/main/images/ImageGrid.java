@@ -2,6 +2,8 @@ package main.images;
 
 import java.awt.image.BufferedImage;
 
+import apt.annotations.Gui;
+import javafx.scene.control.ProgressBar;
 import main.gui.JFXGui;
 
 /**
@@ -17,8 +19,12 @@ public class ImageGrid {
 	private BufferedImage img;
 	private AvgRGB[][] rgbList;
 	
-	public ImageGrid(BufferedImage image ) {
+	private ProgressBar progress;
+	private int progressCount;
+	
+	public ImageGrid(BufferedImage image, ProgressBar progress) {
 		img = image;
+		this.progress = progress;
 	}
 	
 	public int createGrid(boolean initialiseWithGridSize, int width, int height) {
@@ -43,6 +49,8 @@ public class ImageGrid {
 			for(int x=0; x<w;x++) {
 				
 				rgbList[y][x] = new AvgRGB(img.getSubimage(x*cellWidth, y*cellHeight, cellWidth, cellHeight));
+				@Gui
+				Void update = updateProgress();
 			}
 		}
 		System.out.println("Finished ImageGrid");
@@ -63,5 +71,11 @@ public class ImageGrid {
 	
 	public BufferedImage gridImage(int x,int y) {
 		return img.getSubimage(x*cellWidth, y*cellHeight, cellWidth, cellHeight);
+	}
+	
+	private Void updateProgress() {
+		progressCount++;
+		progress.setProgress((float) progressCount / (h * w));
+		return null;
 	}
 }
