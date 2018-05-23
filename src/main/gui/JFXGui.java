@@ -70,11 +70,15 @@ public class JFXGui extends Application {
 	private ImageView dispOut;
 	private double frameCounting;
 	
-	private ProgressBar imgLibProgress;
 	private ProgressBar downProgress;
+	private ProgressBar imgLibProgress;
+	private ProgressBar rgbLibProgress;
+	private ProgressBar imgGridProgress;
 	private ProgressBar tinSubProgress;
+
 	
 	private Button saveImageButton;
+	private Button runCompButton;
 	
 	private BufferedImage finishedImage;
 	
@@ -111,10 +115,10 @@ public class JFXGui extends Application {
 		browse.setLayoutY(15);
 		
 //		run computations button
-		Button runComp = new Button("Run Computation");
+		runCompButton = new Button("Run Computation");
 			//set position
-		runComp.setLayoutX(545);
-		runComp.setLayoutY(400);
+		runCompButton.setLayoutX(545);
+		runCompButton.setLayoutY(400);
 		
 //		browse for reference image button
 		saveImageButton = new Button("Save Image To...");
@@ -219,6 +223,7 @@ public class JFXGui extends Application {
 		JFXToggle paraGC = new JFXToggle();
 		Pane paraGCBox = paraGC.makeToggle(34);
 		paraGC.getState().set(true);
+		paraGCState = true;
 			//set position
 		paraGCLabel.setLayoutX(20);
 		paraGCLabel.setLayoutY(673);
@@ -237,10 +242,23 @@ public class JFXGui extends Application {
 		imgLibProgress.setLayoutY(55);
 		imgLibProgress.setProgress(0F);
 		
+		// rgb library progress bar
+		rgbLibProgress = new ProgressBar();
+		rgbLibProgress.setLayoutX(545);
+		rgbLibProgress.setLayoutY(95);
+		rgbLibProgress.setProgress(0F);
+		
+		// img grid progress bar
+		imgGridProgress = new ProgressBar();
+		imgGridProgress.setLayoutX(545);
+		imgGridProgress.setLayoutY(135);
+		imgGridProgress.setProgress(0F);
+		
+		
 //		imageTinder and substitution progress bar
 		tinSubProgress = new ProgressBar();
 		tinSubProgress.setLayoutX(545);
-		tinSubProgress.setLayoutY(95);
+		tinSubProgress.setLayoutY(175);
 		tinSubProgress.setProgress(0F);
 		
 //		set actions on browse button click
@@ -283,11 +301,14 @@ public class JFXGui extends Application {
 		});
 		
 //		run computations
-		runComp.setOnAction(new EventHandler<ActionEvent>() {
+		runCompButton.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent arg0) {
+				((Button)arg0.getSource()).setDisable(true);
 				imgLibProgress.setProgress(0);
 				downProgress.setProgress(0);
+				rgbLibProgress.setProgress(0);
+				imgGridProgress.setProgress(0);
 				tinSubProgress.setProgress(0);
 				saveImageButton.setDisable(true);
 				hboxOut.getChildren().remove(dispOut);
@@ -355,15 +376,20 @@ public class JFXGui extends Application {
 		//add GUI-computation parallelisation toggle
 		root.getChildren().addAll(paraGCBack, paraGCLabel, paraGCBox);
 		//add run computations button
-		root.getChildren().add(runComp);
+		root.getChildren().add(runCompButton);
 		//add save image to button
 		root.getChildren().add(saveImageButton);
 		//add download progress bar
 		root.getChildren().add(downProgress);
 		//add image library progress bar
 		root.getChildren().add(imgLibProgress);
+		//add rgb library progress bar
+		root.getChildren().add(rgbLibProgress);
+		//add img grid progress bar
+		root.getChildren().add(imgGridProgress);
 		//add tinder/substitution porgress bar
 		root.getChildren().add(tinSubProgress);
+
 		//add image output display to GUI
 		root.getChildren().add(hboxOut);
 		
@@ -397,12 +423,12 @@ public class JFXGui extends Application {
 			imageLibrary = new ImageLibrary(imgLibProgress);
 			
 			if (firstStartup) {
-				imageGrid = new ImageGrid(null);
+				imageGrid = new ImageGrid(null, imgGridProgress);
 			} else {
-				imageGrid = new ImageGrid(ImageIO.read(new File(refPath.getText())));
+				imageGrid = new ImageGrid(ImageIO.read(new File(refPath.getText())), imgGridProgress);
 			}
 			
-			rgbLibrary = new RGBLibrary();
+			rgbLibrary = new RGBLibrary(rgbLibProgress);
 			mosaicBuilder = new MosaicBuilder(tinSubProgress);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
@@ -427,7 +453,7 @@ public class JFXGui extends Application {
 		int mosaicBuild = mosaicBuilder.createMosaic(imageLibrary, rgbList, imageGrid, Integer.parseInt(threadCount.getText()), 'R');
 		
 		@Gui(notifiedBy="mosaicBuild")
-		Void guiUpdate = mosaicBuilder.displayOnGUI(dispOut, saveImageButton);
+		Void guiUpdate = mosaicBuilder.displayOnGUI(dispOut, saveImageButton, runCompButton);
 		
 	}
 	
@@ -448,6 +474,6 @@ public class JFXGui extends Application {
 		int mosaicBuild = mosaicBuilder.createMosaic(imageLibrary, rgbList, imageGrid, 1, 'R');
 		
 		@Gui(notifiedBy="mosaicBuild")
-		Void guiUpdate = mosaicBuilder.displayOnGUI(dispOut, saveImageButton);
+		Void guiUpdate = mosaicBuilder.displayOnGUI(dispOut, saveImageButton, runCompButton);
 	}
 }

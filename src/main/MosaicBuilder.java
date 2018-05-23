@@ -164,9 +164,10 @@ public class MosaicBuilder {
 		return null;
 	}
 	
-	public Void displayOnGUI(ImageView imageView, Button saveButton) {
+	public Void displayOnGUI(ImageView imageView, Button saveButton, Button runButton) {
 		isFinished = true;
-		enableSave(saveButton);
+		saveButton.setDisable(false);
+		runButton.setDisable(false);
 		imageView.setImage(SwingFXUtils.toFXImage(output, null));
 		return null;
 	}

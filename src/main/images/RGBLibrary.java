@@ -13,7 +13,9 @@ import java.util.Map;
 import java.util.Scanner;
 
 import apt.annotations.Future;
+import apt.annotations.Gui;
 import apt.annotations.TaskInfoType;
+import javafx.scene.control.ProgressBar;
 import pu.loopScheduler.LoopScheduler;
 import pu.loopScheduler.LoopSchedulerFactory;
 
@@ -26,12 +28,17 @@ public class RGBLibrary {
 	
 	private Map<String,AvgRGB> rgbList;
 	private Map<String,BufferedImage> library;
+	
+	private ProgressBar progress;
+	private int progressCount;
+	
 	/**
 	 * takes in a library of images and converts them into a library of RGBs paired with their filename
 	 * @param library
 	 */
-	public RGBLibrary() {
+	public RGBLibrary(ProgressBar progress) {
 		rgbList = new HashMap<String,AvgRGB>();
+		this.progress = progress;
 	}
 	
 	
@@ -44,6 +51,9 @@ public class RGBLibrary {
 			BufferedImage image = library.get(imageKey);
 			AvgRGB rgb = new AvgRGB(image);
 			rgbList.put(imageKey,rgb);
+			
+			@Gui
+			Void update = updateProgress();
 		}
 		System.out.println("Finished RGBLibrary");
 		return rgbList;
@@ -93,6 +103,12 @@ public class RGBLibrary {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+	}
+	
+	private Void updateProgress() {
+		progressCount++;
+		progress.setProgress((float)progressCount / library.size());
+		return null;
 	}
 	
 	
