@@ -215,7 +215,7 @@ public class JFXGui extends Application {
 //		GUI-computation parallelisation toggle switch
 		Rectangle paraGCBack = new Rectangle(15, 670, 502, 23);
 		paraGCBack.setFill(Color.WHITE);
-		Label paraGCLabel = new Label("Parallelise GUI with Computations");
+		Label paraGCLabel = new Label("Run tasks in Parallel");
 		JFXToggle paraGC = new JFXToggle();
 		Pane paraGCBox = paraGC.makeToggle(34);
 			//set position
@@ -291,7 +291,12 @@ public class JFXGui extends Application {
 				saveImageButton.setDisable(true);
 				hboxOut.getChildren().remove(dispOut);
 				initialiseProcessingObjects(false);
-				runComputations();
+				
+				if (paraGCState) {
+					runComputations();				
+				} else {
+					runComputationsSequentially();
+				}				
 			}
 		});
 		
@@ -406,9 +411,9 @@ public class JFXGui extends Application {
 	
 	private void runComputations() {
 		@Future
-		int imageDownload = imageDownloader.downloadRecentImages(4);
+		int imageDownloadTask = imageDownloader.downloadRecentImages(Integer.parseInt(threadCount.getText()));
 
-		@Future(depends="imageDownload")
+		@Future(depends="imageDownloadTask")
 		Map<String, BufferedImage> imageLibraryResult = imageLibrary.readDirectory("photos", Double.parseDouble(libScale.getText()), Integer.parseInt(threadCount.getText()));	
 					
 		@Future()
@@ -423,5 +428,25 @@ public class JFXGui extends Application {
 		@Gui(notifiedBy="mosaicBuild")
 		Void guiUpdate = mosaicBuilder.displayOnGUI(dispOut, saveImageButton);
 		
+	}
+	
+	private void runComputationsSequentially() {
+		@Future
+		int imageDownloadTask = imageDownloader.downloadRecentImages(1);
+
+		@Future(depends="imageDownloadTask")
+		Map<String, BufferedImage> imageLibraryResult = imageLibrary.readDirectory("photos", Double.parseDouble(libScale.getText()), 1);	
+					
+		@Future(depends="imageLibraryResult")
+		int imageGridTask = imageGrid.createGrid(false, Integer.parseInt(gridWidth.getText()), Integer.parseInt(gridHeight.getText()));	
+		
+		@Future(depends="imageGridTask")
+		Map<String, AvgRGB> rgbList = rgbLibrary.calculateRGB(imageLibraryResult);
+					
+		@Future(depends="rgbList")
+		int mosaicBuild = mosaicBuilder.createMosaic(imageLibrary, rgbList, imageGrid, 1, 'R');
+		
+		@Gui(notifiedBy="mosaicBuild")
+		Void guiUpdate = mosaicBuilder.displayOnGUI(dispOut, saveImageButton);
 	}
 }
