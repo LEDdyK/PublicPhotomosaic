@@ -216,6 +216,8 @@ public class JFXGui extends Application {
 		downLabel.setTextFill(Color.WHITE);
 		JFXToggle downToggle = new JFXToggle();
 		Pane downToggleBox = downToggle.makeToggle(34);
+		downToggle.getState().set(true);
+		downState = true;
 			//set position
 		downLabel.setLayoutX(20);
 		downLabel.setLayoutY(650);
@@ -331,20 +333,37 @@ public class JFXGui extends Application {
 			@Override
 			public void handle(ActionEvent arg0) {
 				((Button)arg0.getSource()).setDisable(true);
+				
 				imgLibProgress.setProgress(0);
 				downProgress.setProgress(0);
 				rgbLibProgress.setProgress(0);
 				imgGridProgress.setProgress(0);
 				mosaicBuildProgress.setProgress(0);
+				
+				if (!downState) {
+					downloadLabel.setText("Skipping downloads");
+				} else {
+					downloadLabel.setText("Waitng");
+				}
+				
+				imgLibLabel.setText("Waitng");
+				rgbLibLabel.setText("Waitng");
+				imgGridLabel.setText("Waitng");
+				mosaicBuildLabel.setText("Waitng");
+				
 				saveImageButton.setDisable(true);
 				hboxOut.getChildren().remove(dispOut);
 				initialiseProcessingObjects(false);
 				
-				if (paraGCState) {
+				if (paraGCState && downState) {
 					runComputations();				
-				} else {
+				} else if (!paraGCState && downState) {
 					runComputationsSequentially();
-				}				
+				} else if (paraGCState && !downState) {
+					runComputationsWithoutDownload();
+				} else {
+					runComputationsWithoutDownloadSequentially();
+				}
 			}
 		});
 		
@@ -469,7 +488,7 @@ public class JFXGui extends Application {
 		}
 	}
 	
-	private void runComputations() {		
+	private void runComputations() {
 		// Download images
 		@Future
 		int imageDownloadTask = imageDownloader.downloadRecentImages(Integer.parseInt(threadCount.getText()));
@@ -519,9 +538,74 @@ public class JFXGui extends Application {
 		@Gui(notifiedBy="imageDownloadTask")
 		Void imageDownloadGuiUpdate = imageDownloader.postExecutionUpdate();
 		
-		
+	
 		// Process sub-images in directory
 		@Future(depends="imageDownloadTask")
+		Map<String, BufferedImage> imageLibraryResult = imageLibrary.readDirectory("photos", Double.parseDouble(libScale.getText()), 1);	
+					
+		@Gui(notifiedBy="imageLibraryResult")
+		Void imgLibraryGuiUpdate = imageLibrary.postExecutionUpdate();		
+		
+		// Calculate RGB values for sub-images in library
+		@Future(depends="imageLibraryResult")
+		Map<String, AvgRGB> rgbList = rgbLibrary.calculateRGB(imageLibraryResult);
+		
+		@Gui(notifiedBy="rgbList")
+		Void rgbListGuiUpdate = rgbLibrary.postExecutionUpdate();
+		
+		
+		// Calculate RGB values of cells for reference image
+		@Future(depends="rgbList")
+		int imageGridTask = imageGrid.createGrid(false, Integer.parseInt(gridWidth.getText()), Integer.parseInt(gridHeight.getText()));	
+		
+		@Gui(notifiedBy="imageGridTask")
+		Void imageGridGuiUpdate = imageGrid.postExecutionUpdate();
+		
+				
+		// Create Photomosaic using the processed sub-images
+		@Future(depends="imageGridTask")
+		int mosaicBuild = mosaicBuilder.createMosaic(imageLibrary, rgbList, imageGrid, 1, 'R');
+		
+		@Gui(notifiedBy="mosaicBuild")
+		Void mosaicBuildGuiUpdate = mosaicBuilder.postExecutionUpdate(dispOut, saveImageButton, runCompButton);
+	}
+	
+	private void runComputationsWithoutDownload() {
+		// Process sub-images in directory
+		@Future()
+		Map<String, BufferedImage> imageLibraryResult = imageLibrary.readDirectory("photos", Double.parseDouble(libScale.getText()), Integer.parseInt(threadCount.getText()));	
+					
+		@Gui(notifiedBy="imageLibraryResult")
+		Void imgLibraryGuiUpdate = imageLibrary.postExecutionUpdate();
+		
+		
+		// Calculate RGB values for sub-images in library
+		@Future()
+		Map<String, AvgRGB> rgbList = rgbLibrary.calculateRGB(imageLibraryResult);
+		
+		@Gui(notifiedBy="rgbList")
+		Void rgbListGuiUpdate = rgbLibrary.postExecutionUpdate();
+		
+		
+		// Calculate RGB values of cells for reference image
+		@Future()
+		int imageGridTask = imageGrid.createGrid(false, Integer.parseInt(gridWidth.getText()), Integer.parseInt(gridHeight.getText()));	
+		
+		@Gui(notifiedBy="imageGridTask")
+		Void imageGridGuiUpdate = imageGrid.postExecutionUpdate();
+		
+				
+		// Create Photomosaic using the processed sub-images
+		@Future()
+		int mosaicBuild = mosaicBuilder.createMosaic(imageLibrary, rgbList, imageGrid, Integer.parseInt(threadCount.getText()), 'R');
+		
+		@Gui(notifiedBy="mosaicBuild")
+		Void mosaicBuildGuiUpdate = mosaicBuilder.postExecutionUpdate(dispOut, saveImageButton, runCompButton);
+	}
+	
+	private void runComputationsWithoutDownloadSequentially() {
+		// Process sub-images in directory
+		@Future()
 		Map<String, BufferedImage> imageLibraryResult = imageLibrary.readDirectory("photos", Double.parseDouble(libScale.getText()), 1);	
 					
 		@Gui(notifiedBy="imageLibraryResult")
