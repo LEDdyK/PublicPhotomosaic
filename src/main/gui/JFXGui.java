@@ -218,6 +218,7 @@ public class JFXGui extends Application {
 		Label paraGCLabel = new Label("Run tasks in Parallel");
 		JFXToggle paraGC = new JFXToggle();
 		Pane paraGCBox = paraGC.makeToggle(34);
+		paraGC.getState().set(true);
 			//set position
 		paraGCLabel.setLayoutX(20);
 		paraGCLabel.setLayoutY(673);
