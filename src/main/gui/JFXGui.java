@@ -78,6 +78,7 @@ public class JFXGui extends Application {
 
 	
 	private Button saveImageButton;
+	private Button runCompButton;
 	
 	private BufferedImage finishedImage;
 	
@@ -114,10 +115,10 @@ public class JFXGui extends Application {
 		browse.setLayoutY(15);
 		
 //		run computations button
-		Button runComp = new Button("Run Computation");
+		runCompButton = new Button("Run Computation");
 			//set position
-		runComp.setLayoutX(545);
-		runComp.setLayoutY(400);
+		runCompButton.setLayoutX(545);
+		runCompButton.setLayoutY(400);
 		
 //		browse for reference image button
 		saveImageButton = new Button("Save Image To...");
@@ -300,9 +301,10 @@ public class JFXGui extends Application {
 		});
 		
 //		run computations
-		runComp.setOnAction(new EventHandler<ActionEvent>() {
+		runCompButton.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent arg0) {
+				((Button)arg0.getSource()).setDisable(true);
 				imgLibProgress.setProgress(0);
 				downProgress.setProgress(0);
 				rgbLibProgress.setProgress(0);
@@ -374,7 +376,7 @@ public class JFXGui extends Application {
 		//add GUI-computation parallelisation toggle
 		root.getChildren().addAll(paraGCBack, paraGCLabel, paraGCBox);
 		//add run computations button
-		root.getChildren().add(runComp);
+		root.getChildren().add(runCompButton);
 		//add save image to button
 		root.getChildren().add(saveImageButton);
 		//add download progress bar
@@ -451,7 +453,7 @@ public class JFXGui extends Application {
 		int mosaicBuild = mosaicBuilder.createMosaic(imageLibrary, rgbList, imageGrid, Integer.parseInt(threadCount.getText()), 'R');
 		
 		@Gui(notifiedBy="mosaicBuild")
-		Void guiUpdate = mosaicBuilder.displayOnGUI(dispOut, saveImageButton);
+		Void guiUpdate = mosaicBuilder.displayOnGUI(dispOut, saveImageButton, runCompButton);
 		
 	}
 	
@@ -472,6 +474,6 @@ public class JFXGui extends Application {
 		int mosaicBuild = mosaicBuilder.createMosaic(imageLibrary, rgbList, imageGrid, 1, 'R');
 		
 		@Gui(notifiedBy="mosaicBuild")
-		Void guiUpdate = mosaicBuilder.displayOnGUI(dispOut, saveImageButton);
+		Void guiUpdate = mosaicBuilder.displayOnGUI(dispOut, saveImageButton, runCompButton);
 	}
 }
