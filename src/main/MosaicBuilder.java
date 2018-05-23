@@ -14,6 +14,7 @@ import apt.annotations.Gui;
 import apt.annotations.TaskInfoType;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -47,6 +48,7 @@ public class MosaicBuilder {
 	private boolean isFinished;
 	
 	private ProgressBar progressBar;
+	private Label progressLabel;
 	private Image outputImage;
 	
 	static long startTime;
@@ -55,8 +57,9 @@ public class MosaicBuilder {
 	@Future
 	private Void[] futureGroup = new Void[1];
 	
-	public MosaicBuilder(ProgressBar progressBar) {
+	public MosaicBuilder(ProgressBar progressBar, Label progressLabel) {
 		this.progressBar = progressBar;
+		this.progressLabel = progressLabel;
 	}
 	
 	public int createMosaic(ImageLibrary lib, Map<String, AvgRGB> libraryIndex, ImageGrid cellMatrix, int numOfThreads, char type) {
@@ -161,14 +164,16 @@ public class MosaicBuilder {
 	public Void updateProgress() {
 		count += cellMatrix.getWidth();
 		progressBar.setProgress((float)count / numberOfCells);
+		progressLabel.setText("Found best substitute for " + (int)count + " out of " + numberOfCells + " cells");
 		return null;
 	}
 	
-	public Void displayOnGUI(ImageView imageView, Button saveButton, Button runButton) {
+	public Void postExecutionUpdate(ImageView imageView, Button saveButton, Button runButton) {
 		isFinished = true;
 		saveButton.setDisable(false);
 		runButton.setDisable(false);
 		imageView.setImage(SwingFXUtils.toFXImage(output, null));
+		progressLabel.setText("Finished");
 		return null;
 	}
 	

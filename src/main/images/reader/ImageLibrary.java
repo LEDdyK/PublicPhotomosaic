@@ -15,6 +15,7 @@ import javax.imageio.ImageIO;
 import apt.annotations.Future;
 import apt.annotations.Gui;
 import apt.annotations.TaskInfoType;
+import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
 import main.gui.JFXGui;
 import pt.runtime.WorkerThread;
@@ -36,12 +37,14 @@ public class ImageLibrary {
 	private List<File> toDelete = null;
 	
 	private ProgressBar progressBar;
+	private Label progressLabel;
 	
 	@Future
 	private Void[] futureGroup = new Void[1];
 
-	public ImageLibrary(ProgressBar progressBar) {
+	public ImageLibrary(ProgressBar progressBar, Label progressLabel) {
 		this.progressBar = progressBar;
+		this.progressLabel = progressLabel;
 	}
 	
 	/**
@@ -149,6 +152,12 @@ public class ImageLibrary {
 	private Void updateProgress() {
 		++libCount;
 		progressBar.setProgress((float)libCount/directoryListing.length);
+		progressLabel.setText("Processed " + (int)libCount + " out of " + directoryListing.length + " images");
+		return null;
+	}
+	
+	public Void postExecutionUpdate() {
+		progressLabel.setText("Finished");
 		return null;
 	}
 	

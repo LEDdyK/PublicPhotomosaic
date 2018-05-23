@@ -18,6 +18,7 @@ import apt.annotations.Future;
 import apt.annotations.Gui;
 import apt.annotations.TaskInfoType;
 import javafx.application.Platform;
+import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
 import main.gui.JFXGui;
 import pt.runtime.WorkerThread;
@@ -39,16 +40,21 @@ public class ImageDownloader {
 	private List<PhotoMetaData> photoMetaDataList;
 	private double downCount;
 	private ProgressBar progressBar;
+	private Label progressLabel;
 	
 	@Future
 	public Void[] futureGroup = new Void[1];
 	
-	public ImageDownloader(ProgressBar progressBar) {
+	public ImageDownloader(ProgressBar progressBar, Label progressLabel) {
 		this.progressBar = progressBar;
+		this.progressLabel = progressLabel;
 	}
 	public int downloadRecentImages(int numOfThreads) {
 		try {
 			System.out.println("Starting ImageDownloader");
+			@Gui
+			Void progress = updateDownProgress(false);
+			
 			String xmlResult = getRecentPhotosMetaDataXML();
 			photoMetaDataList = parseXMLResult(xmlResult);
 			new File("photos").mkdir();
@@ -93,7 +99,7 @@ public class ImageDownloader {
 				//System.out.println(worker.getThreadID() + ": " + link);
 				downloadImage(link, photoMetaData);
 				@Gui
-				Void progress = updateDownProgress();
+				Void progress = updateDownProgress(true);
 			}
 		}
 		
@@ -180,9 +186,20 @@ public class ImageDownloader {
 		
 	}
 	
-	private Void updateDownProgress() {
-		++downCount;
-		progressBar.setProgress((float)downCount/photoMetaDataList.size());
+	private Void updateDownProgress(boolean isDownloading) {
+		if (isDownloading) {
+			++downCount;
+			progressBar.setProgress((float)downCount/photoMetaDataList.size());
+			progressLabel.setText("Downloaded " + (int)downCount + " out of " + photoMetaDataList.size() + " images");
+		} else {
+			progressLabel.setText("Retrieving image metadata from Flickr");
+		}
+		
+		return null;
+	}
+	
+	public Void postExecutionUpdate() {
+		progressLabel.setText("Finished");
 		return null;
 	}
 
