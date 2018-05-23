@@ -74,7 +74,13 @@ public class JFXGui extends Application {
 	private ProgressBar imgLibProgress;
 	private ProgressBar rgbLibProgress;
 	private ProgressBar imgGridProgress;
-	private ProgressBar tinSubProgress;
+	private ProgressBar mosaicBuildProgress;
+	
+	private Label downloadLabel;
+	private Label imgLibLabel;
+	private Label rgbLibLabel;
+	private Label imgGridLabel;
+	private Label mosaicBuildLabel;
 
 	
 	private Button saveImageButton;
@@ -230,36 +236,56 @@ public class JFXGui extends Application {
 		paraGCBox.setLayoutX(480);
 		paraGCBox.setLayoutY(673);
 		
-//		download progress bar
+//		download progress bar and label
 		downProgress = new ProgressBar();
 		downProgress.setLayoutX(545);
 		downProgress.setLayoutY(15);
 		downProgress.setProgress(0F);
 		
-//		image library progress bar
+		downloadLabel = new Label("Waiting");
+		downloadLabel.setLayoutX(545);
+		downloadLabel.setLayoutY(35);
+		
+//		image library progress bar and label
 		imgLibProgress = new ProgressBar();
 		imgLibProgress.setLayoutX(545);
-		imgLibProgress.setLayoutY(55);
+		imgLibProgress.setLayoutY(65);
 		imgLibProgress.setProgress(0F);
 		
-		// rgb library progress bar
+		imgLibLabel = new Label("Waiting");
+		imgLibLabel.setLayoutX(545);
+		imgLibLabel.setLayoutY(85);
+		
+		// rgb library progress bar and label
 		rgbLibProgress = new ProgressBar();
 		rgbLibProgress.setLayoutX(545);
-		rgbLibProgress.setLayoutY(95);
+		rgbLibProgress.setLayoutY(115);
 		rgbLibProgress.setProgress(0F);
 		
-		// img grid progress bar
+		rgbLibLabel = new Label("Waiting");
+		rgbLibLabel.setLayoutX(545);
+		rgbLibLabel.setLayoutY(135);
+		
+		// img grid progress bar and label
 		imgGridProgress = new ProgressBar();
 		imgGridProgress.setLayoutX(545);
-		imgGridProgress.setLayoutY(135);
+		imgGridProgress.setLayoutY(165);
 		imgGridProgress.setProgress(0F);
 		
+		imgGridLabel = new Label("Waiting");
+		imgGridLabel.setLayoutX(545);
+		imgGridLabel.setLayoutY(185);
 		
-//		imageTinder and substitution progress bar
-		tinSubProgress = new ProgressBar();
-		tinSubProgress.setLayoutX(545);
-		tinSubProgress.setLayoutY(175);
-		tinSubProgress.setProgress(0F);
+		
+//		mosaic build progress bar and label
+		mosaicBuildProgress = new ProgressBar();
+		mosaicBuildProgress.setLayoutX(545);
+		mosaicBuildProgress.setLayoutY(215);
+		mosaicBuildProgress.setProgress(0F);
+		
+		mosaicBuildLabel = new Label("Waiting");
+		mosaicBuildLabel.setLayoutX(545);
+		mosaicBuildLabel.setLayoutY(235);
 		
 //		set actions on browse button click
 		browse.setOnAction(new EventHandler<ActionEvent>() {
@@ -309,7 +335,7 @@ public class JFXGui extends Application {
 				downProgress.setProgress(0);
 				rgbLibProgress.setProgress(0);
 				imgGridProgress.setProgress(0);
-				tinSubProgress.setProgress(0);
+				mosaicBuildProgress.setProgress(0);
 				saveImageButton.setDisable(true);
 				hboxOut.getChildren().remove(dispOut);
 				initialiseProcessingObjects(false);
@@ -388,10 +414,17 @@ public class JFXGui extends Application {
 		//add img grid progress bar
 		root.getChildren().add(imgGridProgress);
 		//add tinder/substitution porgress bar
-		root.getChildren().add(tinSubProgress);
+		root.getChildren().add(mosaicBuildProgress);
 
 		//add image output display to GUI
 		root.getChildren().add(hboxOut);
+		
+		// add progress labels
+		root.getChildren().add(downloadLabel);
+		root.getChildren().add(imgLibLabel);
+		root.getChildren().add(rgbLibLabel);
+		root.getChildren().add(imgGridLabel);
+		root.getChildren().add(mosaicBuildLabel);
 		
 		initialiseProcessingObjects(true);
 		
@@ -419,61 +452,102 @@ public class JFXGui extends Application {
 	
 	private void initialiseProcessingObjects(boolean firstStartup) {
 		try {
-			imageDownloader = new ImageDownloader(downProgress);
-			imageLibrary = new ImageLibrary(imgLibProgress);
+			imageDownloader = new ImageDownloader(downProgress, downloadLabel);
+			imageLibrary = new ImageLibrary(imgLibProgress, imgLibLabel);
 			
 			if (firstStartup) {
-				imageGrid = new ImageGrid(null, imgGridProgress);
+				imageGrid = new ImageGrid(null, imgGridProgress, imgGridLabel);
 			} else {
-				imageGrid = new ImageGrid(ImageIO.read(new File(refPath.getText())), imgGridProgress);
+				imageGrid = new ImageGrid(ImageIO.read(new File(refPath.getText())), imgGridProgress, imgGridLabel);
 			}
 			
-			rgbLibrary = new RGBLibrary(rgbLibProgress);
-			mosaicBuilder = new MosaicBuilder(tinSubProgress);
+			rgbLibrary = new RGBLibrary(rgbLibProgress, rgbLibLabel);
+			mosaicBuilder = new MosaicBuilder(mosaicBuildProgress, mosaicBuildLabel);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
 	
-	private void runComputations() {
+	private void runComputations() {		
+		// Download images
 		@Future
 		int imageDownloadTask = imageDownloader.downloadRecentImages(Integer.parseInt(threadCount.getText()));
 
+		@Gui(notifiedBy="imageDownloadTask")
+		Void imageDownloadGuiUpdate = imageDownloader.postExecutionUpdate();
+		
+		
+		// Process sub-images in directory
 		@Future(depends="imageDownloadTask")
 		Map<String, BufferedImage> imageLibraryResult = imageLibrary.readDirectory("photos", Double.parseDouble(libScale.getText()), Integer.parseInt(threadCount.getText()));	
 					
+		@Gui(notifiedBy="imageLibraryResult")
+		Void imgLibraryGuiUpdate = imageLibrary.postExecutionUpdate();
+		
+		
+		// Calculate RGB values for sub-images in library
+		@Future()
+		Map<String, AvgRGB> rgbList = rgbLibrary.calculateRGB(imageLibraryResult);
+		
+		@Gui(notifiedBy="rgbList")
+		Void rgbListGuiUpdate = rgbLibrary.postExecutionUpdate();
+		
+		
+		// Calculate RGB values of cells for reference image
 		@Future()
 		int imageGridTask = imageGrid.createGrid(false, Integer.parseInt(gridWidth.getText()), Integer.parseInt(gridHeight.getText()));	
 		
-		@Future()
-		Map<String, AvgRGB> rgbList = rgbLibrary.calculateRGB(imageLibraryResult);
-					
+		@Gui(notifiedBy="imageGridTask")
+		Void imageGridGuiUpdate = imageGrid.postExecutionUpdate();
+		
+				
+		// Create Photomosaic using the processed sub-images
 		@Future()
 		int mosaicBuild = mosaicBuilder.createMosaic(imageLibrary, rgbList, imageGrid, Integer.parseInt(threadCount.getText()), 'R');
 		
 		@Gui(notifiedBy="mosaicBuild")
-		Void guiUpdate = mosaicBuilder.displayOnGUI(dispOut, saveImageButton, runCompButton);
+		Void mosaicBuildGuiUpdate = mosaicBuilder.postExecutionUpdate(dispOut, saveImageButton, runCompButton);
 		
 	}
 	
 	private void runComputationsSequentially() {
+		// Download images
 		@Future
 		int imageDownloadTask = imageDownloader.downloadRecentImages(1);
 
+		@Gui(notifiedBy="imageDownloadTask")
+		Void imageDownloadGuiUpdate = imageDownloader.postExecutionUpdate();
+		
+		
+		// Process sub-images in directory
 		@Future(depends="imageDownloadTask")
 		Map<String, BufferedImage> imageLibraryResult = imageLibrary.readDirectory("photos", Double.parseDouble(libScale.getText()), 1);	
 					
+		@Gui(notifiedBy="imageLibraryResult")
+		Void imgLibraryGuiUpdate = imageLibrary.postExecutionUpdate();		
+		
+		// Calculate RGB values for sub-images in library
 		@Future(depends="imageLibraryResult")
+		Map<String, AvgRGB> rgbList = rgbLibrary.calculateRGB(imageLibraryResult);
+		
+		@Gui(notifiedBy="rgbList")
+		Void rgbListGuiUpdate = rgbLibrary.postExecutionUpdate();
+		
+		
+		// Calculate RGB values of cells for reference image
+		@Future(depends="rgbList")
 		int imageGridTask = imageGrid.createGrid(false, Integer.parseInt(gridWidth.getText()), Integer.parseInt(gridHeight.getText()));	
 		
+		@Gui(notifiedBy="imageGridTask")
+		Void imageGridGuiUpdate = imageGrid.postExecutionUpdate();
+		
+				
+		// Create Photomosaic using the processed sub-images
 		@Future(depends="imageGridTask")
-		Map<String, AvgRGB> rgbList = rgbLibrary.calculateRGB(imageLibraryResult);
-					
-		@Future(depends="rgbList")
 		int mosaicBuild = mosaicBuilder.createMosaic(imageLibrary, rgbList, imageGrid, 1, 'R');
 		
 		@Gui(notifiedBy="mosaicBuild")
-		Void guiUpdate = mosaicBuilder.displayOnGUI(dispOut, saveImageButton, runCompButton);
+		Void mosaicBuildGuiUpdate = mosaicBuilder.postExecutionUpdate(dispOut, saveImageButton, runCompButton);
 	}
 }
