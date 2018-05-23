@@ -42,14 +42,21 @@ public class ImageDownloader {
 	private ProgressBar progressBar;
 	private Label progressLabel;
 	
+	private boolean skipDownload;
+	
 	@Future
 	public Void[] futureGroup = new Void[1];
 	
-	public ImageDownloader(ProgressBar progressBar, Label progressLabel) {
+	public ImageDownloader(ProgressBar progressBar, Label progressLabel, boolean skipDownload) {
 		this.progressBar = progressBar;
 		this.progressLabel = progressLabel;
+		this.skipDownload = skipDownload;
 	}
 	public int downloadRecentImages(int numOfThreads) {
+		if (skipDownload) {
+			return 1;
+		}
+		
 		try {
 			System.out.println("Starting ImageDownloader");
 			@Gui
@@ -199,7 +206,9 @@ public class ImageDownloader {
 	}
 	
 	public Void postExecutionUpdate() {
-		progressLabel.setText("Finished");
+		if (!skipDownload) {
+			progressLabel.setText("Finished");
+		}
 		return null;
 	}
 
