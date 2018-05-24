@@ -317,7 +317,7 @@ public class JFXGui extends Application {
 			//time list
 		TimeList timeList = new TimeList();
 		Pane timeListPane = new Pane();
-		timeListPane = timeList.makeTimeList();
+		timeListPane = timeList.makeTimeList("Overall", "Download", "Reference", "Library", "RGB", "Mosaic");
 			//time 1
 		TimeList timeItem1 = new TimeList();
 		Pane timeItem1Pane = new Pane();
