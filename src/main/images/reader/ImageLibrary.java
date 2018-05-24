@@ -94,13 +94,15 @@ public class ImageLibrary {
 				try {
 					file = directoryListing[i];
 					BufferedImage image = ImageIO.read(file);
-					int w = (int)(image.getWidth()*scale);
-					int h = (int)(image.getHeight()*scale);
+					//int w = (int)(image.getWidth()*scale);
+					//int h = (int)(image.getHeight()*scale);
+					int w = (int)(150*scale);
+					int h = (int)(150*scale);
 					BufferedImage scaledImage = new BufferedImage(w,h,BufferedImage.TYPE_INT_RGB);
 					Graphics2D g2d = scaledImage.createGraphics();
 					g2d.drawImage(image,0,0,w,h,null);
 					
-					if(image.getHeight() == image.getWidth()) {
+					if(image.getHeight()==image.getWidth()) {
 						library.put(file.getName(),scaledImage);
 					}else {
 						toDelete.add(file);
