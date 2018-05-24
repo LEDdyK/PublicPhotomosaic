@@ -124,17 +124,17 @@ public class JFXGui extends Application {
 		
 //		run computations button
 		runCompButton = new Button("Run Computation");
-		runCompButton.setPrefWidth(200);
+		runCompButton.setPrefWidth(235);
 			//set position
-		runCompButton.setLayoutX(15);
-		runCompButton.setLayoutY(477);
+		runCompButton.setLayoutX(280);
+		runCompButton.setLayoutY(397);
 		
 //		browse for reference image button
 		saveImageButton = new Button("Save Image To...");
-		saveImageButton.setPrefWidth(200);
+		saveImageButton.setPrefWidth(235);
 			//set position
-		saveImageButton.setLayoutX(315);
-		saveImageButton.setLayoutY(477);
+		saveImageButton.setLayoutX(280);
+		saveImageButton.setLayoutY(441);
 		saveImageButton.setDisable(true);
 		
 //		library scale input
@@ -202,19 +202,19 @@ public class JFXGui extends Application {
 //		output display box
 		dispOut = new ImageView();
 			//set details
-		dispOut.setFitWidth(486);
-		dispOut.setFitHeight(486);
+		dispOut.setFitWidth(449);
+		dispOut.setFitHeight(449);
 		dispOut.setPreserveRatio(true);
 			//set position and border
 		hboxOut = new HBox();
 		hboxOut.setBorder(new Border(new BorderStroke(Color.BLUE, BorderStrokeStyle.SOLID, CornerRadii.EMPTY, BorderWidths.DEFAULT)));
 		hboxOut.setLayoutX(530);
 		hboxOut.setLayoutY(15);
-		hboxOut.setPrefWidth(486);
-		hboxOut.setPrefHeight(486);
+		hboxOut.setPrefWidth(449);
+		hboxOut.setPrefHeight(449);
 
 //		downloader toggle switch
-		Rectangle downBack = new Rectangle(15, 397, 500, 23);
+		Rectangle downBack = new Rectangle(15, 397, 250, 23);
 		downBack.setFill(Color.STEELBLUE);
 		Label downLabel = new Label ("Enable Download");
 		downLabel.setTextFill(Color.WHITE);
@@ -225,11 +225,11 @@ public class JFXGui extends Application {
 			//set position
 		downLabel.setLayoutX(20);
 		downLabel.setLayoutY(400);
-		downToggleBox.setLayoutX(478);
+		downToggleBox.setLayoutX(228);
 		downToggleBox.setLayoutY(400);
 		
 //		task-task parallelisation toggle switch
-		Rectangle paraTTBack = new Rectangle(15, 420, 500, 23);
+		Rectangle paraTTBack = new Rectangle(15, 420, 250, 23);
 		paraTTBack.setFill(Color.WHITE);
 		Label paraTTLabel = new Label("Run Tasks in Parallel");
 		JFXToggle paraTT = new JFXToggle();
@@ -239,11 +239,11 @@ public class JFXGui extends Application {
 			//set position
 		paraTTLabel.setLayoutX(20);
 		paraTTLabel.setLayoutY(423);
-		paraTTBox.setLayoutX(478);
+		paraTTBox.setLayoutX(228);
 		paraTTBox.setLayoutY(423);
 		
 //		GUI-computation parallelisation toggle switch
-		Rectangle paraGCBack = new Rectangle(15, 443, 500, 23);
+		Rectangle paraGCBack = new Rectangle(15, 443, 250, 23);
 		paraGCBack.setFill(Color.STEELBLUE);
 		Label paraGCLabel = new Label("Run GUI in Parallel");
 		paraGCLabel.setTextFill(Color.WHITE);
@@ -254,7 +254,7 @@ public class JFXGui extends Application {
 			//set position
 		paraGCLabel.setLayoutX(20);
 		paraGCLabel.setLayoutY(446);
-		paraGCBox.setLayoutX(478);
+		paraGCBox.setLayoutX(228);
 		paraGCBox.setLayoutY(446);
 		
 //		download progress bar
@@ -311,6 +311,43 @@ public class JFXGui extends Application {
 		mosaicBuildLabel = new Label("Waiting");
 		mosaicBuildLabel.setLayoutX(280);
 		mosaicBuildLabel.setLayoutY(355);
+		
+//		time values
+		HBox timeBox = new HBox();
+			//time list
+		TimeList timeList = new TimeList();
+		Pane timeListPane = new Pane();
+		timeListPane = timeList.makeTimeList();
+			//time 1
+		TimeList timeItem1 = new TimeList();
+		Pane timeItem1Pane = new Pane();
+		timeItem1Pane = timeItem1.makeTimeList();
+			//time 2
+		TimeList timeItem2 = new TimeList();
+		Pane timeItem2Pane = new Pane();
+		timeItem2Pane = timeItem2.makeTimeList();
+			//time 3
+		TimeList timeItem3 = new TimeList();
+		Pane timeItem3Pane = new Pane();
+		timeItem3Pane = timeItem3.makeTimeList();
+			//time 4
+		TimeList timeItem4 = new TimeList();
+		Pane timeItem4Pane = new Pane();
+		timeItem4Pane = timeItem4.makeTimeList();
+			//time 5
+		TimeList timeItem5 = new TimeList();
+		Pane timeItem5Pane = new Pane();
+		timeItem5Pane = timeItem5.makeTimeList();
+			//time 6
+		TimeList timeItem6 = new TimeList();
+		Pane timeItem6Pane = new Pane();
+		timeItem6Pane = timeItem6.makeTimeList();
+			//time values set up
+		timeBox.setPrefSize(966, 138);
+		timeBox.setLayoutX(15);
+		timeBox.setLayoutY(489);
+//		timeBox.setBorder(new Border(new BorderStroke(Color.BLUE, BorderStrokeStyle.SOLID, CornerRadii.EMPTY, BorderWidths.DEFAULT)));
+		timeBox.getChildren().addAll(timeListPane, timeItem1Pane, timeItem2Pane, timeItem3Pane, timeItem4Pane, timeItem5Pane, timeItem6Pane);
 		
 //		set actions on browse button click
 		browse.setOnAction(new EventHandler<ActionEvent>() {
@@ -467,6 +504,8 @@ public class JFXGui extends Application {
 		root.getChildren().addAll(mosaicBuildProgress, mosaicBuildLabel);
 		//add image output display to GUI
 		root.getChildren().add(hboxOut);
+		//add time values
+		root.getChildren().add(timeBox);
 		
 		initialiseProcessingObjects(true);
 		
