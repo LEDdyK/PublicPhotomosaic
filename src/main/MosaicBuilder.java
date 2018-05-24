@@ -164,7 +164,7 @@ public class MosaicBuilder {
 	public Void updateProgress() {
 		count += cellMatrix.getWidth();
 		progressBar.setProgress((float)count / numberOfCells);
-		progressLabel.setText("Found best substitute for " + (int)count + " out of " + numberOfCells + " cells");
+		progressLabel.setText("Substituted " + (int)count + " out of " + numberOfCells + " cells");
 		return null;
 	}
 	

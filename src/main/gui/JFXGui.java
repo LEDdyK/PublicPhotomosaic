@@ -56,6 +56,7 @@ public class JFXGui extends Application {
 	private File saveToFile;
 	
 	private Boolean downState;
+	private Boolean paraTTState;
 	private Boolean paraGCState;
 	
 	private TextField refPath;
@@ -82,7 +83,6 @@ public class JFXGui extends Application {
 	private Label imgGridLabel;
 	private Label mosaicBuildLabel;
 
-	
 	private Button saveImageButton;
 	private Button runCompButton;
 	
@@ -96,11 +96,13 @@ public class JFXGui extends Application {
 	
 	@Override
 	public void start(Stage stage) {
-		double height = 750;
-		double width = 1500;
+		double height = 708;
+		double width = 1049;
 		
 //		set window properties
 		stage.setTitle("SOFTENG 751: Photomosaic - Development mode");
+		stage.setWidth(width);
+		stage.setHeight(height);
 		stage.setMinWidth(width);
 		stage.setMinHeight(height);
 		
@@ -122,15 +124,17 @@ public class JFXGui extends Application {
 		
 //		run computations button
 		runCompButton = new Button("Run Computation");
+		runCompButton.setPrefWidth(200);
 			//set position
-		runCompButton.setLayoutX(545);
-		runCompButton.setLayoutY(400);
+		runCompButton.setLayoutX(15);
+		runCompButton.setLayoutY(477);
 		
 //		browse for reference image button
 		saveImageButton = new Button("Save Image To...");
+		saveImageButton.setPrefWidth(200);
 			//set position
-		saveImageButton.setLayoutX(545);
-		saveImageButton.setLayoutY(440);
+		saveImageButton.setLayoutX(315);
+		saveImageButton.setLayoutY(477);
 		saveImageButton.setDisable(true);
 		
 //		library scale input
@@ -198,91 +202,112 @@ public class JFXGui extends Application {
 //		output display box
 		dispOut = new ImageView();
 			//set details
-		dispOut.setFitWidth(810);
-		dispOut.setFitHeight(720);
+		dispOut.setFitWidth(486);
+		dispOut.setFitHeight(486);
 		dispOut.setPreserveRatio(true);
 			//set position and border
 		hboxOut = new HBox();
 		hboxOut.setBorder(new Border(new BorderStroke(Color.BLUE, BorderStrokeStyle.SOLID, CornerRadii.EMPTY, BorderWidths.DEFAULT)));
-		hboxOut.setLayoutX(675);
+		hboxOut.setLayoutX(530);
 		hboxOut.setLayoutY(15);
-		hboxOut.setPrefWidth(810);
-		hboxOut.setPrefHeight(720);
+		hboxOut.setPrefWidth(486);
+		hboxOut.setPrefHeight(486);
 
 //		downloader toggle switch
-		Rectangle downBack = new Rectangle(15, 397, 502, 23);
+		Rectangle downBack = new Rectangle(15, 397, 500, 23);
 		downBack.setFill(Color.STEELBLUE);
 		Label downLabel = new Label ("Enable Download");
 		downLabel.setTextFill(Color.WHITE);
 		JFXToggle downToggle = new JFXToggle();
 		Pane downToggleBox = downToggle.makeToggle(34);
+		downToggle.getState().set(true);
+		downState = true;
 			//set position
 		downLabel.setLayoutX(20);
 		downLabel.setLayoutY(400);
-		downToggleBox.setLayoutX(480);
+		downToggleBox.setLayoutX(478);
 		downToggleBox.setLayoutY(400);
 		
+//		task-task parallelisation toggle switch
+		Rectangle paraTTBack = new Rectangle(15, 420, 500, 23);
+		paraTTBack.setFill(Color.WHITE);
+		Label paraTTLabel = new Label("Run Tasks in Parallel");
+		JFXToggle paraTT = new JFXToggle();
+		Pane paraTTBox = paraTT.makeToggle(34);
+		paraTT.getState().set(true);
+		paraTTState = true;
+			//set position
+		paraTTLabel.setLayoutX(20);
+		paraTTLabel.setLayoutY(423);
+		paraTTBox.setLayoutX(478);
+		paraTTBox.setLayoutY(423);
+		
 //		GUI-computation parallelisation toggle switch
-		Rectangle paraGCBack = new Rectangle(15, 420, 502, 23);
-		paraGCBack.setFill(Color.WHITE);
-		Label paraGCLabel = new Label("Run tasks in Parallel");
+		Rectangle paraGCBack = new Rectangle(15, 443, 500, 23);
+		paraGCBack.setFill(Color.STEELBLUE);
+		Label paraGCLabel = new Label("Run GUI in Parallel");
+		paraGCLabel.setTextFill(Color.WHITE);
 		JFXToggle paraGC = new JFXToggle();
 		Pane paraGCBox = paraGC.makeToggle(34);
 		paraGC.getState().set(true);
 		paraGCState = true;
 			//set position
 		paraGCLabel.setLayoutX(20);
-		paraGCLabel.setLayoutY(423);
-		paraGCBox.setLayoutX(480);
-		paraGCBox.setLayoutY(423);
+		paraGCLabel.setLayoutY(446);
+		paraGCBox.setLayoutX(478);
+		paraGCBox.setLayoutY(446);
 		
-//		download progress bar and label
+//		download progress bar
 		downProgress = new ProgressBar();
 		downProgress.setLayoutX(280);
 		downProgress.setLayoutY(135);
+		downProgress.setPrefWidth(235);
 		downProgress.setProgress(0F);
-		
+			//label
 		downloadLabel = new Label("Waiting");
 		downloadLabel.setLayoutX(280);
 		downloadLabel.setLayoutY(155);
 		
-//		image library progress bar and label
+//		image library progress bar
 		imgLibProgress = new ProgressBar();
 		imgLibProgress.setLayoutX(280);
 		imgLibProgress.setLayoutY(185);
+		imgLibProgress.setPrefWidth(235);
 		imgLibProgress.setProgress(0F);
-		
+			//label
 		imgLibLabel = new Label("Waiting");
 		imgLibLabel.setLayoutX(280);
 		imgLibLabel.setLayoutY(205);
 		
-		// rgb library progress bar and label
+		// rgb library progress bar
 		rgbLibProgress = new ProgressBar();
 		rgbLibProgress.setLayoutX(280);
 		rgbLibProgress.setLayoutY(235);
+		rgbLibProgress.setPrefWidth(235);
 		rgbLibProgress.setProgress(0F);
-		
+			//label
 		rgbLibLabel = new Label("Waiting");
 		rgbLibLabel.setLayoutX(280);
 		rgbLibLabel.setLayoutY(255);
 		
-		// img grid progress bar and label
+		// img grid progress bar
 		imgGridProgress = new ProgressBar();
 		imgGridProgress.setLayoutX(280);
 		imgGridProgress.setLayoutY(285);
+		imgGridProgress.setPrefWidth(235);
 		imgGridProgress.setProgress(0F);
-		
+			//label
 		imgGridLabel = new Label("Waiting");
 		imgGridLabel.setLayoutX(280);
 		imgGridLabel.setLayoutY(305);
 		
-		
-//		mosaic build progress bar and label
+//		mosaic build progress bar
 		mosaicBuildProgress = new ProgressBar();
 		mosaicBuildProgress.setLayoutX(280);
 		mosaicBuildProgress.setLayoutY(335);
+		mosaicBuildProgress.setPrefWidth(235);
 		mosaicBuildProgress.setProgress(0F);
-		
+			//label
 		mosaicBuildLabel = new Label("Waiting");
 		mosaicBuildLabel.setLayoutX(280);
 		mosaicBuildLabel.setLayoutY(355);
@@ -331,20 +356,37 @@ public class JFXGui extends Application {
 			@Override
 			public void handle(ActionEvent arg0) {
 				((Button)arg0.getSource()).setDisable(true);
+				
 				imgLibProgress.setProgress(0);
 				downProgress.setProgress(0);
 				rgbLibProgress.setProgress(0);
 				imgGridProgress.setProgress(0);
 				mosaicBuildProgress.setProgress(0);
+				
+				if (!downState) {
+					downloadLabel.setText("Skipping downloads");
+				} else {
+					downloadLabel.setText("Waiting");
+				}
+				
+				imgLibLabel.setText("Waiting");
+				rgbLibLabel.setText("Waiting");
+				imgGridLabel.setText("Waiting");
+				mosaicBuildLabel.setText("Waiting");
+				
 				saveImageButton.setDisable(true);
 				hboxOut.getChildren().remove(dispOut);
 				initialiseProcessingObjects(false);
 				
 				if (paraGCState) {
-					runComputations();				
+					if (paraTTState) {
+						runComputations();				
+					} else {
+						runComputationsSequentially();
+					}
 				} else {
-					runComputationsSequentially();
-				}				
+					runComputationsCompletelySequentially();
+				}
 			}
 		});
 		
@@ -374,6 +416,12 @@ public class JFXGui extends Application {
 			downState = downToggle.getStateBool();
 		});
 		
+//		set actions on task-task parallelisation toggle click
+		paraTTBox.setOnMouseClicked(event -> {
+			paraTT.getState().set(!paraTT.getStateBool());
+			paraTTState = paraTT.getStateBool();
+		});
+		
 //		set actions on GUI-computation parallelisation toggle click
 		paraGCBox.setOnMouseClicked(event -> {
 			paraGC.getState().set(!paraGC.getStateBool());
@@ -399,6 +447,8 @@ public class JFXGui extends Application {
 		root.getChildren().add(hbox);
 		//add download toggle
 		root.getChildren().addAll(downBack, downLabel, downToggleBox);
+		//add task-task parallelisation toggle
+		root.getChildren().addAll(paraTTBack, paraTTLabel, paraTTBox);
 		//add GUI-computation parallelisation toggle
 		root.getChildren().addAll(paraGCBack, paraGCLabel, paraGCBox);
 		//add run computations button
@@ -406,36 +456,29 @@ public class JFXGui extends Application {
 		//add save image to button
 		root.getChildren().add(saveImageButton);
 		//add download progress bar
-		root.getChildren().add(downProgress);
+		root.getChildren().addAll(downProgress, downloadLabel);
 		//add image library progress bar
-		root.getChildren().add(imgLibProgress);
+		root.getChildren().addAll(imgLibProgress, imgLibLabel);
 		//add rgb library progress bar
-		root.getChildren().add(rgbLibProgress);
+		root.getChildren().addAll(rgbLibProgress, rgbLibLabel);
 		//add img grid progress bar
-		root.getChildren().add(imgGridProgress);
+		root.getChildren().addAll(imgGridProgress, imgGridLabel);
 		//add tinder/substitution porgress bar
-		root.getChildren().add(mosaicBuildProgress);
-
+		root.getChildren().addAll(mosaicBuildProgress, mosaicBuildLabel);
 		//add image output display to GUI
 		root.getChildren().add(hboxOut);
-		
-		// add progress labels
-		root.getChildren().add(downloadLabel);
-		root.getChildren().add(imgLibLabel);
-		root.getChildren().add(rgbLibLabel);
-		root.getChildren().add(imgGridLabel);
-		root.getChildren().add(mosaicBuildLabel);
 		
 		initialiseProcessingObjects(true);
 		
 		Scene scene = new Scene(root, width, height);
 		
+		//refresh output display
 		new AnimationTimer() {
 			@Override
 			public void handle(long arg0) {
 				if (!mosaicBuilder.isFinished()) {
 					++frameCounting;
-					if (frameCounting % 60 == 0) {
+					if (frameCounting % 1 == 0) {
 						dispOut.setImage(mosaicBuilder.getOutputImage());
 						hboxOut.getChildren().remove(dispOut);
 						hboxOut.getChildren().add(dispOut);
@@ -452,7 +495,7 @@ public class JFXGui extends Application {
 	
 	private void initialiseProcessingObjects(boolean firstStartup) {
 		try {
-			imageDownloader = new ImageDownloader(downProgress, downloadLabel);
+			imageDownloader = new ImageDownloader(downProgress, downloadLabel, !downState);
 			imageLibrary = new ImageLibrary(imgLibProgress, imgLibLabel);
 			
 			if (firstStartup) {
@@ -469,68 +512,67 @@ public class JFXGui extends Application {
 		}
 	}
 	
-	private void runComputations() {		
+	private void runComputations() {
 		// Download images
 		@Future
 		int imageDownloadTask = imageDownloader.downloadRecentImages(Integer.parseInt(threadCount.getText()));
-
 		@Gui(notifiedBy="imageDownloadTask")
 		Void imageDownloadGuiUpdate = imageDownloader.postExecutionUpdate();
-		
-		
 		// Process sub-images in directory
 		@Future(depends="imageDownloadTask")
 		Map<String, BufferedImage> imageLibraryResult = imageLibrary.readDirectory("photos", Double.parseDouble(libScale.getText()), Integer.parseInt(threadCount.getText()));	
-					
 		@Gui(notifiedBy="imageLibraryResult")
 		Void imgLibraryGuiUpdate = imageLibrary.postExecutionUpdate();
-		
-		
 		// Calculate RGB values for sub-images in library
 		@Future()
 		Map<String, AvgRGB> rgbList = rgbLibrary.calculateRGB(imageLibraryResult);
-		
 		@Gui(notifiedBy="rgbList")
 		Void rgbListGuiUpdate = rgbLibrary.postExecutionUpdate();
-		
-		
 		// Calculate RGB values of cells for reference image
 		@Future()
-		int imageGridTask = imageGrid.createGrid(false, Integer.parseInt(gridWidth.getText()), Integer.parseInt(gridHeight.getText()));	
-		
+		int imageGridTask = imageGrid.createGrid(false, Integer.parseInt(gridWidth.getText()), Integer.parseInt(gridHeight.getText()));
 		@Gui(notifiedBy="imageGridTask")
 		Void imageGridGuiUpdate = imageGrid.postExecutionUpdate();
-		
-				
 		// Create Photomosaic using the processed sub-images
 		@Future()
 		int mosaicBuild = mosaicBuilder.createMosaic(imageLibrary, rgbList, imageGrid, Integer.parseInt(threadCount.getText()), 'R');
-		
 		@Gui(notifiedBy="mosaicBuild")
 		Void mosaicBuildGuiUpdate = mosaicBuilder.postExecutionUpdate(dispOut, saveImageButton, runCompButton);
-		
 	}
 	
 	private void runComputationsSequentially() {
-
+		@Future
 		int imageDownloadTask = imageDownloader.downloadRecentImages(1);
-
+		@Gui(notifiedBy="imageDownloadTask")
 		Void imageDownloadGuiUpdate = imageDownloader.postExecutionUpdate();
-
+		@Future(depends="imageDownloadTask")
 		Map<String, BufferedImage> imageLibraryResult = imageLibrary.readDirectory("photos", Double.parseDouble(libScale.getText()), 1);	
-
+		@Gui(notifiedBy="imageLibraryResult")
 		Void imgLibraryGuiUpdate = imageLibrary.postExecutionUpdate();		
-
+		@Future(depends="imageLibraryResult")
 		Map<String, AvgRGB> rgbList = rgbLibrary.calculateRGB(imageLibraryResult);
-
+		@Gui(notifiedBy="rgbList")
 		Void rgbListGuiUpdate = rgbLibrary.postExecutionUpdate();
-
+		@Future(depends="rgbList")
 		int imageGridTask = imageGrid.createGrid(false, Integer.parseInt(gridWidth.getText()), Integer.parseInt(gridHeight.getText()));	
-
+		@Gui(notifiedBy="imageGridTask")
 		Void imageGridGuiUpdate = imageGrid.postExecutionUpdate();
-
+		@Future(depends="imageGridTask")
 		int mosaicBuild = mosaicBuilder.createMosaic(imageLibrary, rgbList, imageGrid, 1, 'R');
-
+		@Gui(notifiedBy="mosaicBuild")
+		Void mosaicBuildGuiUpdate = mosaicBuilder.postExecutionUpdate(dispOut, saveImageButton, runCompButton);
+	}
+	
+	private void runComputationsCompletelySequentially() {
+		int imageDownloadTask = imageDownloader.downloadRecentImages(1);
+		Void imageDownloadGuiUpdate = imageDownloader.postExecutionUpdate();
+		Map<String, BufferedImage> imageLibraryResult = imageLibrary.readDirectory("photos", Double.parseDouble(libScale.getText()), 1);
+		Void imgLibraryGuiUpdate = imageLibrary.postExecutionUpdate();
+		Map<String, AvgRGB> rgbList = rgbLibrary.calculateRGB(imageLibraryResult);
+		Void rgbListGuiUpdate = rgbLibrary.postExecutionUpdate();
+		int imageGridTask = imageGrid.createGrid(false, Integer.parseInt(gridWidth.getText()), Integer.parseInt(gridHeight.getText()));
+		Void imageGridGuiUpdate = imageGrid.postExecutionUpdate();
+		int mosaicBuild = mosaicBuilder.createMosaic(imageLibrary, rgbList, imageGrid, 1, 'R');
 		Void mosaicBuildGuiUpdate = mosaicBuilder.postExecutionUpdate(dispOut, saveImageButton, runCompButton);
 	}
 }

@@ -79,7 +79,7 @@ public class ImageGrid {
 	private Void updateProgress() {
 		progressCount++;
 		progress.setProgress((float) progressCount / (h * w));
-		progressLabel.setText("Calculated rgb values for " + progressCount + " out of " + (h*w) + " cells");
+		progressLabel.setText("Calculated rgb for " + progressCount + " out of " + (h*w) + " cells");
 		return null;
 	}
 	
