@@ -6,6 +6,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.Map;
 
 import javax.imageio.ImageIO;
@@ -50,7 +51,9 @@ import main.images.reader.ImageLibrary;
 import pt.runtime.ParaTask.TaskType;
 import javafx.stage.Stage;
 
-public class JFXGui extends Application {
+public class JFXGui extends Application implements GUICallback {
+	
+	private HashMap<String, String> latestTimes = new HashMap<>();
 	
 	private File selectedFile;
 	private File saveToFile;
@@ -93,6 +96,13 @@ public class JFXGui extends Application {
 	private ImageGrid imageGrid;
 	private RGBLibrary rgbLibrary;
 	private MosaicBuilder mosaicBuilder;
+
+	private TimeList timeItem1;
+	private TimeList timeItem2;
+	private TimeList timeItem3;
+	private TimeList timeItem4;
+	private TimeList timeItem5;
+	private TimeList timeItem6;
 	
 	@Override
 	public void start(Stage stage) {
@@ -319,27 +329,27 @@ public class JFXGui extends Application {
 		Pane timeListPane = new Pane();
 		timeListPane = timeList.makeTimeList("Overall", "Download", "Reference", "Library", "RGB", "Mosaic");
 			//time 1
-		TimeList timeItem1 = new TimeList();
+		timeItem1 = new TimeList();
 		Pane timeItem1Pane = new Pane();
 		timeItem1Pane = timeItem1.makeTimeList();
 			//time 2
-		TimeList timeItem2 = new TimeList();
+		timeItem2 = new TimeList();
 		Pane timeItem2Pane = new Pane();
 		timeItem2Pane = timeItem2.makeTimeList();
 			//time 3
-		TimeList timeItem3 = new TimeList();
+		timeItem3 = new TimeList();
 		Pane timeItem3Pane = new Pane();
 		timeItem3Pane = timeItem3.makeTimeList();
 			//time 4
-		TimeList timeItem4 = new TimeList();
+		timeItem4 = new TimeList();
 		Pane timeItem4Pane = new Pane();
 		timeItem4Pane = timeItem4.makeTimeList();
 			//time 5
-		TimeList timeItem5 = new TimeList();
+		timeItem5 = new TimeList();
 		Pane timeItem5Pane = new Pane();
 		timeItem5Pane = timeItem5.makeTimeList();
 			//time 6
-		TimeList timeItem6 = new TimeList();
+		timeItem6 = new TimeList();
 		Pane timeItem6Pane = new Pane();
 		timeItem6Pane = timeItem6.makeTimeList();
 			//time values set up
@@ -414,6 +424,8 @@ public class JFXGui extends Application {
 				saveImageButton.setDisable(true);
 				hboxOut.getChildren().remove(dispOut);
 				initialiseProcessingObjects(false);
+				
+				shiftTimes();
 				
 				if (paraGCState) {
 					if (paraTTState) {
@@ -510,6 +522,13 @@ public class JFXGui extends Application {
 		initialiseProcessingObjects(true);
 		
 		Scene scene = new Scene(root, width, height);
+
+		latestTimes.put("overall", "");
+		latestTimes.put("download", "");
+		latestTimes.put("reference", "");
+		latestTimes.put("library", "");
+		latestTimes.put("rgb", "");
+		latestTimes.put("mosaic", "");
 		
 		//refresh output display
 		new AnimationTimer() {
@@ -522,8 +541,10 @@ public class JFXGui extends Application {
 						hboxOut.getChildren().remove(dispOut);
 						hboxOut.getChildren().add(dispOut);
 						frameCounting = 0;
-					}	
-				}		
+					}
+				}
+				//System.out.println(latestTimes.get("download"));
+				updateLatest();
 			}
 		}.start();
 	
@@ -531,6 +552,7 @@ public class JFXGui extends Application {
 		stage.setScene(scene);
         stage.show();
 	}
+	
 	
 	private void initialiseProcessingObjects(boolean firstStartup) {
 		try {
@@ -554,7 +576,7 @@ public class JFXGui extends Application {
 	private void runComputations() {
 		// Download images
 		@Future
-		int imageDownloadTask = imageDownloader.downloadRecentImages(Integer.parseInt(threadCount.getText()));
+		int imageDownloadTask = imageDownloader.downloadRecentImages(Integer.parseInt(threadCount.getText()), this);
 		@Gui(notifiedBy="imageDownloadTask")
 		Void imageDownloadGuiUpdate = imageDownloader.postExecutionUpdate();
 		// Process sub-images in directory
@@ -581,7 +603,7 @@ public class JFXGui extends Application {
 	
 	private void runComputationsSequentially() {
 		@Future
-		int imageDownloadTask = imageDownloader.downloadRecentImages(1);
+		int imageDownloadTask = imageDownloader.downloadRecentImages(1, this);
 		@Gui(notifiedBy="imageDownloadTask")
 		Void imageDownloadGuiUpdate = imageDownloader.postExecutionUpdate();
 		@Future(depends="imageDownloadTask")
@@ -602,8 +624,9 @@ public class JFXGui extends Application {
 		Void mosaicBuildGuiUpdate = mosaicBuilder.postExecutionUpdate(dispOut, saveImageButton, runCompButton);
 	}
 	
+	
 	private void runComputationsCompletelySequentially() {
-		int imageDownloadTask = imageDownloader.downloadRecentImages(1);
+		int imageDownloadTask = imageDownloader.downloadRecentImages(1, this);
 		Void imageDownloadGuiUpdate = imageDownloader.postExecutionUpdate();
 		Map<String, BufferedImage> imageLibraryResult = imageLibrary.readDirectory("photos", Double.parseDouble(libScale.getText()), 1);
 		Void imgLibraryGuiUpdate = imageLibrary.postExecutionUpdate();
@@ -613,5 +636,31 @@ public class JFXGui extends Application {
 		Void imageGridGuiUpdate = imageGrid.postExecutionUpdate();
 		int mosaicBuild = mosaicBuilder.createMosaic(imageLibrary, rgbList, imageGrid, 1, 'R');
 		Void mosaicBuildGuiUpdate = mosaicBuilder.postExecutionUpdate(dispOut, saveImageButton, runCompButton);
+	}
+
+
+	
+	private void updateLatest() {
+		timeItem1.setLabel("overall", "400");
+		timeItem1.setLabel("download", latestTimes.get("download"));
+		timeItem1.setLabel("reference", latestTimes.get("reference"));
+		timeItem1.setLabel("library", latestTimes.get("library"));
+		timeItem1.setLabel("rgb", latestTimes.get("rgb"));
+		timeItem1.setLabel("mosaic", latestTimes.get("mosaic"));
+	}
+	
+	private void shiftTimes() {
+		timeItem6.setLabel(timeItem5);
+		timeItem5.setLabel(timeItem4);
+		timeItem4.setLabel(timeItem3);
+		timeItem3.setLabel(timeItem2);
+		timeItem2.setLabel(timeItem1);
+	}
+	
+	@Override
+	public void setTime(String key, long value) {
+		synchronized(latestTimes){
+			latestTimes.put(key, Long.toString(value));
+		}
 	}
 }
