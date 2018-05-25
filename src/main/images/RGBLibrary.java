@@ -17,6 +17,7 @@ import apt.annotations.Gui;
 import apt.annotations.TaskInfoType;
 import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
+import main.gui.GUICallback;
 import pu.loopScheduler.LoopScheduler;
 import pu.loopScheduler.LoopSchedulerFactory;
 
@@ -46,9 +47,9 @@ public class RGBLibrary {
 	
 	
 	
-	public Map<String, AvgRGB> calculateRGB(Map<String,BufferedImage> library) {
+	public Map<String, AvgRGB> calculateRGB(Map<String,BufferedImage> library, GUICallback callback) {
+		long startTime = System.currentTimeMillis();
 		this.library = library;
-		
 		System.out.println("Starting RGBLibrary");
 		for(String imageKey: library.keySet()) {
 			BufferedImage image = library.get(imageKey);
@@ -58,6 +59,8 @@ public class RGBLibrary {
 			@Gui
 			Void update = updateProgress();
 		}
+		//return time of task execution
+		callback.setTime("rgb", System.currentTimeMillis()-startTime);
 		System.out.println("Finished RGBLibrary");
 		return rgbList;
 	}

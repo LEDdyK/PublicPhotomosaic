@@ -18,6 +18,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import main.gui.GUICallback;
 import main.gui.JFXGui;
 import main.images.AvgRGB;
 import main.images.ImageGrid;
@@ -63,7 +64,8 @@ public class MosaicBuilder {
 		this.progressLabel = progressLabel;
 	}
 	
-	public int createMosaic(ImageLibrary lib, Map<String, AvgRGB> libraryIndex, ImageGrid cellMatrix, int numOfThreads, char type) {
+	public int createMosaic(ImageLibrary lib, Map<String, AvgRGB> libraryIndex, ImageGrid cellMatrix, int numOfThreads, char type, GUICallback callback) {
+		long startTime = System.currentTimeMillis();
 		this.imglib = lib;
 		this.libraryIndex = libraryIndex;
 		this.cellMatrix = cellMatrix;
@@ -92,6 +94,8 @@ public class MosaicBuilder {
 		waitTillFinished();
 		g2d.dispose();
 		
+		//return time of task execution
+		callback.setTime("mosaic", System.currentTimeMillis()-startTime);
 		System.out.println("Finish CreateMosaic");
 		return 1;
 	}

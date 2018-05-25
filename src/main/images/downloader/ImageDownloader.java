@@ -82,6 +82,7 @@ public class ImageDownloader {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		//return time of task execution
 		callback.setTime("download", System.currentTimeMillis()-startTime);
 		System.out.println("Finished ImageDownloader");
 		return 1;

@@ -581,12 +581,12 @@ public class JFXGui extends Application implements GUICallback {
 		Void imageDownloadGuiUpdate = imageDownloader.postExecutionUpdate();
 		// Process sub-images in directory
 		@Future(depends="imageDownloadTask")
-		Map<String, BufferedImage> imageLibraryResult = imageLibrary.readDirectory("photos", Double.parseDouble(libScale.getText()), Integer.parseInt(threadCount.getText()));	
+		Map<String, BufferedImage> imageLibraryResult = imageLibrary.readDirectory("photos", Double.parseDouble(libScale.getText()), Integer.parseInt(threadCount.getText()), this);	
 		@Gui(notifiedBy="imageLibraryResult")
 		Void imgLibraryGuiUpdate = imageLibrary.postExecutionUpdate();
 		// Calculate RGB values for sub-images in library
 		@Future()
-		Map<String, AvgRGB> rgbList = rgbLibrary.calculateRGB(imageLibraryResult);
+		Map<String, AvgRGB> rgbList = rgbLibrary.calculateRGB(imageLibraryResult, this);
 		@Gui(notifiedBy="rgbList")
 		Void rgbListGuiUpdate = rgbLibrary.postExecutionUpdate();
 		// Calculate RGB values of cells for reference image
@@ -596,7 +596,7 @@ public class JFXGui extends Application implements GUICallback {
 		Void imageGridGuiUpdate = imageGrid.postExecutionUpdate();
 		// Create Photomosaic using the processed sub-images
 		@Future()
-		int mosaicBuild = mosaicBuilder.createMosaic(imageLibrary, rgbList, imageGrid, Integer.parseInt(threadCount.getText()), 'R');
+		int mosaicBuild = mosaicBuilder.createMosaic(imageLibrary, rgbList, imageGrid, Integer.parseInt(threadCount.getText()), 'R', this);
 		@Gui(notifiedBy="mosaicBuild")
 		Void mosaicBuildGuiUpdate = mosaicBuilder.postExecutionUpdate(dispOut, saveImageButton, runCompButton);
 	}
@@ -607,11 +607,11 @@ public class JFXGui extends Application implements GUICallback {
 		@Gui(notifiedBy="imageDownloadTask")
 		Void imageDownloadGuiUpdate = imageDownloader.postExecutionUpdate();
 		@Future(depends="imageDownloadTask")
-		Map<String, BufferedImage> imageLibraryResult = imageLibrary.readDirectory("photos", Double.parseDouble(libScale.getText()), 1);	
+		Map<String, BufferedImage> imageLibraryResult = imageLibrary.readDirectory("photos", Double.parseDouble(libScale.getText()), 1, this);	
 		@Gui(notifiedBy="imageLibraryResult")
 		Void imgLibraryGuiUpdate = imageLibrary.postExecutionUpdate();		
 		@Future(depends="imageLibraryResult")
-		Map<String, AvgRGB> rgbList = rgbLibrary.calculateRGB(imageLibraryResult);
+		Map<String, AvgRGB> rgbList = rgbLibrary.calculateRGB(imageLibraryResult, this);
 		@Gui(notifiedBy="rgbList")
 		Void rgbListGuiUpdate = rgbLibrary.postExecutionUpdate();
 		@Future(depends="rgbList")
@@ -619,7 +619,7 @@ public class JFXGui extends Application implements GUICallback {
 		@Gui(notifiedBy="imageGridTask")
 		Void imageGridGuiUpdate = imageGrid.postExecutionUpdate();
 		@Future(depends="imageGridTask")
-		int mosaicBuild = mosaicBuilder.createMosaic(imageLibrary, rgbList, imageGrid, 1, 'R');
+		int mosaicBuild = mosaicBuilder.createMosaic(imageLibrary, rgbList, imageGrid, 1, 'R', this);
 		@Gui(notifiedBy="mosaicBuild")
 		Void mosaicBuildGuiUpdate = mosaicBuilder.postExecutionUpdate(dispOut, saveImageButton, runCompButton);
 	}
@@ -628,13 +628,13 @@ public class JFXGui extends Application implements GUICallback {
 	private void runComputationsCompletelySequentially() {
 		int imageDownloadTask = imageDownloader.downloadRecentImages(1, this);
 		Void imageDownloadGuiUpdate = imageDownloader.postExecutionUpdate();
-		Map<String, BufferedImage> imageLibraryResult = imageLibrary.readDirectory("photos", Double.parseDouble(libScale.getText()), 1);
+		Map<String, BufferedImage> imageLibraryResult = imageLibrary.readDirectory("photos", Double.parseDouble(libScale.getText()), 1, this);
 		Void imgLibraryGuiUpdate = imageLibrary.postExecutionUpdate();
-		Map<String, AvgRGB> rgbList = rgbLibrary.calculateRGB(imageLibraryResult);
+		Map<String, AvgRGB> rgbList = rgbLibrary.calculateRGB(imageLibraryResult, this);
 		Void rgbListGuiUpdate = rgbLibrary.postExecutionUpdate();
 		int imageGridTask = imageGrid.createGrid(false, Integer.parseInt(gridWidth.getText()), Integer.parseInt(gridHeight.getText()));
 		Void imageGridGuiUpdate = imageGrid.postExecutionUpdate();
-		int mosaicBuild = mosaicBuilder.createMosaic(imageLibrary, rgbList, imageGrid, 1, 'R');
+		int mosaicBuild = mosaicBuilder.createMosaic(imageLibrary, rgbList, imageGrid, 1, 'R', this);
 		Void mosaicBuildGuiUpdate = mosaicBuilder.postExecutionUpdate(dispOut, saveImageButton, runCompButton);
 	}
 
