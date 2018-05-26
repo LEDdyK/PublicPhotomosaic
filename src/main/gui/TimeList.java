@@ -102,7 +102,6 @@ public class TimeList {
 				this.labelA.setText(millis);
 				break;
 			case "download":
-				System.out.println(millis);
 				this.labelB.setText(millis);
 				break;
 			case "reference":

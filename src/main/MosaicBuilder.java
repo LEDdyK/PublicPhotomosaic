@@ -64,7 +64,7 @@ public class MosaicBuilder {
 		this.progressLabel = progressLabel;
 	}
 	
-	public int createMosaic(ImageLibrary lib, Map<String, AvgRGB> libraryIndex, ImageGrid cellMatrix, int numOfThreads, char type, GUICallback callback) {
+	public int createMosaic(ImageLibrary lib, Map<String, AvgRGB> libraryIndex, ImageGrid cellMatrix, int numOfThreads, char type, GUICallback callback, long firstTime) {
 		long startTime = System.currentTimeMillis();
 		this.imglib = lib;
 		this.libraryIndex = libraryIndex;
@@ -95,7 +95,9 @@ public class MosaicBuilder {
 		g2d.dispose();
 		
 		//return time of task execution
-		callback.setTime("mosaic", System.currentTimeMillis()-startTime);
+		long finalTime = System.currentTimeMillis();
+		callback.setTime("mosaic", finalTime-startTime);
+		callback.setTime("overall", finalTime-firstTime);
 		System.out.println("Finish CreateMosaic");
 		return 1;
 	}

@@ -523,12 +523,12 @@ public class JFXGui extends Application implements GUICallback {
 		
 		Scene scene = new Scene(root, width, height);
 
-		latestTimes.put("overall", "");
-		latestTimes.put("download", "");
-		latestTimes.put("reference", "");
-		latestTimes.put("library", "");
-		latestTimes.put("rgb", "");
-		latestTimes.put("mosaic", "");
+		latestTimes.put("overall", "0");
+		latestTimes.put("download", "0");
+		latestTimes.put("reference", "0");
+		latestTimes.put("library", "0");
+		latestTimes.put("rgb", "0");
+		latestTimes.put("mosaic", "0");
 		
 		//refresh output display
 		new AnimationTimer() {
@@ -575,6 +575,7 @@ public class JFXGui extends Application implements GUICallback {
 	
 	private void runComputations() {
 		// Download images
+		long startTime = System.currentTimeMillis();
 		@Future
 		int imageDownloadTask = imageDownloader.downloadRecentImages(Integer.parseInt(threadCount.getText()), this);
 		@Gui(notifiedBy="imageDownloadTask")
@@ -591,17 +592,18 @@ public class JFXGui extends Application implements GUICallback {
 		Void rgbListGuiUpdate = rgbLibrary.postExecutionUpdate();
 		// Calculate RGB values of cells for reference image
 		@Future()
-		int imageGridTask = imageGrid.createGrid(false, Integer.parseInt(gridWidth.getText()), Integer.parseInt(gridHeight.getText()));
+		int imageGridTask = imageGrid.createGrid(false, Integer.parseInt(gridWidth.getText()), Integer.parseInt(gridHeight.getText()), this);
 		@Gui(notifiedBy="imageGridTask")
 		Void imageGridGuiUpdate = imageGrid.postExecutionUpdate();
 		// Create Photomosaic using the processed sub-images
 		@Future()
-		int mosaicBuild = mosaicBuilder.createMosaic(imageLibrary, rgbList, imageGrid, Integer.parseInt(threadCount.getText()), 'R', this);
+		int mosaicBuild = mosaicBuilder.createMosaic(imageLibrary, rgbList, imageGrid, Integer.parseInt(threadCount.getText()), 'R', this, startTime);
 		@Gui(notifiedBy="mosaicBuild")
 		Void mosaicBuildGuiUpdate = mosaicBuilder.postExecutionUpdate(dispOut, saveImageButton, runCompButton);
 	}
 	
 	private void runComputationsSequentially() {
+		long startTime = System.currentTimeMillis();
 		@Future
 		int imageDownloadTask = imageDownloader.downloadRecentImages(1, this);
 		@Gui(notifiedBy="imageDownloadTask")
@@ -615,33 +617,34 @@ public class JFXGui extends Application implements GUICallback {
 		@Gui(notifiedBy="rgbList")
 		Void rgbListGuiUpdate = rgbLibrary.postExecutionUpdate();
 		@Future(depends="rgbList")
-		int imageGridTask = imageGrid.createGrid(false, Integer.parseInt(gridWidth.getText()), Integer.parseInt(gridHeight.getText()));	
+		int imageGridTask = imageGrid.createGrid(false, Integer.parseInt(gridWidth.getText()), Integer.parseInt(gridHeight.getText()), this);	
 		@Gui(notifiedBy="imageGridTask")
 		Void imageGridGuiUpdate = imageGrid.postExecutionUpdate();
 		@Future(depends="imageGridTask")
-		int mosaicBuild = mosaicBuilder.createMosaic(imageLibrary, rgbList, imageGrid, 1, 'R', this);
+		int mosaicBuild = mosaicBuilder.createMosaic(imageLibrary, rgbList, imageGrid, 1, 'R', this, startTime);
 		@Gui(notifiedBy="mosaicBuild")
 		Void mosaicBuildGuiUpdate = mosaicBuilder.postExecutionUpdate(dispOut, saveImageButton, runCompButton);
 	}
 	
 	
 	private void runComputationsCompletelySequentially() {
+		long startTime = System.currentTimeMillis();
 		int imageDownloadTask = imageDownloader.downloadRecentImages(1, this);
 		Void imageDownloadGuiUpdate = imageDownloader.postExecutionUpdate();
 		Map<String, BufferedImage> imageLibraryResult = imageLibrary.readDirectory("photos", Double.parseDouble(libScale.getText()), 1, this);
 		Void imgLibraryGuiUpdate = imageLibrary.postExecutionUpdate();
 		Map<String, AvgRGB> rgbList = rgbLibrary.calculateRGB(imageLibraryResult, this);
 		Void rgbListGuiUpdate = rgbLibrary.postExecutionUpdate();
-		int imageGridTask = imageGrid.createGrid(false, Integer.parseInt(gridWidth.getText()), Integer.parseInt(gridHeight.getText()));
+		int imageGridTask = imageGrid.createGrid(false, Integer.parseInt(gridWidth.getText()), Integer.parseInt(gridHeight.getText()), this);
 		Void imageGridGuiUpdate = imageGrid.postExecutionUpdate();
-		int mosaicBuild = mosaicBuilder.createMosaic(imageLibrary, rgbList, imageGrid, 1, 'R', this);
+		int mosaicBuild = mosaicBuilder.createMosaic(imageLibrary, rgbList, imageGrid, 1, 'R', this, startTime);
 		Void mosaicBuildGuiUpdate = mosaicBuilder.postExecutionUpdate(dispOut, saveImageButton, runCompButton);
 	}
 
 
 	
 	private void updateLatest() {
-		timeItem1.setLabel("overall", "400");
+		timeItem1.setLabel("overall", latestTimes.get("overall"));
 		timeItem1.setLabel("download", latestTimes.get("download"));
 		timeItem1.setLabel("reference", latestTimes.get("reference"));
 		timeItem1.setLabel("library", latestTimes.get("library"));
@@ -655,6 +658,17 @@ public class JFXGui extends Application implements GUICallback {
 		timeItem4.setLabel(timeItem3);
 		timeItem3.setLabel(timeItem2);
 		timeItem2.setLabel(timeItem1);
+//		timeItem1.setLabel("overall", "In Progress");
+//		if (downState) {
+//			timeItem1.setLabel("download", "In Progress");
+//		}
+//		else {
+//			timeItem1.setLabel("download", "Skipped");
+//		}
+//		timeItem1.setLabel("reference", "In Progress");
+//		timeItem1.setLabel("library", "In Progress");
+//		timeItem1.setLabel("rgb", "In Progress");
+//		timeItem1.setLabel("mosaic", "In Progress");
 	}
 	
 	@Override
