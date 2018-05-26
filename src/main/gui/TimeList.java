@@ -96,6 +96,47 @@ public class TimeList {
 		return timeList;
 	}
 	
+	public Pane makeDefaultList() {
+		Pane timeList = new Pane();
+		timeList.setPrefWidth(138);
+		Rectangle listA = new Rectangle(0, 0, 138, 23);
+		labelA = new Label("InProgress");
+		listA.setFill(Color.STEELBLUE);
+		labelA.setTextFill(Color.WHITE);
+		labelA.setLayoutX(5);
+		labelA.setLayoutY(3);
+		Rectangle listB = new Rectangle(0, 23, 138, 23);
+		listB.setFill(Color.WHITE);
+		labelB = new Label("InProgress");
+		labelB.setLayoutX(5);
+		labelB.setLayoutY(26);
+		Rectangle listC = new Rectangle(0, 46, 138, 23);
+		listC.setFill(Color.STEELBLUE);
+		labelC = new Label("InProgress");
+		labelC.setTextFill(Color.WHITE);
+		labelC.setLayoutX(5);
+		labelC.setLayoutY(49);
+		Rectangle listD = new Rectangle(0, 69, 138, 23);
+		listD.setFill(Color.WHITE);
+		labelD = new Label("InProgress");
+		labelD.setLayoutX(5);
+		labelD.setLayoutY(72);
+		Rectangle listE = new Rectangle(0, 92, 138, 23);
+		listE.setFill(Color.STEELBLUE);
+		labelE = new Label("InProgress");
+		labelE.setTextFill(Color.WHITE);
+		labelE.setLayoutX(5);
+		labelE.setLayoutY(95);
+		Rectangle listF = new Rectangle(0, 115, 138, 23);
+		listF.setFill(Color.WHITE);
+		labelF = new Label("InProgress");
+		labelF.setLayoutX(5);
+		labelF.setLayoutY(118);
+		timeList.getChildren().addAll(listA, listB, listC, listD, listE, listF);
+		timeList.getChildren().addAll(labelA, labelB, labelC, labelD, labelE, labelF);
+		return timeList;
+	}
+	
 	public void setLabel (String label, String millis) {
 		switch (label) {
 			case "overall":

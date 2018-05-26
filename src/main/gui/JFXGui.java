@@ -96,7 +96,7 @@ public class JFXGui extends Application implements GUICallback {
 	private ImageGrid imageGrid;
 	private RGBLibrary rgbLibrary;
 	private MosaicBuilder mosaicBuilder;
-
+	
 	private TimeList timeItem1;
 	private TimeList timeItem2;
 	private TimeList timeItem3;
@@ -658,17 +658,16 @@ public class JFXGui extends Application implements GUICallback {
 		timeItem4.setLabel(timeItem3);
 		timeItem3.setLabel(timeItem2);
 		timeItem2.setLabel(timeItem1);
-//		timeItem1.setLabel("overall", "In Progress");
-//		if (downState) {
-//			timeItem1.setLabel("download", "In Progress");
-//		}
-//		else {
-//			timeItem1.setLabel("download", "Skipped");
-//		}
-//		timeItem1.setLabel("reference", "In Progress");
-//		timeItem1.setLabel("library", "In Progress");
-//		timeItem1.setLabel("rgb", "In Progress");
-//		timeItem1.setLabel("mosaic", "In Progress");
+		latestTimes.put("overall", "InProgress");
+		if (downState) {
+			latestTimes.put("download", "InProgress");
+		} else {
+			latestTimes.put("download", "Skipped");
+		}
+		latestTimes.put("reference", "InProgress");
+		latestTimes.put("library", "InProgress");
+		latestTimes.put("rgb", "InProgress");
+		latestTimes.put("mosaic", "InProgress");
 	}
 	
 	@Override
