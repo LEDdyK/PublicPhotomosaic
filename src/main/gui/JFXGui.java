@@ -600,6 +600,9 @@ public class JFXGui extends Application implements GUICallback {
 		int mosaicBuild = mosaicBuilder.createMosaic(imageLibrary, rgbList, imageGrid, Integer.parseInt(threadCount.getText()), 'R', this, startTime);
 		@Gui(notifiedBy="mosaicBuild")
 		Void mosaicBuildGuiUpdate = mosaicBuilder.postExecutionUpdate(dispOut, saveImageButton, runCompButton);
+		
+		@Future(depends="mosaicBuild")
+		int print = printTime(startTime);
 	}
 	
 	private void runComputationsSequentially() {
@@ -624,6 +627,9 @@ public class JFXGui extends Application implements GUICallback {
 		int mosaicBuild = mosaicBuilder.createMosaic(imageLibrary, rgbList, imageGrid, 1, 'R', this, startTime);
 		@Gui(notifiedBy="mosaicBuild")
 		Void mosaicBuildGuiUpdate = mosaicBuilder.postExecutionUpdate(dispOut, saveImageButton, runCompButton);
+	
+		@Future(depends="mosaicBuild")
+		int print = printTime(startTime);
 	}
 	
 	
@@ -639,6 +645,9 @@ public class JFXGui extends Application implements GUICallback {
 		Void imageGridGuiUpdate = imageGrid.postExecutionUpdate();
 		int mosaicBuild = mosaicBuilder.createMosaic(imageLibrary, rgbList, imageGrid, 1, 'R', this, startTime);
 		Void mosaicBuildGuiUpdate = mosaicBuilder.postExecutionUpdate(dispOut, saveImageButton, runCompButton);
+
+		@Future(depends="mosaicBuild")
+		int print = printTime(startTime);
 	}
 
 
@@ -675,5 +684,10 @@ public class JFXGui extends Application implements GUICallback {
 		synchronized(latestTimes){
 			latestTimes.put(key, Long.toString(value));
 		}
+	}
+	
+	public int printTime(long startTime) {
+		System.out.println("Time to finish: " + (System.currentTimeMillis() - startTime));
+		return 1;
 	}
 }
