@@ -18,6 +18,8 @@ import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import main.gui.GUICallback;
+import main.gui.JFXGui;
 import main.images.AvgRGB;
 import main.images.ImageGrid;
 import main.images.reader.ImageLibrary;
@@ -62,7 +64,8 @@ public class MosaicBuilder {
 		this.progressLabel = progressLabel;
 	}
 	
-	public int createMosaic(ImageLibrary lib, Map<String, AvgRGB> libraryIndex, ImageGrid cellMatrix, int numOfThreads, char type) {
+	public int createMosaic(ImageLibrary lib, Map<String, AvgRGB> libraryIndex, ImageGrid cellMatrix, int numOfThreads, char type, GUICallback callback, long firstTime) {
+		long startTime = System.currentTimeMillis();
 		this.imglib = lib;
 		this.libraryIndex = libraryIndex;
 		this.cellMatrix = cellMatrix;
@@ -91,6 +94,10 @@ public class MosaicBuilder {
 		waitTillFinished();
 		g2d.dispose();
 		
+		//return time of task execution
+		long finalTime = System.currentTimeMillis();
+		callback.setTime("mosaic", finalTime-startTime);
+		callback.setTime("overall", finalTime-firstTime);
 		System.out.println("Finish CreateMosaic");
 		return 1;
 	}
@@ -164,7 +171,7 @@ public class MosaicBuilder {
 	public Void updateProgress() {
 		count += cellMatrix.getWidth();
 		progressBar.setProgress((float)count / numberOfCells);
-		progressLabel.setText("Found best substitute for " + (int)count + " out of " + numberOfCells + " cells");
+		progressLabel.setText("Substituted " + (int)count + " out of " + numberOfCells + " cells");
 		return null;
 	}
 	

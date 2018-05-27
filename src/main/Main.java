@@ -22,7 +22,7 @@ import pt.runtime.ParaTask;
 
 public class Main {
 	
-	@InitParaTask
+	@InitParaTask(numberOfThreads = 100)
 	public static void main(String[] args) {	
 		Application.launch(JFXGui.class, args);
 

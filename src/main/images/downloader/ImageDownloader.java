@@ -20,6 +20,7 @@ import apt.annotations.TaskInfoType;
 import javafx.application.Platform;
 import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
+import main.gui.GUICallback;
 import main.gui.JFXGui;
 import pt.runtime.WorkerThread;
 import pu.loopScheduler.LoopRange;
@@ -52,7 +53,8 @@ public class ImageDownloader {
 		this.progressLabel = progressLabel;
 		this.skipDownload = skipDownload;
 	}
-	public int downloadRecentImages(int numOfThreads) {
+	public int downloadRecentImages(int numOfThreads, GUICallback callback) {
+		long startTime = System.currentTimeMillis();
 		if (skipDownload) {
 			return 1;
 		}
@@ -72,14 +74,16 @@ public class ImageDownloader {
 			Void task = downloadImages(scheduler, photoMetaDataList);
 			futureGroup[0] = task;
 			
-			waitTillFinished();	
+			waitTillFinished();
 		} catch (MalformedURLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		} 
+		}
+		//return time of task execution
+		callback.setTime("download", System.currentTimeMillis()-startTime);
 		System.out.println("Finished ImageDownloader");
 		return 1;
 	}

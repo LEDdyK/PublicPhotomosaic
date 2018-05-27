@@ -17,6 +17,7 @@ import apt.annotations.Gui;
 import apt.annotations.TaskInfoType;
 import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
+import main.gui.GUICallback;
 import main.gui.JFXGui;
 import pt.runtime.WorkerThread;
 import pu.loopScheduler.LoopRange;
@@ -51,8 +52,8 @@ public class ImageLibrary {
 	 * processes a directory
 	 * @param dirPath
 	 */
-	public Map<String, BufferedImage> readDirectory(String dirPath) {
-		return readDirectory(dirPath,1.0,1);
+	public Map<String, BufferedImage> readDirectory(String dirPath, GUICallback callback) {
+		return readDirectory(dirPath,1.0,1,callback);
 		
 	}
 	
@@ -60,7 +61,8 @@ public class ImageLibrary {
 	 * processes a directory
 	 * @param dirPath
 	 */
-	public Map<String, BufferedImage> readDirectory(String dirPath, double scale, int numOfThreads) {
+	public Map<String, BufferedImage> readDirectory(String dirPath, double scale, int numOfThreads, GUICallback callback) {
+		long startTime = System.currentTimeMillis();
 		System.out.println("Starting ImageLibrary");
 		File directory = new File(dirPath);
 		directoryListing = directory.listFiles();
@@ -75,6 +77,8 @@ public class ImageLibrary {
 		
 		waitTillFinished();
 		System.out.println(library.size() + " images in library");
+		//return time of task execution
+		callback.setTime("library", System.currentTimeMillis()-startTime);
 		System.out.println("Finished ImageLibrary");
 		
 		for(File deletable: toDelete) {

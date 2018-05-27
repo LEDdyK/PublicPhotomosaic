@@ -5,6 +5,7 @@ import java.awt.image.BufferedImage;
 import apt.annotations.Gui;
 import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
+import main.gui.GUICallback;
 import main.gui.JFXGui;
 
 /**
@@ -30,7 +31,8 @@ public class ImageGrid {
 		this.progressLabel = progressLabel;
 	}
 	
-	public int createGrid(boolean initialiseWithGridSize, int width, int height) {
+	public int createGrid(boolean initialiseWithGridSize, int width, int height, GUICallback callback) {
+		long startTime = System.currentTimeMillis();
 		System.out.println("Starting ImageGrid");
 		if (initialiseWithGridSize) {
 			h = height;
@@ -56,6 +58,7 @@ public class ImageGrid {
 				Void update = updateProgress();
 			}
 		}
+		callback.setTime("reference", System.currentTimeMillis()-startTime);
 		System.out.println("Finished ImageGrid");
 		return 0;
 	}
@@ -79,7 +82,7 @@ public class ImageGrid {
 	private Void updateProgress() {
 		progressCount++;
 		progress.setProgress((float) progressCount / (h * w));
-		progressLabel.setText("Calculated rgb values for " + progressCount + " out of " + (h*w) + " cells");
+		progressLabel.setText("Calculated rgb for " + progressCount + " out of " + (h*w) + " cells");
 		return null;
 	}
 	
