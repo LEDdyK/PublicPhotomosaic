@@ -365,7 +365,7 @@ public class JFXGui extends Application implements GUICallback {
 			public void handle(ActionEvent arg0) {
 				FileChooser fileChooser = new FileChooser();
 				fileChooser.setTitle("Select Reference Image");
-				fileChooser.getExtensionFilters().addAll(new ExtensionFilter("Image Files", "*.png", "*.jpg"));
+				fileChooser.getExtensionFilters().addAll(new ExtensionFilter("Image Files", "*.png", "*.jpg", "*.bmp"));
 				selectedFile = fileChooser.showOpenDialog(stage);
 				if (selectedFile != null) {
 					refPath.setText(selectedFile.getAbsolutePath());
@@ -445,7 +445,7 @@ public class JFXGui extends Application implements GUICallback {
 			public void handle(ActionEvent arg0) {
 				FileChooser saveChooser = new FileChooser();
 				saveChooser.setTitle("Save Image To...");
-				saveChooser.getExtensionFilters().addAll(new ExtensionFilter("Image Files", "*.png"));
+				saveChooser.getExtensionFilters().addAll(new ExtensionFilter("Image Files", "*.png", "*.jpg", "*.bmp"));
 				saveToFile = saveChooser.showOpenDialog(stage);
 				if (saveToFile != null) {
 					((Button)arg0.getSource()).setDisable(true);
