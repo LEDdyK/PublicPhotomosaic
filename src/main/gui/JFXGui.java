@@ -446,7 +446,7 @@ public class JFXGui extends Application implements GUICallback {
 				FileChooser saveChooser = new FileChooser();
 				saveChooser.setTitle("Save Image To...");
 				saveChooser.getExtensionFilters().addAll(new ExtensionFilter("Image Files", "*.png", "*.jpg", "*.bmp"));
-				saveToFile = saveChooser.showOpenDialog(stage);
+				saveToFile = saveChooser.showSaveDialog(stage);
 				if (saveToFile != null) {
 					((Button)arg0.getSource()).setDisable(true);
 					
