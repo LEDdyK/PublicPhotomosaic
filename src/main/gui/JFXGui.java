@@ -11,6 +11,7 @@ import java.util.Map;
 
 import javax.imageio.ImageIO;
 
+import apt.annotations.AsyncCatch;
 import apt.annotations.Future;
 import apt.annotations.Gui;
 import apt.annotations.TaskInfoType;
@@ -43,6 +44,7 @@ import javafx.stage.FileChooser;
 import javafx.stage.FileChooser.ExtensionFilter;
 import main.Main;
 import main.MosaicBuilder;
+import main.exceptions.ImageTooBigException;
 import main.images.AvgRGB;
 import main.images.ImageGrid;
 import main.images.RGBLibrary;
@@ -65,8 +67,8 @@ public class JFXGui extends Application implements GUICallback {
 	private TextField refPath;
 	private TextField libScale;
 	private TextField threadCount;
-	private TextField gridWidth;
-	private TextField gridHeight;
+	private TextField cellWidth;
+	private TextField cellHeight;
 	
 	private int numberOfCells;
 
@@ -170,26 +172,26 @@ public class JFXGui extends Application implements GUICallback {
 		threadCount.setPrefWidth(50);
 		
 //		grid width input
-		Label gridWidthLabel = new Label ("Grid Width");
-		gridWidth = new TextField();
+		Label gridWidthLabel = new Label ("Cell Width");
+		cellWidth = new TextField();
 			//set position
 		gridWidthLabel.setLayoutX(15);
 		gridWidthLabel.setLayoutY(99);
-		gridWidth.setLayoutX(200);
-		gridWidth.setLayoutY(95);
+		cellWidth.setLayoutX(200);
+		cellWidth.setLayoutY(95);
 			//set details
-		gridWidth.setPrefWidth(50);
+		cellWidth.setPrefWidth(50);
 		
 //		grid height input
-		Label gridHeightLabel = new Label ("Grid Height");
-		gridHeight = new TextField();
+		Label gridHeightLabel = new Label ("Cell Height");
+		cellHeight = new TextField();
 			//set position
 		gridHeightLabel.setLayoutX(280);
 		gridHeightLabel.setLayoutY(99);
-		gridHeight.setLayoutX(465);
-		gridHeight.setLayoutY(95);
+		cellHeight.setLayoutX(465);
+		cellHeight.setLayoutY(95);
 			//set details
-		gridHeight.setPrefWidth(50);
+		cellHeight.setPrefWidth(50);
 		
 //		separator
 		Line line = new Line(265, 55, 265, 120);
@@ -446,7 +448,7 @@ public class JFXGui extends Application implements GUICallback {
 				FileChooser saveChooser = new FileChooser();
 				saveChooser.setTitle("Save Image To...");
 				saveChooser.getExtensionFilters().addAll(new ExtensionFilter("Image Files", "*.png", "*.jpg", "*.bmp"));
-				saveToFile = saveChooser.showOpenDialog(stage);
+				saveToFile = saveChooser.showSaveDialog(stage);
 				if (saveToFile != null) {
 					((Button)arg0.getSource()).setDisable(true);
 					
@@ -487,9 +489,9 @@ public class JFXGui extends Application implements GUICallback {
 		//add thread count input to GUI
 		root.getChildren().addAll(threadCountLabel, threadCount);
 		//add grid width input to GUI
-		root.getChildren().addAll(gridWidthLabel, gridWidth);
+		root.getChildren().addAll(gridWidthLabel, cellWidth);
 		//add grid height input to GUI
-		root.getChildren().addAll(gridHeightLabel, gridHeight);
+		root.getChildren().addAll(gridHeightLabel, cellHeight);
 		//add separator
 		root.getChildren().add(line);
 		//add image display to GUI
@@ -578,28 +580,43 @@ public class JFXGui extends Application implements GUICallback {
 		long startTime = System.currentTimeMillis();
 		@Future
 		int imageDownloadTask = imageDownloader.downloadRecentImages(Integer.parseInt(threadCount.getText()), this);
+		
 		@Gui(notifiedBy="imageDownloadTask")
 		Void imageDownloadGuiUpdate = imageDownloader.postExecutionUpdate();
+		
+		
 		// Process sub-images in directory
 		@Future(depends="imageDownloadTask")
-		Map<String, BufferedImage> imageLibraryResult = imageLibrary.readDirectory("photos", Double.parseDouble(libScale.getText()), Integer.parseInt(threadCount.getText()), this);	
+		Map<String, BufferedImage> imageLibraryResult = imageLibrary.readDirectory("photos", Double.parseDouble(libScale.getText()), Integer.parseInt(threadCount.getText()), this);
+		
 		@Gui(notifiedBy="imageLibraryResult")
 		Void imgLibraryGuiUpdate = imageLibrary.postExecutionUpdate();
+		
+		
 		// Calculate RGB values for sub-images in library
 		@Future()
 		Map<String, AvgRGB> rgbList = rgbLibrary.calculateRGB(imageLibraryResult, this);
+		
 		@Gui(notifiedBy="rgbList")
 		Void rgbListGuiUpdate = rgbLibrary.postExecutionUpdate();
+		
+		
 		// Calculate RGB values of cells for reference image
 		@Future()
-		int imageGridTask = imageGrid.createGrid(false, Integer.parseInt(gridWidth.getText()), Integer.parseInt(gridHeight.getText()), this);
+		int imageGridTask = imageGrid.createGrid(false, Integer.parseInt(cellWidth.getText()), Integer.parseInt(cellHeight.getText()), this);
+		
 		@Gui(notifiedBy="imageGridTask")
 		Void imageGridGuiUpdate = imageGrid.postExecutionUpdate();
+		
+		
 		// Create Photomosaic using the processed sub-images
+		@AsyncCatch(throwables= {ImageTooBigException.class}, handlers= {"handleImageTooBig()"})
 		@Future()
 		int mosaicBuild = mosaicBuilder.createMosaic(imageLibrary, rgbList, imageGrid, Integer.parseInt(threadCount.getText()), 'R', this, startTime);
+		
 		@Gui(notifiedBy="mosaicBuild")
 		Void mosaicBuildGuiUpdate = mosaicBuilder.postExecutionUpdate(dispOut, saveImageButton, runCompButton);
+		
 		
 		@Future(depends="mosaicBuild")
 		int print = printTime(startTime);
@@ -620,9 +637,10 @@ public class JFXGui extends Application implements GUICallback {
 		@Gui(notifiedBy="rgbList")
 		Void rgbListGuiUpdate = rgbLibrary.postExecutionUpdate();
 		@Future(depends="rgbList")
-		int imageGridTask = imageGrid.createGrid(false, Integer.parseInt(gridWidth.getText()), Integer.parseInt(gridHeight.getText()), this);	
+		int imageGridTask = imageGrid.createGrid(false, Integer.parseInt(cellWidth.getText()), Integer.parseInt(cellHeight.getText()), this);	
 		@Gui(notifiedBy="imageGridTask")
 		Void imageGridGuiUpdate = imageGrid.postExecutionUpdate();
+		@AsyncCatch(throwables= {ImageTooBigException.class}, handlers= {"handleImageTooBig()"})
 		@Future(depends="imageGridTask")
 		int mosaicBuild = mosaicBuilder.createMosaic(imageLibrary, rgbList, imageGrid, 1, 'R', this, startTime);
 		@Gui(notifiedBy="mosaicBuild")
@@ -641,9 +659,14 @@ public class JFXGui extends Application implements GUICallback {
 		Void imgLibraryGuiUpdate = imageLibrary.postExecutionUpdate();
 		Map<String, AvgRGB> rgbList = rgbLibrary.calculateRGB(imageLibraryResult, this);
 		Void rgbListGuiUpdate = rgbLibrary.postExecutionUpdate();
-		int imageGridTask = imageGrid.createGrid(false, Integer.parseInt(gridWidth.getText()), Integer.parseInt(gridHeight.getText()), this);
+		int imageGridTask = imageGrid.createGrid(false, Integer.parseInt(cellWidth.getText()), Integer.parseInt(cellHeight.getText()), this);
 		Void imageGridGuiUpdate = imageGrid.postExecutionUpdate();
-		int mosaicBuild = mosaicBuilder.createMosaic(imageLibrary, rgbList, imageGrid, 1, 'R', this, startTime);
+		try {
+			int mosaicBuild = mosaicBuilder.createMosaic(imageLibrary, rgbList, imageGrid, 1, 'R', this, startTime);
+		} catch (ImageTooBigException e) {
+			handleImageTooBig();
+		}
+		
 		Void mosaicBuildGuiUpdate = mosaicBuilder.postExecutionUpdate(dispOut, saveImageButton, runCompButton);
 
 		@Future(depends="mosaicBuild")
@@ -689,5 +712,9 @@ public class JFXGui extends Application implements GUICallback {
 	public int printTime(long startTime) {
 		System.out.println("Time to finish: " + (System.currentTimeMillis() - startTime));
 		return 1;
+	}
+	
+	public void handleImageTooBig() {
+		mosaicBuildLabel.setText("IMAGE TOO BIG, CHOOSE SMALLER SCALE OR BIGGER CELL SIZE");
 	}
 }
