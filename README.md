@@ -20,6 +20,8 @@ Alternatively, you can clone the repository and run the 'runParaTaskJar' Ant bui
 ## Group Members
 
 ponchotang - Andy Tang - atan932
+
 Scorpiris3196 - Joseph Dumogho - jdum654
+
 litekiwiyoghurt/LEDdyk/UOA\lkim564 - Lite Kim - lkim564
 
