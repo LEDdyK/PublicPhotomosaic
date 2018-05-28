@@ -545,7 +545,6 @@ public class JFXGui extends Application implements GUICallback {
 						frameCounting = 0;
 					}
 				}
-				updateLatest();
 			}
 		}.start();
 	
