@@ -15,3 +15,11 @@ In this case, you will get a message telling you so, so please either reduce the
 ### Ant build
 
 Alternatively, you can clone the repository and run the 'runParaTaskJar' Ant build process
+
+
+## Group Members
+
+ponchotang - Andy Tang - atan932
+Scorpiris3196 - Joseph Dumogho - jdum654
+litekiwiyoghurt/LEDdyk/UOA\lkim564 - Lite Kim - lkim564
+
