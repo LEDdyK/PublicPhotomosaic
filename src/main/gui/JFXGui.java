@@ -428,6 +428,7 @@ public class JFXGui extends Application implements GUICallback {
 				initialiseProcessingObjects(false);
 				
 				shiftTimes();
+				updateLatest();
 				
 				if (paraGCState) {
 					if (paraTTState) {
