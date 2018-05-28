@@ -578,28 +578,42 @@ public class JFXGui extends Application implements GUICallback {
 		long startTime = System.currentTimeMillis();
 		@Future
 		int imageDownloadTask = imageDownloader.downloadRecentImages(Integer.parseInt(threadCount.getText()), this);
+		
 		@Gui(notifiedBy="imageDownloadTask")
 		Void imageDownloadGuiUpdate = imageDownloader.postExecutionUpdate();
+		
+		
 		// Process sub-images in directory
 		@Future(depends="imageDownloadTask")
-		Map<String, BufferedImage> imageLibraryResult = imageLibrary.readDirectory("photos", Double.parseDouble(libScale.getText()), Integer.parseInt(threadCount.getText()), this);	
+		Map<String, BufferedImage> imageLibraryResult = imageLibrary.readDirectory("photos", Double.parseDouble(libScale.getText()), Integer.parseInt(threadCount.getText()), this);
+		
 		@Gui(notifiedBy="imageLibraryResult")
 		Void imgLibraryGuiUpdate = imageLibrary.postExecutionUpdate();
+		
+		
 		// Calculate RGB values for sub-images in library
 		@Future()
 		Map<String, AvgRGB> rgbList = rgbLibrary.calculateRGB(imageLibraryResult, this);
+		
 		@Gui(notifiedBy="rgbList")
 		Void rgbListGuiUpdate = rgbLibrary.postExecutionUpdate();
+		
+		
 		// Calculate RGB values of cells for reference image
 		@Future()
 		int imageGridTask = imageGrid.createGrid(false, Integer.parseInt(gridWidth.getText()), Integer.parseInt(gridHeight.getText()), this);
+		
 		@Gui(notifiedBy="imageGridTask")
 		Void imageGridGuiUpdate = imageGrid.postExecutionUpdate();
+		
+		
 		// Create Photomosaic using the processed sub-images
 		@Future()
 		int mosaicBuild = mosaicBuilder.createMosaic(imageLibrary, rgbList, imageGrid, Integer.parseInt(threadCount.getText()), 'R', this, startTime);
+		
 		@Gui(notifiedBy="mosaicBuild")
 		Void mosaicBuildGuiUpdate = mosaicBuilder.postExecutionUpdate(dispOut, saveImageButton, runCompButton);
+		
 		
 		@Future(depends="mosaicBuild")
 		int print = printTime(startTime);
