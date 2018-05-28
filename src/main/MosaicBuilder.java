@@ -18,6 +18,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import main.exceptions.ImageTooBigException;
 import main.gui.GUICallback;
 import main.gui.JFXGui;
 import main.images.AvgRGB;
@@ -79,6 +80,13 @@ public class MosaicBuilder {
 		BufferedImage cell = imglib.getImage(keySet.iterator().next());
 		cellHeight = (int)(cell.getHeight());
 		cellWidth = (int)(cell.getWidth());
+		
+		int numberOfPixels = cellWidth * cellMatrix.getWidth() * cellHeight * cellMatrix.getHeight();
+		
+		if (numberOfPixels > 32000000) {
+			throw new ImageTooBigException();
+		}
+		
 		output = new BufferedImage(cellWidth*cellMatrix.getWidth(),cellHeight*cellMatrix.getHeight(),BufferedImage.TYPE_INT_RGB);
 		g2d = output.createGraphics();
 		

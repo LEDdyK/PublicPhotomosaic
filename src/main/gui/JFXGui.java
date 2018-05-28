@@ -11,6 +11,7 @@ import java.util.Map;
 
 import javax.imageio.ImageIO;
 
+import apt.annotations.AsyncCatch;
 import apt.annotations.Future;
 import apt.annotations.Gui;
 import apt.annotations.TaskInfoType;
@@ -43,6 +44,7 @@ import javafx.stage.FileChooser;
 import javafx.stage.FileChooser.ExtensionFilter;
 import main.Main;
 import main.MosaicBuilder;
+import main.exceptions.ImageTooBigException;
 import main.images.AvgRGB;
 import main.images.ImageGrid;
 import main.images.RGBLibrary;
@@ -608,6 +610,7 @@ public class JFXGui extends Application implements GUICallback {
 		
 		
 		// Create Photomosaic using the processed sub-images
+		@AsyncCatch(throwables= {ImageTooBigException.class}, handlers= {"handleImageTooBig()"})
 		@Future()
 		int mosaicBuild = mosaicBuilder.createMosaic(imageLibrary, rgbList, imageGrid, Integer.parseInt(threadCount.getText()), 'R', this, startTime);
 		
@@ -637,6 +640,7 @@ public class JFXGui extends Application implements GUICallback {
 		int imageGridTask = imageGrid.createGrid(false, Integer.parseInt(gridWidth.getText()), Integer.parseInt(gridHeight.getText()), this);	
 		@Gui(notifiedBy="imageGridTask")
 		Void imageGridGuiUpdate = imageGrid.postExecutionUpdate();
+		@AsyncCatch(throwables= {ImageTooBigException.class}, handlers= {"handleImageTooBig()"})
 		@Future(depends="imageGridTask")
 		int mosaicBuild = mosaicBuilder.createMosaic(imageLibrary, rgbList, imageGrid, 1, 'R', this, startTime);
 		@Gui(notifiedBy="mosaicBuild")
@@ -657,7 +661,12 @@ public class JFXGui extends Application implements GUICallback {
 		Void rgbListGuiUpdate = rgbLibrary.postExecutionUpdate();
 		int imageGridTask = imageGrid.createGrid(false, Integer.parseInt(gridWidth.getText()), Integer.parseInt(gridHeight.getText()), this);
 		Void imageGridGuiUpdate = imageGrid.postExecutionUpdate();
-		int mosaicBuild = mosaicBuilder.createMosaic(imageLibrary, rgbList, imageGrid, 1, 'R', this, startTime);
+		try {
+			int mosaicBuild = mosaicBuilder.createMosaic(imageLibrary, rgbList, imageGrid, 1, 'R', this, startTime);
+		} catch (ImageTooBigException e) {
+			handleImageTooBig();
+		}
+		
 		Void mosaicBuildGuiUpdate = mosaicBuilder.postExecutionUpdate(dispOut, saveImageButton, runCompButton);
 
 		@Future(depends="mosaicBuild")
@@ -703,5 +712,9 @@ public class JFXGui extends Application implements GUICallback {
 	public int printTime(long startTime) {
 		System.out.println("Time to finish: " + (System.currentTimeMillis() - startTime));
 		return 1;
+	}
+	
+	public void handleImageTooBig() {
+		mosaicBuildLabel.setText("IMAGE TOO BIG, CHOOSE SMALLER SCALE OR BIGGER CELL SIZE");
 	}
 }
