@@ -86,7 +86,8 @@ public class ImageGrid {
 		return null;
 	}
 	
-	public Void postExecutionUpdate() {
+	public Void postExecutionUpdate(GUICallback callback) {
+		callback.updateLatest();
 		progressLabel.setText("Finished");
 		return null;
 	}

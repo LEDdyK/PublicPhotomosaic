@@ -183,12 +183,13 @@ public class MosaicBuilder {
 		return null;
 	}
 	
-	public Void postExecutionUpdate(ImageView imageView, Button saveButton, Button runButton) {
+	public Void postExecutionUpdate(ImageView imageView, Button saveButton, Button runButton, GUICallback callback) {
 		isFinished = true;
 		saveButton.setDisable(false);
 		runButton.setDisable(false);
 		imageView.setImage(SwingFXUtils.toFXImage(output, null));
 		progressLabel.setText("Finished");
+		callback.updateLatest();
 		return null;
 	}
 	

@@ -209,10 +209,11 @@ public class ImageDownloader {
 		return null;
 	}
 	
-	public Void postExecutionUpdate() {
+	public Void postExecutionUpdate(GUICallback callback) {
 		if (!skipDownload) {
 			progressLabel.setText("Finished");
 		}
+		callback.updateLatest();
 		return null;
 	}
 

@@ -118,8 +118,9 @@ public class RGBLibrary {
 		return null;
 	}
 	
-	public Void postExecutionUpdate() {
+	public Void postExecutionUpdate(GUICallback callback) {
 		progressLabel.setText("Finished");
+		callback.updateLatest();
 		return null;
 	}
 	
