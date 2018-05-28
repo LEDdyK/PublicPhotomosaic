@@ -67,8 +67,8 @@ public class JFXGui extends Application implements GUICallback {
 	private TextField refPath;
 	private TextField libScale;
 	private TextField threadCount;
-	private TextField gridWidth;
-	private TextField gridHeight;
+	private TextField cellWidth;
+	private TextField cellHeight;
 	
 	private int numberOfCells;
 
@@ -172,26 +172,26 @@ public class JFXGui extends Application implements GUICallback {
 		threadCount.setPrefWidth(50);
 		
 //		grid width input
-		Label gridWidthLabel = new Label ("Grid Width");
-		gridWidth = new TextField();
+		Label gridWidthLabel = new Label ("Cell Width");
+		cellWidth = new TextField();
 			//set position
 		gridWidthLabel.setLayoutX(15);
 		gridWidthLabel.setLayoutY(99);
-		gridWidth.setLayoutX(200);
-		gridWidth.setLayoutY(95);
+		cellWidth.setLayoutX(200);
+		cellWidth.setLayoutY(95);
 			//set details
-		gridWidth.setPrefWidth(50);
+		cellWidth.setPrefWidth(50);
 		
 //		grid height input
-		Label gridHeightLabel = new Label ("Grid Height");
-		gridHeight = new TextField();
+		Label gridHeightLabel = new Label ("Cell Height");
+		cellHeight = new TextField();
 			//set position
 		gridHeightLabel.setLayoutX(280);
 		gridHeightLabel.setLayoutY(99);
-		gridHeight.setLayoutX(465);
-		gridHeight.setLayoutY(95);
+		cellHeight.setLayoutX(465);
+		cellHeight.setLayoutY(95);
 			//set details
-		gridHeight.setPrefWidth(50);
+		cellHeight.setPrefWidth(50);
 		
 //		separator
 		Line line = new Line(265, 55, 265, 120);
@@ -489,9 +489,9 @@ public class JFXGui extends Application implements GUICallback {
 		//add thread count input to GUI
 		root.getChildren().addAll(threadCountLabel, threadCount);
 		//add grid width input to GUI
-		root.getChildren().addAll(gridWidthLabel, gridWidth);
+		root.getChildren().addAll(gridWidthLabel, cellWidth);
 		//add grid height input to GUI
-		root.getChildren().addAll(gridHeightLabel, gridHeight);
+		root.getChildren().addAll(gridHeightLabel, cellHeight);
 		//add separator
 		root.getChildren().add(line);
 		//add image display to GUI
@@ -603,7 +603,7 @@ public class JFXGui extends Application implements GUICallback {
 		
 		// Calculate RGB values of cells for reference image
 		@Future()
-		int imageGridTask = imageGrid.createGrid(false, Integer.parseInt(gridWidth.getText()), Integer.parseInt(gridHeight.getText()), this);
+		int imageGridTask = imageGrid.createGrid(false, Integer.parseInt(cellWidth.getText()), Integer.parseInt(cellHeight.getText()), this);
 		
 		@Gui(notifiedBy="imageGridTask")
 		Void imageGridGuiUpdate = imageGrid.postExecutionUpdate();
@@ -637,7 +637,7 @@ public class JFXGui extends Application implements GUICallback {
 		@Gui(notifiedBy="rgbList")
 		Void rgbListGuiUpdate = rgbLibrary.postExecutionUpdate();
 		@Future(depends="rgbList")
-		int imageGridTask = imageGrid.createGrid(false, Integer.parseInt(gridWidth.getText()), Integer.parseInt(gridHeight.getText()), this);	
+		int imageGridTask = imageGrid.createGrid(false, Integer.parseInt(cellWidth.getText()), Integer.parseInt(cellHeight.getText()), this);	
 		@Gui(notifiedBy="imageGridTask")
 		Void imageGridGuiUpdate = imageGrid.postExecutionUpdate();
 		@AsyncCatch(throwables= {ImageTooBigException.class}, handlers= {"handleImageTooBig()"})
@@ -659,7 +659,7 @@ public class JFXGui extends Application implements GUICallback {
 		Void imgLibraryGuiUpdate = imageLibrary.postExecutionUpdate();
 		Map<String, AvgRGB> rgbList = rgbLibrary.calculateRGB(imageLibraryResult, this);
 		Void rgbListGuiUpdate = rgbLibrary.postExecutionUpdate();
-		int imageGridTask = imageGrid.createGrid(false, Integer.parseInt(gridWidth.getText()), Integer.parseInt(gridHeight.getText()), this);
+		int imageGridTask = imageGrid.createGrid(false, Integer.parseInt(cellWidth.getText()), Integer.parseInt(cellHeight.getText()), this);
 		Void imageGridGuiUpdate = imageGrid.postExecutionUpdate();
 		try {
 			int mosaicBuild = mosaicBuilder.createMosaic(imageLibrary, rgbList, imageGrid, 1, 'R', this, startTime);
